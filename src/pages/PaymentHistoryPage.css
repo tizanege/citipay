@@ -1,0 +1,90 @@
+/* ==========================================================================
+   Payment History Page: Spacious Fintech Ledger Styling
+   ========================================================================== */
+
+.payment-history-page-wrapper {
+  max-width: var(--content-max-w);
+  margin: 0 auto;
+}
+
+.ledger-controls-card {
+  padding: 1.25rem 1.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .ledger-controls-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.search-box-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 0.65rem 1rem;
+}
+
+.search-box-wrap input {
+  border: none;
+  background: transparent;
+  width: 100%;
+  font-size: 0.88rem;
+  color: var(--text-primary);
+  outline: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+.filter-box-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 0.65rem 1rem;
+}
+
+.filter-box-wrap select {
+  border: none;
+  background: transparent;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  outline: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+.ledger-table-card {
+  padding: 1.25rem 1.5rem;
+}
+
+.receipt-download-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-md);
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.receipt-download-btn:hover {
+  background: #EFF6FF;
+  color: #1D4ED8;
+  border-color: #BFDBFE;
+}

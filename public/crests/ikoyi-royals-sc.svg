@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="100%" height="100%">
+  <defs>
+    <linearGradient id="irsc-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#78350F"/>
+      <stop offset="50%" stop-color="#D97706"/>
+      <stop offset="100%" stop-color="#0F172A"/>
+    </linearGradient>
+    <linearGradient id="gold-royal" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FEF08A"/>
+      <stop offset="50%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#B45309"/>
+    </linearGradient>
+  </defs>
+  <!-- Shield Outline -->
+  <path d="M60 6 C85 6 106 14 106 38 C106 72 82 102 60 114 C38 102 14 72 14 38 C14 14 35 6 60 6 Z" fill="url(#irsc-bg)" stroke="url(#gold-royal)" stroke-width="4"/>
+  <!-- Inner Rim -->
+  <path d="M60 12 C80 12 98 19 98 39 C98 68 77 94 60 105 C43 94 22 68 22 39 C22 19 40 12 60 12 Z" fill="none" stroke="#FDE68A" stroke-width="1.5" opacity="0.6"/>
+  <!-- Royal Crown -->
+  <path d="M42 45 L46 32 L54 40 L60 26 L66 40 L74 32 L78 45 Z" fill="url(#gold-royal)" stroke="#78350F" stroke-width="1"/>
+  <circle cx="46" cy="31" r="2" fill="#FEF08A"/>
+  <circle cx="60" cy="25" r="2.5" fill="#FEF08A"/>
+  <circle cx="74" cy="31" r="2" fill="#FEF08A"/>
+  <!-- Stylized Soccer Ball -->
+  <circle cx="60" cy="58" r="13" fill="#FFFFFF" stroke="#78350F" stroke-width="1.5"/>
+  <polygon points="60,52 64,55 62,60 58,60 56,55" fill="#78350F"/>
+  <!-- Ribbon -->
+  <path d="M26 78 Q60 84 94 78 L90 92 Q60 98 30 92 Z" fill="#0F172A" stroke="url(#gold-royal)" stroke-width="1.5"/>
+  <text x="60" y="89" font-family="'Outfit', sans-serif" font-weight="900" font-size="12" fill="#FFFFFF" text-anchor="middle" letter-spacing="2">IRSC</text>
+  <text x="60" y="101" font-family="'Outfit', sans-serif" font-weight="700" font-size="6" fill="#FDE68A" text-anchor="middle" letter-spacing="1">IKOYI ROYALS</text>
+</svg>

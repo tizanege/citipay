@@ -1,0 +1,412 @@
+/* Player Dashboard Styling - Citi Football */
+
+.portal-dashboard-wrapper {
+  max-width: var(--content-max-w);
+  margin: 0 auto;
+}
+
+/* Quick Persona Switcher Toolbar */
+.persona-quick-bar {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 0.5rem 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.persona-switch-pill {
+  padding: 0.3rem 0.65rem;
+  border-radius: 2rem;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #334155;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all 0.15s ease;
+}
+
+.persona-switch-pill:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.persona-switch-pill.active {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+}
+
+.persona-switch-pill .dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+}
+.persona-switch-pill .dot.green { background: #2563EB; }
+.persona-switch-pill .dot.yellow { background: #f59e0b; }
+.persona-switch-pill .dot.red { background: #ef4444; }
+
+/* Welcome Header */
+.member-welcome-header {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1.25rem;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+
+.club-badge-micro {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #EFF6FF;
+  color: #1D4ED8;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 0.2rem 0.6rem;
+  border-radius: 0.5rem;
+}
+
+.welcome-name-title {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  margin: 0.2rem 0;
+  font-family: var(--font-heading);
+}
+
+.welcome-sub-desc {
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 600;
+  margin: 0;
+}
+
+.btn-make-payment-hero {
+  padding: 0.75rem 1.5rem;
+  font-size: 0.85rem;
+  font-weight: 800;
+  box-shadow: 0 4px 14px rgba(5, 150, 105, 0.3);
+}
+
+/* =========================================================
+   THREE-COLOR ELIGIBILITY BANNER (Item 4)
+   ========================================================= */
+.eligibility-status-banner {
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  border: 1.5px solid;
+  transition: all 0.2s ease;
+}
+
+.eligibility-status-banner.green-banner {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border-color: #93c5fd;
+}
+
+.eligibility-status-banner.yellow-banner {
+  background: linear-gradient(135deg, #fefce8 0%, #fef08a 100%);
+  border-color: #fde047;
+}
+
+.eligibility-status-banner.red-banner {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  border-color: #fca5a5;
+}
+
+.eligibility-banner-inner {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.eligibility-icon-circle {
+  width: 4.25rem;
+  height: 4.25rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.eligibility-text-wrap {
+  flex: 1;
+}
+
+.eligibility-pill-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.35rem;
+}
+
+.eligibility-main-heading {
+  font-size: 1.6rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.35rem 0;
+  font-family: var(--font-heading);
+}
+
+.green-banner .eligibility-main-heading { color: #1E40AF; }
+.yellow-banner .eligibility-main-heading { color: #854d0e; }
+.red-banner .eligibility-main-heading { color: #991b1b; }
+
+.eligibility-explanation {
+  font-size: 0.875rem;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.green-banner .eligibility-explanation { color: #2563EB; }
+.yellow-banner .eligibility-explanation { color: #a16207; }
+.red-banner .eligibility-explanation { color: #b91c1c; }
+
+.eligibility-action-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-warning-prominent {
+  background: #ca8a04;
+  color: #ffffff;
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(202, 138, 4, 0.3);
+}
+.btn-warning-prominent:hover {
+  background: #a16207;
+}
+
+.btn-danger-prominent {
+  background: #dc2626;
+  color: #ffffff;
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+.btn-danger-prominent:hover {
+  background: #b91c1c;
+}
+
+.cleared-badge-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 0.6rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #bfdbfe;
+}
+
+/* =========================================================
+   PAYMENT SUMMARY CARDS (Item 3)
+   ========================================================= */
+.payment-summary-card {
+  padding: 1.25rem;
+}
+
+.card-kpi-lbl {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.card-kpi-amount {
+  font-size: 1.6rem;
+  font-weight: 900;
+  margin-top: 0.25rem;
+}
+
+/* =========================================================
+   INSTALLMENT PLAN CARD (Item 9)
+   ========================================================= */
+.plan-stats-bar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.875rem;
+  padding: 0.65rem 0.85rem;
+}
+
+.plan-stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.plan-stat-lbl {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.plan-stat-val {
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.installment-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.75rem;
+  border: 1.5px solid #e2e8f0;
+  background: #ffffff;
+}
+
+.installment-item-row.paid-row {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.installment-item-row.pending-row {
+  background: #fff;
+  border-color: #fde047;
+}
+
+/* =========================================================
+   AVAILABILITY WIDGET (Item 16)
+   ========================================================= */
+.gameweek-hero-box {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border-radius: 1rem;
+  padding: 1.15rem;
+  color: #ffffff;
+  border: 1px solid #334155;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+}
+
+.gameweek-pill-badge {
+  display: inline-block;
+  background: #f59e0b;
+  color: #0f172a;
+  font-size: 0.65rem;
+  font-weight: 900;
+  padding: 0.2rem 0.55rem;
+  border-radius: 0.4rem;
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.05em;
+}
+
+.gameweek-fixture-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #ffffff !important;
+  margin: 0.15rem 0 0.4rem 0;
+  letter-spacing: -0.01em;
+}
+
+.gameweek-meta-line {
+  font-size: 0.75rem;
+  color: #e2e8f0 !important;
+  margin: 0.15rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.availability-question-lbl {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 0.5rem;
+}
+
+.availability-vote-buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.vote-choice-btn {
+  padding: 0.65rem 0.5rem;
+  border-radius: 0.75rem;
+  border: 1.5px solid #e2e8f0;
+  background: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  font-weight: 800;
+  font-size: 0.8rem;
+  transition: all 0.15s ease;
+}
+
+.vote-choice-btn:hover {
+  background: #f8fafc;
+}
+
+.vote-choice-btn.green.selected {
+  border-color: #2563EB;
+  background: #EFF6FF;
+  color: #1E40AF;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.vote-choice-btn.yellow.selected {
+  border-color: #f59e0b;
+  background: #fefce8;
+  color: #854d0e;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+}
+
+.vote-choice-btn.red.selected {
+  border-color: #ef4444;
+  background: #fef2f2;
+  color: #991b1b;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+}
+
+/* Responsive adjustments for Mobile-First (Item 20) */
+@media (max-width: 768px) {
+  .member-welcome-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .btn-make-payment-hero {
+    width: 100%;
+    justify-content: center;
+  }
+  .eligibility-banner-inner {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+  .eligibility-action-wrap {
+    width: 100%;
+  }
+  .grid-3 {
+    grid-template-columns: 1fr;
+  }
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+}

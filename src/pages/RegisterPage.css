@@ -1,0 +1,348 @@
+/* ==========================================================================
+   Register Page: Luxury Athletic Onboarding Experience
+   ========================================================================== */
+
+.register-layout-wrap {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  background-color: #F8FAFC;
+}
+
+/* ── Left Showcase Panel ────────────────────────────── */
+.register-hero-sidebar {
+  flex: 0.95;
+  background: linear-gradient(150deg, #090D16 0%, #0F172A 55%, #1E3A8A 100%);
+  padding: 3.5rem 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: #FFFFFF;
+  position: relative;
+  overflow: hidden;
+}
+
+.register-hero-sidebar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 10% 20%, rgba(37, 99, 235, 0.2) 0%, transparent 50%),
+              radial-gradient(circle at 90% 80%, rgba(220, 38, 38, 0.12) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.register-hero-top {
+  position: relative;
+  z-index: 2;
+}
+
+.reg-brand-box {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.reg-brand-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-lg);
+  background: rgba(37, 99, 235, 0.2);
+  border: 1px solid rgba(37, 99, 235, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #3B82F6;
+}
+
+.register-hero-title {
+  font-family: var(--font-heading);
+  font-size: 2.25rem;
+  font-weight: 900;
+  color: #FFFFFF;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  margin-bottom: 0.75rem;
+}
+
+.register-hero-title span {
+  color: #60A5FA;
+}
+
+.register-hero-desc {
+  font-size: 0.95rem;
+  color: #94A3B8;
+  line-height: 1.6;
+}
+
+.reg-steps-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin: 2.5rem 0;
+  position: relative;
+  z-index: 2;
+}
+
+.reg-step-guide-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.reg-step-num-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #94A3B8;
+  transition: all 0.2s ease;
+}
+
+.reg-step-guide-item.active .reg-step-num-badge {
+  background: #2563EB;
+  border-color: #60A5FA;
+  color: #FFFFFF;
+  box-shadow: 0 0 12px rgba(37, 99, 235, 0.5);
+}
+
+.reg-step-guide-item.completed .reg-step-num-badge {
+  background: #1E3A8A;
+  border-color: #2563EB;
+  color: #93C5FD;
+}
+
+.reg-step-title {
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: #E2E8F0;
+}
+
+.reg-step-desc {
+  font-size: 0.78rem;
+  color: #94A3B8;
+  margin-top: 0.15rem;
+}
+
+.reg-trust-footer {
+  position: relative;
+  z-index: 2;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 1.5rem;
+  font-size: 0.78rem;
+  color: #64748B;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ── Right Content Form Panel ───────────────────────── */
+.register-form-panel {
+  flex: 1.25;
+  padding: 3rem 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+}
+
+.register-main-card {
+  width: 100%;
+  max-width: 660px;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: var(--radius-2xl);
+  padding: 2.75rem 3rem;
+  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.05), 0 4px 6px -2px rgba(15, 23, 42, 0.02);
+}
+
+.reg-form-header {
+  margin-bottom: 2rem;
+}
+
+.reg-form-title {
+  font-family: var(--font-heading);
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #0F172A;
+  letter-spacing: -0.02em;
+}
+
+.reg-form-sub {
+  font-size: 0.9rem;
+  color: #64748B;
+  margin-top: 0.25rem;
+}
+
+/* ── Step Progress Indicator ────────────────────────── */
+.reg-progress-bar-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2.25rem;
+  position: relative;
+}
+
+.reg-prog-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #94A3B8;
+  position: relative;
+  z-index: 2;
+}
+
+.reg-prog-step.active {
+  color: #0F172A;
+}
+
+.reg-prog-step.completed {
+  color: #2563EB;
+}
+
+.reg-prog-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 2px solid #E2E8F0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: #64748B;
+  transition: all 0.2s ease;
+}
+
+.reg-prog-step.active .reg-prog-circle {
+  background: #2563EB;
+  border-color: #2563EB;
+  color: #FFFFFF;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+}
+
+.reg-prog-step.completed .reg-prog-circle {
+  background: #EFF6FF;
+  border-color: #BFDBFE;
+  color: #1D4ED8;
+}
+
+.reg-prog-line {
+  flex: 1;
+  height: 2px;
+  background: #E2E8F0;
+  margin: 0 0.75rem 1.25rem;
+}
+
+.reg-prog-line.active {
+  background: #2563EB;
+}
+
+/* ── Club Selector Grid ─────────────────────────────── */
+.club-picker-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 260px;
+  overflow-y: auto;
+  padding-right: 0.35rem;
+}
+
+.club-picker-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1.15rem;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: var(--radius-xl);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.club-picker-item:hover {
+  border-color: #CBD5E1;
+  background: #F8FAFC;
+}
+
+.club-picker-item.selected {
+  border-color: #2563EB;
+  background: #EFF6FF;
+  box-shadow: 0 0 0 1px #2563EB;
+}
+
+.club-item-crest {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  border: 1px solid #E2E8F0;
+}
+
+/* ── Payment Options ────────────────────────────────── */
+.reg-payment-card {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.25rem 1.5rem;
+  background: #FFFFFF;
+  border: 1.5px solid #E2E8F0;
+  border-radius: var(--radius-xl);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.reg-payment-card:hover {
+  border-color: #CBD5E1;
+}
+
+.reg-payment-card.selected {
+  border-color: #2563EB;
+  background: #EFF6FF;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
+}
+
+.reg-payment-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #0F172A;
+}
+
+.reg-payment-desc {
+  font-size: 0.8rem;
+  color: #64748B;
+  margin-top: 0.2rem;
+}
+
+.selected-club-preview {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.25rem 1.5rem;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: var(--radius-xl);
+}
+
+@media (max-width: 1024px) {
+  .register-hero-sidebar {
+    display: none;
+  }
+  .register-form-panel {
+    padding: 2rem 1.25rem;
+  }
+}

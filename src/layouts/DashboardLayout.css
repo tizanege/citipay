@@ -1,0 +1,43 @@
+/* ==========================================================================
+   Dashboard Layout: Bulletproof Layout with Generous Spacing
+   ========================================================================== */
+
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--bg-app, #F8FAFC);
+}
+
+.dashboard-body-wrap {
+  flex: 1;
+  margin-left: 260px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--bg-app, #F8FAFC);
+}
+
+.dashboard-main {
+  flex: 1;
+  padding: 2.25rem 3rem 6rem 3rem;
+  max-width: 1320px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1024px) {
+  .dashboard-main {
+    padding: 1.75rem 1.75rem 5rem 1.75rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .dashboard-body-wrap {
+    margin-left: 0;
+  }
+  .dashboard-main {
+    padding: 1.25rem 1rem 4rem 1rem;
+  }
+}

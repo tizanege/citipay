@@ -1,0 +1,474 @@
+/* ==========================================================================
+   TopNav: Spacious Luxury Header Bar
+   ========================================================================== */
+
+.topnav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 68px;
+  padding: 0 2.5rem;
+  background: #FFFFFF;
+  border-bottom: 1px solid #E2E8F0;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+@media (max-width: 900px) {
+  .topnav-bar {
+    padding: 0 1.25rem;
+  }
+}
+
+/* ── Left: Global Search ────────────────────────────── */
+.topnav-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: var(--radius-full);
+  padding: 0.55rem 1.15rem;
+  width: 400px;
+  max-width: 100%;
+  transition: all 0.15s ease;
+}
+
+.topnav-search-wrap:focus-within {
+  background: #FFFFFF;
+  border-color: #2563EB;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.topnav-search-icon {
+  color: #94A3B8;
+  flex-shrink: 0;
+}
+
+.topnav-search-input {
+  border: none;
+  background: transparent;
+  width: 100%;
+  font-size: 0.85rem;
+  color: #0F172A;
+  outline: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+.topnav-kbd-shortcut {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #64748B;
+  background: #E2E8F0;
+  padding: 0.15rem 0.45rem;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+/* ── Right: Badges & Controls ───────────────────────── */
+.topnav-actions-wrap {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.topnav-season-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #EFF6FF;
+  border: 1px solid #BFDBFE;
+  padding: 0.4rem 0.95rem;
+  border-radius: var(--radius-full);
+}
+
+.live-status-pulse {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #2563EB;
+  box-shadow: 0 0 8px #2563EB;
+  animation: livePulse 2s infinite;
+}
+
+@keyframes livePulse {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.8; }
+}
+
+.season-label {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #1E40AF;
+  letter-spacing: 0.01em;
+}
+
+/* ── Club Crest Card ────────────────────────────────── */
+.topnav-club-card {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.topnav-club-card:hover {
+  border-color: #2563EB;
+  background: #F8FAFC;
+}
+
+.club-crest-box-mini {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
+}
+
+.club-card-details {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.78rem;
+}
+
+.club-card-code {
+  font-weight: 800;
+  color: #0F172A;
+}
+
+.club-card-rank {
+  font-weight: 700;
+  color: #2563EB;
+}
+
+/* ── Notifications Icon ─────────────────────────────── */
+.topnav-icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #475569;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.15s ease;
+}
+
+.topnav-icon-btn:hover {
+  background: #F8FAFC;
+  color: #0F172A;
+  border-color: #CBD5E1;
+}
+
+.topnav-unread-pip {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #EF4444;
+  border: 2px solid #FFFFFF;
+}
+
+/* ── User Profile Button ────────────────────────────── */
+.topnav-user-profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: var(--radius-full);
+  padding: 0.35rem 0.9rem 0.35rem 0.35rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.topnav-user-profile-btn:hover {
+  background: #F8FAFC;
+  border-color: #CBD5E1;
+}
+
+.user-avatar-ring {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #2563EB;
+  flex-shrink: 0;
+}
+
+.user-avatar-ring img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-text-column {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.user-display-name {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #0F172A;
+  line-height: 1.1;
+}
+
+.user-role-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #2563EB;
+}
+
+/* ── Dropdown Menus ─────────────────────────────────── */
+.topnav-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: var(--radius-xl);
+  box-shadow: 0 16px 36px -4px rgba(15, 23, 42, 0.14);
+  z-index: 100;
+  overflow: hidden;
+  animation: menuPop 0.15s ease-out;
+}
+
+@keyframes menuPop {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.notif-panel {
+  width: 320px;
+}
+
+.club-select-panel {
+  width: 290px;
+}
+
+.role-menu-panel {
+  width: 320px;
+}
+
+.dropdown-title-row {
+  padding: 0.85rem 1.15rem;
+  background: #F8FAFC;
+  border-bottom: 1px solid #E2E8F0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dropdown-scroll-list {
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+/* Club Dropdown Items */
+.club-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 1px solid transparent;
+}
+
+.club-dropdown-item:hover {
+  background: #F8FAFC;
+  border-color: #E2E8F0;
+}
+
+.club-dropdown-item.active {
+  background: #EFF6FF;
+  border-color: #BFDBFE;
+}
+
+.club-dropdown-crest-box {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  font-weight: 800;
+  font-size: 0.75rem;
+  letter-spacing: -0.01em;
+  flex-shrink: 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.12);
+}
+
+.club-dropdown-info {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.club-dropdown-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #0F172A;
+  line-height: 1.25;
+}
+
+.club-dropdown-fee {
+  font-size: 0.7rem;
+  font-family: monospace;
+  color: #64748B;
+  margin-top: 2px;
+}
+
+/* Role Selector Dropdown Items */
+.role-switch-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.5rem;
+}
+
+.role-option-btn {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background: #FFFFFF;
+}
+
+.role-option-btn:hover {
+  background: #F8FAFC;
+  border-color: #E2E8F0;
+}
+
+.role-option-btn.active {
+  background: #EFF6FF;
+  border-color: #BFDBFE;
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.08);
+}
+
+.role-icon-box {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.role-icon-member {
+  background: #EFF6FF;
+  color: #2563EB;
+}
+
+.role-icon-club {
+  background: #EFF6FF;
+  color: #2563EB;
+}
+
+.role-icon-admin {
+  background: #F5F3FF;
+  color: #7C3AED;
+}
+
+.role-option-text {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.role-option-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #0F172A;
+  line-height: 1.25;
+}
+
+.role-option-sub {
+  font-size: 0.68rem;
+  color: #64748B;
+  margin-top: 2px;
+}
+
+/* Role Sign Out Section */
+.role-logout-container {
+  border-top: 1px solid #F1F5F9;
+  padding: 0.45rem 0.5rem;
+}
+
+.role-logout-btn {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  padding: 0.6rem 0.85rem;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #EF4444;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.role-logout-btn:hover {
+  background: #FEF2F2;
+  color: #DC2626;
+}
+
+/* Notifications Items */
+.notif-card-item {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.75rem 0.85rem;
+  border-radius: var(--radius-lg);
+  margin-bottom: 0.25rem;
+}
+
+.notif-card-item.unread {
+  background: #EFF6FF;
+}
+
+.notif-dot-marker {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #2563EB;
+  margin-top: 5px;
+  flex-shrink: 0;
+}

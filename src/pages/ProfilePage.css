@@ -1,0 +1,175 @@
+/* ==========================================================================
+   Profile Page: Spacious Luxury Player Dossier & Integration Roadmap
+   ========================================================================== */
+
+.profile-page-wrapper {
+  max-width: var(--content-max-w);
+  margin: 0 auto;
+}
+
+/* ── Top Profile Hero Card ────── */
+.profile-hero-card {
+  background: linear-gradient(135deg, #FFFFFF 0%, #F0FDF4 55%, #F8FAFC 100%);
+  border: 1px solid #D1FAE5;
+  border-radius: var(--radius-xl);
+  padding: 2rem 2.25rem;
+  box-shadow: var(--shadow-subtle);
+}
+
+.profile-hero-inner {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  width: 100%;
+}
+
+.profile-avatar-box {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  min-width: 96px;
+  max-width: 96px;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.profile-avatar-lg {
+  width: 96px;
+  height: 96px;
+  min-width: 96px;
+  max-width: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3.5px solid #2563EB;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.25);
+  display: block;
+}
+
+.avatar-status-pip {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2.5px solid #FFFFFF;
+}
+
+.avatar-status-pip.green {
+  background: #2563EB;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.avatar-status-pip.yellow {
+  background: #F59E0B;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+}
+
+.avatar-status-pip.red {
+  background: #EF4444;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+}
+
+.profile-hero-details {
+  flex: 1;
+}
+
+.profile-full-name {
+  font-family: var(--font-heading);
+  font-size: 1.85rem;
+  font-weight: 900;
+  color: #0F172A;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  margin: 0.2rem 0;
+}
+
+.profile-nickname-line {
+  font-size: 0.88rem;
+  color: #64748B;
+  font-weight: 600;
+  margin: 0;
+}
+
+.profile-meta-chips {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.profile-hero-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+.player-rating-badge {
+  background: #0F172A;
+  color: #FFFFFF;
+  border-radius: var(--radius-xl);
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #334155;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.15);
+}
+
+.player-rating-badge .rating-num {
+  font-size: 1.75rem;
+  font-weight: 900;
+  color: #F59E0B;
+  line-height: 1;
+}
+
+.player-rating-badge .rating-lbl {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #94A3B8;
+  margin-top: 0.15rem;
+}
+
+/* ── Dossier Rows ────── */
+.dossier-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: var(--radius-lg);
+  font-size: 0.825rem;
+  transition: all 0.15s ease;
+}
+
+.dossier-row:hover {
+  background: #FFFFFF;
+  border-color: #CBD5E1;
+}
+
+.dossier-label {
+  color: #64748B;
+  font-weight: 600;
+}
+
+.dossier-value {
+  color: #0F172A;
+  font-weight: 700;
+  text-align: right;
+}
+
+@media (max-width: 768px) {
+  .profile-hero-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+  }
+  .profile-hero-right {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}

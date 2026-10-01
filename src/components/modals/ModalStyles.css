@@ -1,0 +1,630 @@
+/* CitiPay Portal Modal Styles */
+
+.modal-backdrop-portal {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal-content-portal {
+  background: #ffffff;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 540px;
+  margin: auto;
+  overflow: hidden;
+  animation: slideUpModal 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-content-portal.max-w-sm {
+  max-width: 400px;
+}
+
+.modal-content-portal.max-w-md {
+  max-width: 480px;
+}
+
+.modal-content-portal.max-w-lg {
+  max-width: 560px;
+}
+
+.modal-content-portal.max-w-xl {
+  max-width: 650px;
+}
+
+.modal-header-portal {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  background: #ffffff;
+}
+
+.modal-title-portal {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.modal-close-btn {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.modal-close-btn:hover {
+  background: #fee2e2;
+  color: #ef4444;
+  border-color: #fca5a5;
+}
+
+.modal-body-portal {
+  padding: 1.5rem;
+  max-height: calc(88vh - 4rem);
+  overflow-y: auto;
+}
+
+/* Forms inside modal */
+.form-label-portal {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #475569;
+  margin-bottom: 0.4rem;
+}
+
+.form-input-portal {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.75rem;
+  border: 1.5px solid #e2e8f0;
+  background: #f8fafc;
+  font-size: 0.875rem;
+  color: #0f172a;
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.form-input-portal:focus {
+  background: #ffffff;
+  border-color: #2563EB;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.form-input-portal.with-prefix {
+  padding-left: 2rem;
+}
+
+.currency-prefix {
+  position: absolute;
+  left: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: #2563EB;
+}
+
+/* Payment Type Selector */
+.payment-type-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+}
+
+.payment-type-option {
+  padding: 0.65rem 0.85rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 0.75rem;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.payment-type-option:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+
+.payment-type-option.active {
+  border-color: #2563EB;
+  background: #EFF6FF;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.type-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: #cbd5e1;
+}
+
+.payment-type-option.active .type-dot {
+  background: #2563EB;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+/* Method pill grid */
+.method-pill-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.method-pill-btn {
+  padding: 0.6rem 0.5rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 0.75rem;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.method-pill-btn:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+
+.method-pill-btn.active {
+  border-color: #2563EB;
+  background: #EFF6FF;
+  color: #1E40AF;
+}
+
+/* Checkout Summary Box */
+.checkout-summary-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.875rem;
+  padding: 0.85rem 1rem;
+}
+
+/* Success Card */
+.payment-success-card {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.success-icon-badge {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background: #EFF6FF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+}
+
+.success-title {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: #1E40AF;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.25rem;
+}
+
+.success-sub {
+  font-size: 0.8rem;
+  color: #475569;
+  margin-bottom: 1.25rem;
+}
+
+.success-reference-box {
+  background: #f0fdf4;
+  border: 1.5px dashed #86efac;
+  border-radius: 1rem;
+  padding: 1rem;
+  text-align: left;
+}
+
+/* =========================================================
+   RECEIPT CANVAS STYLES (Item 15)
+   ========================================================= */
+.receipt-actions-header {
+  padding: 1rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.receipt-tool-btn {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.receipt-tool-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.receipt-paper-canvas {
+  background: #ffffff;
+  padding: 1.5rem;
+  font-family: inherit;
+  position: relative;
+}
+
+.receipt-paper-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.receipt-club-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.receipt-logo-box {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.6rem;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.receipt-club-name {
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.receipt-club-sub {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #2563EB;
+}
+
+.receipt-badge-paid {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: #059669;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 900;
+  padding: 0.35rem 0.75rem;
+  border-radius: 2rem;
+  letter-spacing: 0.05em;
+}
+
+.receipt-divider {
+  height: 1px;
+  background: repeating-linear-gradient(90deg, #cbd5e1 0, #cbd5e1 5px, transparent 5px, transparent 9px);
+  margin: 1.25rem 0;
+}
+
+.receipt-headline-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.25rem;
+}
+
+.receipt-meta-lbl {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.receipt-ref-code {
+  font-family: monospace;
+  font-weight: 900;
+  font-size: 0.95rem;
+  color: #0f172a;
+}
+
+.receipt-date-text {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.receipt-member-box {
+  background: #f8fafc;
+  border-radius: 0.875rem;
+  border: 1px solid #e2e8f0;
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.receipt-row-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  margin-bottom: 0.35rem;
+}
+
+.receipt-key {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.receipt-val {
+  color: #0f172a;
+  font-weight: 600;
+  text-align: right;
+}
+
+.receipt-amount-container {
+  text-align: center;
+  background: #ecfdf5;
+  border: 1.5px solid #a7f3d0;
+  border-radius: 0.875rem;
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.receipt-amount-lbl {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #1E40AF;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.receipt-amount-number {
+  font-family: monospace;
+  font-size: 1.75rem;
+  font-weight: 900;
+  color: #1E40AF;
+  margin: 0.25rem 0;
+}
+
+.receipt-amount-words {
+  font-size: 0.7rem;
+  color: #2563EB;
+  font-style: italic;
+  font-weight: 600;
+}
+
+.receipt-security-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.75rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.receipt-qr-cluster {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.receipt-qr-box {
+  padding: 0.25rem;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.4rem;
+}
+
+.receipt-qr-text {
+  max-width: 170px;
+}
+
+.stamp-circle {
+  width: 3.25rem;
+  height: 3.25rem;
+  border: 2px dashed #2563EB;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  font-weight: 900;
+  color: #2563EB;
+  transform: rotate(-12deg);
+  opacity: 0.85;
+}
+
+.receipt-footer-buttons {
+  padding: 1rem 1.5rem;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+}
+
+/* =========================================================
+   STATUS OVERRIDE & RECALCULATION STYLES
+   ========================================================= */
+.member-target-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.875rem;
+  padding: 0.75rem 1rem;
+}
+
+.status-badge-mini {
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.4rem;
+}
+
+.status-badge-mini.green { background: #EFF6FF; color: #1E40AF; }
+.status-badge-mini.yellow { background: #fef9c3; color: #854d0e; }
+.status-badge-mini.red { background: #fee2e2; color: #991b1b; }
+
+.status-selector-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+}
+
+.status-choice-btn {
+  padding: 0.65rem 0.85rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 0.75rem;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.status-choice-btn:hover {
+  background: #f8fafc;
+}
+
+.status-choice-btn.active.green {
+  border-color: #2563EB;
+  background: #EFF6FF;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.status-choice-btn.active.yellow {
+  border-color: #ca8a04;
+  background: #fefce8;
+  box-shadow: 0 0 0 2px rgba(202, 138, 4, 0.15);
+}
+
+.status-choice-btn.active.red {
+  border-color: #dc2626;
+  background: #fef2f2;
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.15);
+}
+
+.status-choice-dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+}
+
+.status-choice-dot.green { background: #2563EB; }
+.status-choice-dot.yellow { background: #ca8a04; }
+.status-choice-dot.red { background: #dc2626; }
+
+.audit-preview-box, .recalculation-preview-box {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+}
+
+/* =========================================================
+   CONFIG RULES STYLES (Item 5)
+   ========================================================= */
+.rule-config-block {
+  border-radius: 0.875rem;
+  padding: 0.85rem 1rem;
+  border: 1.5px solid;
+}
+
+.rule-config-block.green-theme {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.rule-config-block.yellow-theme {
+  background: #fefce8;
+  border-color: #fde047;
+}
+
+.rule-config-block.red-theme {
+  background: #fef2f2;
+  border-color: #fca5a5;
+}
+
+.rule-config-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rule-input-field {
+  width: 5.5rem;
+  padding: 0.35rem 0.5rem;
+  font-family: monospace;
+  font-weight: 800;
+  font-size: 0.85rem;
+  border-radius: 0.5rem;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  color: #0f172a;
+}
+
+.status-dot-sm {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+}
+.status-dot-sm.green { background: #2563EB; }
+.status-dot-sm.yellow { background: #ca8a04; }
+.status-dot-sm.red { background: #dc2626; }
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUpModal {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

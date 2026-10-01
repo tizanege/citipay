@@ -1,0 +1,218 @@
+/* ==========================================================================
+   Admin Dashboard & Federation Command Center
+   ========================================================================== */
+
+.admin-dashboard-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: var(--content-max-w);
+  margin: 0 auto;
+}
+
+.admin-header-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #FFFFFF;
+  padding: 1.5rem 2rem;
+  border-radius: var(--radius-2xl);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+
+.admin-metric-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: 1.35rem 1.5rem;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
+}
+
+.admin-metric-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-1px);
+}
+
+.admin-metric-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.club-overview-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  padding: 0.9rem 1.15rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  background: #FFFFFF;
+  transition: all var(--transition-fast);
+}
+
+.club-overview-row:hover {
+  border-color: var(--border-hover);
+  background: #F8FAFC;
+}
+
+.club-logo-thumb {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-md);
+  object-fit: contain;
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.audit-stream-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 0.9rem 1.15rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  background: #FFFFFF;
+  transition: all var(--transition-fast);
+}
+
+.audit-stream-row:hover {
+  border-color: var(--border-hover);
+  background: #F8FAFC;
+}
+
+/* ── Federation Club Cards (Affiliated Clubs Registry) ── */
+.federation-club-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1.125rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.25rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02), 0 6px 16px -4px rgba(15, 23, 42, 0.04);
+}
+
+.federation-club-card:hover {
+  transform: translateY(-2px);
+  border-color: #cbd5e1;
+  box-shadow: 0 12px 24px -6px rgba(15, 23, 42, 0.08);
+}
+
+.club-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.club-crest-container {
+  width: 72px !important;
+  height: 72px !important;
+  min-width: 72px !important;
+  min-height: 72px !important;
+  max-width: 72px !important;
+  max-height: 72px !important;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1.5px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.club-crest-img {
+  width: 58px !important;
+  height: 58px !important;
+  max-width: 58px !important;
+  max-height: 58px !important;
+  object-fit: contain !important;
+  display: block;
+}
+
+.club-compliance-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 9999px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1e40af;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.club-compliance-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #2563eb;
+}
+
+.club-card-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 0.25rem 0;
+  letter-spacing: -0.02em;
+}
+
+.club-card-sub {
+  font-size: 0.75rem;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0 0 1rem 0;
+}
+
+.club-specs-panel {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.875rem;
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.club-spec-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+}
+
+.club-spec-row:not(:last-child) {
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.club-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #f1f5f9;
+}

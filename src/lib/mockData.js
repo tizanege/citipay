@@ -1,0 +1,251 @@
+// Mock data for CitiPay & CitiLeague platform
+
+export const mockClubs = [
+  {
+    id: 'club-1',
+    name: 'Victoria Island FC',
+    slug: 'victoria-island-fc',
+    code: 'VIFC',
+    logo_url: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=128&auto=format&fit=crop&q=80',
+    primary_color: '#22C55E',
+    stadium: 'Onikan Arena, Lagos',
+    city: 'Lagos',
+    membership_fee: 60000,
+    max_installments: 4,
+    player_count: 24,
+    rank: 1,
+    points: 38,
+    played: 15,
+    won: 12,
+    drawn: 2,
+    lost: 1,
+    goals_for: 34,
+    goals_against: 11
+  },
+  {
+    id: 'club-2',
+    name: 'Ikoyi Royals SC',
+    slug: 'ikoyi-royals-sc',
+    code: 'IRSC',
+    logo_url: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=128&auto=format&fit=crop&q=80',
+    primary_color: '#3B82F6',
+    stadium: 'Legacy Stadium, Surulere',
+    city: 'Lagos',
+    membership_fee: 75000,
+    max_installments: 3,
+    player_count: 22,
+    rank: 2,
+    points: 35,
+    played: 15,
+    won: 11,
+    drawn: 2,
+    lost: 2,
+    goals_for: 29,
+    goals_against: 14
+  },
+  {
+    id: 'club-3',
+    name: 'Lekki City Stars',
+    slug: 'lekki-city-stars',
+    code: 'LCST',
+    logo_url: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=128&auto=format&fit=crop&q=80',
+    primary_color: '#F59E0B',
+    stadium: 'Meadow Hall Complex, Lekki',
+    city: 'Lagos',
+    membership_fee: 50000,
+    max_installments: 4,
+    player_count: 26,
+    rank: 3,
+    points: 31,
+    played: 15,
+    won: 9,
+    drawn: 4,
+    lost: 2,
+    goals_for: 27,
+    goals_against: 16
+  },
+  {
+    id: 'club-4',
+    name: 'Ikeja United Athletic',
+    slug: 'ikeja-united',
+    code: 'IKUA',
+    logo_url: 'https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=128&auto=format&fit=crop&q=80',
+    primary_color: '#8B5CF6',
+    stadium: 'Agege Township Stadium',
+    city: 'Lagos',
+    membership_fee: 45000,
+    max_installments: 4,
+    player_count: 25,
+    rank: 4,
+    points: 27,
+    played: 15,
+    won: 8,
+    drawn: 3,
+    lost: 4,
+    goals_for: 23,
+    goals_against: 18
+  },
+  {
+    id: 'club-5',
+    name: 'Surulere Strikers FC',
+    slug: 'surulere-strikers',
+    code: 'SSFC',
+    logo_url: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=128&auto=format&fit=crop&q=80',
+    primary_color: '#EC4899',
+    stadium: 'National Stadium AstroTurf',
+    city: 'Lagos',
+    membership_fee: 40000,
+    max_installments: 4,
+    player_count: 20,
+    rank: 5,
+    points: 22,
+    played: 15,
+    won: 6,
+    drawn: 4,
+    lost: 5,
+    goals_for: 20,
+    goals_against: 22
+  }
+]
+
+export const mockCurrentUser = {
+  id: 'usr-001',
+  email: 'tobi.adeyemi@citileague.ng',
+  full_name: 'Tobi Adeyemi',
+  phone: '+234 812 345 6789',
+  avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=256&auto=format&fit=crop&q=80',
+  role: 'player',
+  club_id: 'club-1',
+  club_name: 'Victoria Island FC',
+  club_code: 'VIFC',
+  status: 'active',
+  player: {
+    jersey_number: 10,
+    primary_position: 'CAM',
+    secondary_position: 'LW',
+    preferred_foot: 'Right',
+    height_cm: 181,
+    weight_kg: 74,
+    nationality: 'Nigeria',
+    date_of_birth: '1999-08-14',
+    overall_rating: 84,
+    pace: 88,
+    shooting: 82,
+    passing: 86,
+    dribbling: 89,
+    defending: 55,
+    physical: 76,
+    matches_played: 14,
+    goals: 9,
+    assists: 7,
+    clean_sheets: 0,
+    yellow_cards: 1,
+    red_cards: 0,
+    minutes_played: 1180,
+    form: 'Excellent',
+    mvp_awards: 4,
+    pass_accuracy: 87.4,
+    shots_on_target: 28,
+    key_passes: 34
+  },
+  payment_plan: {
+    title: 'CitiLeague Season 2026/27 Registration & Kit Fee',
+    total_amount: 60000,
+    amount_paid: 45000,
+    balance: 15000,
+    installment_count: 4,
+    completed_installments: 3,
+    status: 'partially_paid',
+    due_date: '2026-10-15',
+    installments: [
+      { id: 'inst-1', number: 1, amount: 15000, due_date: '2026-07-15', status: 'paid', paid_at: '2026-07-12' },
+      { id: 'inst-2', number: 2, amount: 15000, due_date: '2026-08-15', status: 'paid', paid_at: '2026-08-14' },
+      { id: 'inst-3', number: 3, amount: 15000, due_date: '2026-09-15', status: 'paid', paid_at: '2026-09-10' },
+      { id: 'inst-4', number: 4, amount: 15000, due_date: '2026-10-15', status: 'pending', paid_at: null }
+    ]
+  }
+}
+
+export const mockTransactions = [
+  {
+    id: 'tx-1004',
+    date: '2026-09-10T14:30:00Z',
+    reference: 'CITI-PAY-88239102',
+    description: 'Season Registration — Installment 3 of 4',
+    club: 'Victoria Island FC',
+    amount: 15000,
+    currency: 'NGN',
+    method: 'Paystack (Card)',
+    channel: 'card',
+    status: 'success'
+  },
+  {
+    id: 'tx-1003',
+    date: '2026-08-14T09:15:00Z',
+    reference: 'CITI-PAY-77123901',
+    description: 'Season Registration — Installment 2 of 4',
+    club: 'Victoria Island FC',
+    amount: 15000,
+    currency: 'NGN',
+    method: 'Paystack (Bank Transfer)',
+    channel: 'bank_transfer',
+    status: 'success'
+  },
+  {
+    id: 'tx-1002',
+    date: '2026-07-12T16:45:00Z',
+    reference: 'CITI-PAY-66012894',
+    description: 'Season Registration — Installment 1 of 4 (Deposit)',
+    club: 'Victoria Island FC',
+    amount: 15000,
+    currency: 'NGN',
+    method: 'Paystack (USSD)',
+    channel: 'ussd',
+    status: 'success'
+  },
+  {
+    id: 'tx-1001',
+    date: '2026-05-20T11:00:00Z',
+    reference: 'CITI-PAY-55192837',
+    description: 'Pre-Season Tournament Pass & Medical Screening',
+    club: 'Victoria Island FC',
+    amount: 10000,
+    currency: 'NGN',
+    method: 'Paystack (Card)',
+    channel: 'card',
+    status: 'success'
+  }
+]
+
+export const mockRankings = [
+  { rank: 1, name: 'Tobi Adeyemi', club: 'Victoria Island FC', position: 'CAM', rating: 84, goals: 9, assists: 7, matches: 14, mvp: 4 },
+  { rank: 2, name: 'Chinedu Eze', club: 'Ikoyi Royals SC', position: 'ST', rating: 83, goals: 12, assists: 3, matches: 15, mvp: 5 },
+  { rank: 3, name: 'Femi Balogun', club: 'Lekki City Stars', position: 'LW', rating: 81, goals: 8, assists: 6, matches: 13, mvp: 3 },
+  { rank: 4, name: 'Emeka Nwosu', club: 'Victoria Island FC', position: 'CB', rating: 80, goals: 2, assists: 1, matches: 15, clean_sheets: 8, mvp: 2 },
+  { rank: 5, name: 'Ahmed Lawal', club: 'Ikeja United', position: 'RW', rating: 79, goals: 7, assists: 5, matches: 14, mvp: 2 },
+  { rank: 6, name: 'Kelechi Okocha', club: 'Surulere Strikers', position: 'CM', rating: 79, goals: 4, assists: 8, matches: 15, mvp: 1 },
+  { rank: 7, name: 'Daniel Oladipo', club: 'Ikoyi Royals SC', position: 'GK', rating: 78, goals: 0, assists: 0, matches: 15, clean_sheets: 7, mvp: 2 },
+  { rank: 8, name: 'Suleiman Garba', club: 'Victoria Island FC', position: 'CDM', rating: 78, goals: 1, assists: 4, matches: 14, mvp: 1 }
+]
+
+export const mockUpcomingMatches = [
+  {
+    id: 'm-1',
+    home_club: 'Victoria Island FC',
+    away_club: 'Ikoyi Royals SC',
+    date: 'Saturday, 04 Oct 2026',
+    time: '16:00 WAT',
+    venue: 'Onikan Arena, Lagos',
+    derby: 'Lagos Island Derby',
+    round: 'Matchday 16'
+  },
+  {
+    id: 'm-2',
+    home_club: 'Lekki City Stars',
+    away_club: 'Victoria Island FC',
+    date: 'Sunday, 12 Oct 2026',
+    time: '15:30 WAT',
+    venue: 'Meadow Hall Complex, Lekki',
+    round: 'Matchday 17'
+  }
+]

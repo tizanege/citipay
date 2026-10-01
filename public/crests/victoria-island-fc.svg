@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="100%" height="100%">
+  <defs>
+    <linearGradient id="vifc-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E3A8A"/>
+      <stop offset="50%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#0F172A"/>
+    </linearGradient>
+    <linearGradient id="cyan-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="100%" stop-color="#0284C7"/>
+    </linearGradient>
+  </defs>
+  <!-- Shield Outline -->
+  <path d="M60 6 C85 6 106 14 106 38 C106 72 82 102 60 114 C38 102 14 72 14 38 C14 14 35 6 60 6 Z" fill="url(#vifc-bg)" stroke="#38BDF8" stroke-width="4"/>
+  <!-- Inner Rim -->
+  <path d="M60 12 C80 12 98 19 98 39 C98 68 77 94 60 105 C43 94 22 68 22 39 C22 19 40 12 60 12 Z" fill="none" stroke="#93C5FD" stroke-width="1.5" opacity="0.6"/>
+  <!-- Waves motif -->
+  <path d="M30 46 Q45 40 60 46 Q75 52 90 46" fill="none" stroke="#60A5FA" stroke-width="3"/>
+  <path d="M30 54 Q45 48 60 54 Q75 60 90 54" fill="none" stroke="#93C5FD" stroke-width="3"/>
+  <!-- Stylized Soccer Ball -->
+  <circle cx="60" cy="30" r="12" fill="#FFFFFF" stroke="#1E3A8A" stroke-width="1.5"/>
+  <polygon points="60,24 64,27 62,32 58,32 56,27" fill="#1E3A8A"/>
+  <!-- Ribbon -->
+  <path d="M26 78 Q60 84 94 78 L90 92 Q60 98 30 92 Z" fill="#0F172A" stroke="#38BDF8" stroke-width="1.5"/>
+  <text x="60" y="89" font-family="'Outfit', sans-serif" font-weight="900" font-size="12" fill="#FFFFFF" text-anchor="middle" letter-spacing="2">VIFC</text>
+  <text x="60" y="101" font-family="'Outfit', sans-serif" font-weight="700" font-size="6" fill="#38BDF8" text-anchor="middle" letter-spacing="1">VICTORIA ISLAND</text>
+</svg>
