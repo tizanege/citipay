@@ -26,6 +26,3 @@ dist-ssr
 # Environment
 .env
 .env.production
-
-# Temp
-higgsfield-skills-temp/
