@@ -37,7 +37,7 @@ export default function RegisterPage() {
 
     // Step 3: Registration Plan
     paymentType: 'installment',
-    installmentsCount: 4,
+    installmentsCount: 2,
     agreeTerms: false
   })
 
@@ -422,7 +422,7 @@ export default function RegisterPage() {
                         <div className="flex-1">
                           <div className="reg-payment-title">Installmental Payment (Recommended)</div>
                           <div className="reg-payment-desc">
-                            Pay in 4 easy monthly installments of ₦{(selectedClub.membership_fee / 4).toLocaleString()} via Paystack
+                            Pay in 2 installments (50% split) of ₦{(selectedClub.membership_fee / 2).toLocaleString()} via Paystack
                           </div>
                         </div>
                         <span className="badge badge-success font-bold text-xs">Flexible</span>

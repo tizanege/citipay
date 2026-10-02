@@ -17,8 +17,11 @@ export default function MakePaymentModal() {
     currentClub
   } = useCitiPay()
 
+  const halfMembership = Math.round((currentMember.membership_fee || currentClub?.membership_fee || 100000) / 2)
+  const defaultInstAmount = currentMember.membership_outstanding > 0 ? Math.min(halfMembership, currentMember.membership_outstanding) : halfMembership
+
   const [paymentType, setPaymentType] = useState(paymentModalState.type || 'membership_installment')
-  const [amount, setAmount] = useState(paymentModalState.defaultAmount || 25000)
+  const [amount, setAmount] = useState(paymentModalState.defaultAmount || defaultInstAmount)
   const [paymentMethod, setPaymentMethod] = useState('paystack_card') // 'paystack_card' | 'bank_transfer' | 'ussd' | 'apple_pay'
   const [notes, setNotes] = useState('')
   const [isProcessing, setIsProcessing] = useState(false)
@@ -28,9 +31,9 @@ export default function MakePaymentModal() {
 
   const handleTypeChange = (type) => {
     setPaymentType(type)
-    if (type === 'membership') setAmount(currentMember.membership_outstanding || 100000)
-    else if (type === 'membership_installment') setAmount(25000)
-    else if (type === 'social_dues') setAmount(5000)
+    if (type === 'membership') setAmount(currentMember.membership_outstanding || currentMember.membership_fee || 100000)
+    else if (type === 'membership_installment') setAmount(defaultInstAmount)
+    else if (type === 'social_dues') setAmount(currentClub?.monthly_social_dues || 5000)
     else if (type === 'merchandise') setAmount(18000)
     else if (type === 'other_approved') setAmount(10000)
   }
@@ -57,7 +60,7 @@ export default function MakePaymentModal() {
 
   const handleClose = () => {
     setSuccessTx(null)
-    setPaymentModalState({ isOpen: false, type: 'membership_installment', defaultAmount: 25000 })
+    setPaymentModalState({ isOpen: false, type: 'membership_installment', defaultAmount: defaultInstAmount })
   }
 
   const handleViewReceipt = () => {
@@ -141,7 +144,7 @@ export default function MakePaymentModal() {
                       <div className="type-dot" />
                       <div className="text-left">
                         <div className="font-bold text-xs text-slate-900">Membership Installment</div>
-                        <div className="text-2xs text-slate-500">₦25,000 / Installment</div>
+                        <div className="text-2xs text-slate-500">₦{halfMembership.toLocaleString()} / Tranche (50%)</div>
                       </div>
                     </div>
                   </button>
@@ -155,7 +158,7 @@ export default function MakePaymentModal() {
                       <div className="type-dot" />
                       <div className="text-left">
                         <div className="font-bold text-xs text-slate-900">Full Membership Fee</div>
-                        <div className="text-2xs text-slate-500">₦100,000 Total Season</div>
+                        <div className="text-2xs text-slate-500">₦{(currentMember.membership_fee || 100000).toLocaleString()} Total Season</div>
                       </div>
                     </div>
                   </button>
@@ -169,7 +172,7 @@ export default function MakePaymentModal() {
                       <div className="type-dot" />
                       <div className="text-left">
                         <div className="font-bold text-xs text-slate-900">Monthly Social Dues</div>
-                        <div className="text-2xs text-slate-500">₦5,000 (Current Month)</div>
+                        <div className="text-2xs text-slate-500">₦{(currentClub?.monthly_social_dues || 5000).toLocaleString()} (Current Month)</div>
                       </div>
                     </div>
                   </button>

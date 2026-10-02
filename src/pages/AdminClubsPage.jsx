@@ -22,6 +22,11 @@ export default function AdminClubsPage() {
     alert(`Active club context switched to ${clubId}. You can manage this club in the executive portal.`)
   }
 
+  const handleOpenClubRules = (clubId) => {
+    setSelectedClubId(clubId)
+    setRulesConfigModalState({ isOpen: true })
+  }
+
   return (
     <div className="admin-dashboard-wrap">
       {/* Header Banner */}
@@ -180,10 +185,11 @@ export default function AdminClubsPage() {
               <div className="club-card-actions">
                 <button
                   className="btn btn-secondary flex-1 text-xs py-2 font-bold flex items-center justify-center gap-1.5"
-                  onClick={() => setRulesConfigModalState({ isOpen: true })}
+                  onClick={() => handleOpenClubRules(club.id)}
+                  title="Configure club dues, membership fees and eligibility rules"
                 >
                   <Sliders size={13} />
-                  <span>Rules</span>
+                  <span>Rules & Fees</span>
                 </button>
                 <button
                   className="btn btn-primary flex-1 text-xs py-2 font-bold flex items-center justify-center gap-1.5"

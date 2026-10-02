@@ -59,9 +59,9 @@ export default function App() {
         <Route path="/dashboard" element={<PlayerDashboard />} />
         <Route path="/payments" element={<PaymentsPage />} />
         <Route path="/payment-history" element={<PaymentHistoryPage />} />
-        <Route path="/performance" element={<PerformancePage />} />
-        <Route path="/rankings" element={<RankingsPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/performance" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/rankings" element={<Navigate to="/dashboard" replace />} />
 
         {/* ── 2. Club Executive Access Level ── */}
         <Route path="/club/dashboard" element={<ClubDashboard />} />

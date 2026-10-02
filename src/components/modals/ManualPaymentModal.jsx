@@ -16,9 +16,10 @@ export default function ManualPaymentModal() {
   } = useCitiPay()
 
   const defaultMember = manualPaymentModalState.member || members[0]
+  const defaultInst = Math.round((defaultMember?.membership_fee || 100000) / 2)
 
   const [selectedMemberId, setSelectedMemberId] = useState(defaultMember?.id || 'mem-001')
-  const [amount, setAmount] = useState('25000')
+  const [amount, setAmount] = useState(String(defaultInst))
   const [paymentType, setPaymentType] = useState('membership_installment')
   const [reference, setReference] = useState('BANK-12345')
   const [paymentDate, setPaymentDate] = useState('September 28, 2026')

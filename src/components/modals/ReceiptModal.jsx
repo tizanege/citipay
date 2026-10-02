@@ -16,7 +16,7 @@ export default function ReceiptModal() {
     member_name: currentMember.full_name,
     member_id: currentMember.member_id,
     description: 'Membership installment',
-    amount: 25000,
+    amount: 50000,
     date_display: 'September 28, 2026',
     status: 'PAID',
     method: 'Paystack (Card)',

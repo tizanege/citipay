@@ -274,7 +274,7 @@ export default function TopNav() {
                   </div>
                   <div className="role-option-text">
                     <div className="role-option-title">Member / Player Portal</div>
-                    <div className="role-option-sub">Eligibility, Pay Dues, Receipts, Performance</div>
+                    <div className="role-option-sub">Eligibility, Pay Dues, Receipts, Profile</div>
                   </div>
                 </button>
 

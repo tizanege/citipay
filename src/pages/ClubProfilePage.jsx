@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Building2, ShieldCheck, MapPin, Sliders, Landmark,
   Users, Mail, Phone, Calendar, CheckCircle2, Shield,
@@ -8,8 +8,29 @@ import { useCitiPay } from '../contexts/CitiPayContext'
 import './ClubDashboard.css'
 
 export default function ClubProfilePage() {
-  const { currentClub, clubRules, setRulesConfigModalState, adminMetrics } = useCitiPay()
-  const [isEditing, setIsEditing] = useState(false)
+  const { currentClub, clubRules, setRulesConfigModalState, adminMetrics, updateClubFees } = useCitiPay()
+  const [isEditingFees, setIsEditingFees] = useState(false)
+  const [membershipFee, setMembershipFee] = useState(currentClub.membership_fee || 100000)
+  const [monthlyDues, setMonthlyDues] = useState(currentClub.monthly_social_dues || 5000)
+  const [saveSuccess, setSaveSuccess] = useState(false)
+
+  useEffect(() => {
+    setMembershipFee(currentClub.membership_fee || 100000)
+    setMonthlyDues(currentClub.monthly_social_dues || 5000)
+  }, [currentClub.membership_fee, currentClub.monthly_social_dues])
+
+  const handleSaveFees = () => {
+    updateClubFees({
+      clubId: currentClub.id,
+      membership_fee: Number(membershipFee),
+      monthly_social_dues: Number(monthlyDues),
+      max_installments: 2
+    })
+    setIsEditingFees(false)
+    setSaveSuccess(true)
+    setTimeout(() => setSaveSuccess(false), 3500)
+  }
+
   const [bankAccount, setBankAccount] = useState({
     bankName: 'Guaranty Trust Bank (GTBank)',
     accountName: `${currentClub.name} Association Ltd`,
@@ -104,6 +125,117 @@ export default function ClubProfilePage() {
           </div>
         </div>
 
+        {/* Club Dues & Membership Fee Card */}
+        <div className="card p-5">
+          <div className="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
+            <div>
+              <h3 className="section-title text-base font-extrabold text-slate-900">DUES & MEMBERSHIP FEES</h3>
+              <p className="text-xs text-slate-500">Official club fee obligations for competitive squad registration</p>
+            </div>
+            <div className="flex items-center gap-2">
+              {isEditingFees ? (
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    className="btn btn-secondary text-xs py-1 px-3 font-semibold"
+                    onClick={() => {
+                      setMembershipFee(currentClub.membership_fee || 100000)
+                      setMonthlyDues(currentClub.monthly_social_dues || 5000)
+                      setIsEditingFees(false)
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-primary text-xs py-1 px-3 font-bold flex items-center gap-1"
+                    onClick={handleSaveFees}
+                  >
+                    <Save size={13} /> Save Fees
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  className="btn btn-secondary text-xs py-1.5 px-3 font-bold flex items-center gap-1"
+                  onClick={() => setIsEditingFees(true)}
+                >
+                  <Edit3 size={13} /> Edit Fees
+                </button>
+              )}
+            </div>
+          </div>
+
+          {saveSuccess && (
+            <div className="p-2.5 mb-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-1.5">
+              <CheckCircle2 size={15} /> Club membership fees and monthly dues updated successfully!
+            </div>
+          )}
+
+          <div className="flex flex-col gap-3 text-xs">
+            <div className="flex justify-between items-center py-2 border-b border-slate-100">
+              <div>
+                <span className="text-slate-700 font-bold block">Annual / Season Membership:</span>
+                <span className="text-3xs text-slate-500">Paid in 2 bi-annual installments</span>
+              </div>
+              {isEditingFees ? (
+                <div className="flex items-center gap-1">
+                  <span className="font-bold text-slate-500">₦</span>
+                  <input
+                    type="number"
+                    className="form-input-portal font-mono font-bold text-xs py-1 px-2 w-32"
+                    value={membershipFee}
+                    onChange={(e) => setMembershipFee(e.target.value)}
+                    step="1000"
+                    min="1000"
+                  />
+                </div>
+              ) : (
+                <strong className="text-emerald-700 font-mono text-sm font-extrabold">
+                  ₦{(currentClub.membership_fee || 100000).toLocaleString()}
+                </strong>
+              )}
+            </div>
+
+            <div className="flex justify-between items-center py-2 border-b border-slate-100">
+              <div>
+                <span className="text-slate-700 font-bold block">Monthly Social Dues:</span>
+                <span className="text-3xs text-slate-500">Monthly recurring dues for pitch & gear</span>
+              </div>
+              {isEditingFees ? (
+                <div className="flex items-center gap-1">
+                  <span className="font-bold text-slate-500">₦</span>
+                  <input
+                    type="number"
+                    className="form-input-portal font-mono font-bold text-xs py-1 px-2 w-32"
+                    value={monthlyDues}
+                    onChange={(e) => setMonthlyDues(e.target.value)}
+                    step="500"
+                    min="100"
+                  />
+                </div>
+              ) : (
+                <strong className="text-slate-900 font-mono text-sm font-extrabold">
+                  ₦{(currentClub.monthly_social_dues || 5000).toLocaleString()}/mo
+                </strong>
+              )}
+            </div>
+
+            <div className="flex justify-between items-center py-2 border-b border-slate-100">
+              <span className="text-slate-600 font-medium">Installment Payment Structure:</span>
+              <span className="badge badge-accent font-bold font-mono text-3xs">
+                2 Installments (50% / 50%) — 2x ₦{Math.round((Number(membershipFee || 100000)) / 2).toLocaleString()}
+              </span>
+            </div>
+
+            <div className="p-3 rounded-lg bg-emerald-50/60 border border-emerald-100 text-xs text-emerald-900">
+              💡 <strong>Instant Sync:</strong> Updating dues or membership fees immediately recalculates squad balances, installment tranches, and Paystack payment defaults for all registered members of {currentClub.name}.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid-2 mb-6">
         {/* Official Club Bank Account (For Offline Reconciliations) */}
         <div className="card p-5">
           <div className="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
@@ -139,9 +271,7 @@ export default function ClubProfilePage() {
             💡 <strong>Offline Payment Process:</strong> When members pay into this account, use <strong>+ Record Payment</strong> in the Collections Ledger to log the reference and credit the player's account.
           </div>
         </div>
-      </div>
 
-      <div className="grid-2">
         {/* Dynamic 3-Color Eligibility Rules Configuration */}
         <div className="card p-5">
           <div className="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">

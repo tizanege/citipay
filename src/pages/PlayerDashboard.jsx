@@ -32,18 +32,19 @@ export default function PlayerDashboard() {
   const membershipPaid = Number(member.membership_paid || 0)
   const membershipOutstanding = Number(member.membership_outstanding ?? Math.max(0, membershipFee - membershipPaid))
   const socialDuesCurrentMonth = Number(member.social_dues_current_month || 5000)
-  const nextPaymentAmount = Number(member.next_payment_amount ?? (membershipOutstanding > 0 ? Math.min(25000, membershipOutstanding) : 0))
+  const installmentAmount = Math.round(membershipFee / 2)
+  const nextPaymentAmount = Number(member.next_payment_amount ?? (membershipOutstanding > 0 ? Math.min(installmentAmount, membershipOutstanding) : 0))
 
   // Recent transactions for this player
   const memberTxs = (transactions || []).filter(
     tx => tx?.member_id === member.member_id || tx?.member_name === member.full_name
   ).slice(0, 4)
 
-  const handleOpenPayment = (type = 'membership_installment', defaultAmount = 25000) => {
+  const handleOpenPayment = (type = 'membership_installment', defaultAmount = nextPaymentAmount || installmentAmount) => {
     setPaymentModalState({
       isOpen: true,
       type,
-      defaultAmount: defaultAmount || membershipOutstanding || 25000
+      defaultAmount: defaultAmount || membershipOutstanding || installmentAmount
     })
   }
 
@@ -100,7 +101,7 @@ export default function PlayerDashboard() {
         <div className="welcome-right-col">
           <button
             className="btn btn-primary btn-make-payment-hero flex items-center gap-2"
-            onClick={() => handleOpenPayment('membership_installment', 25000)}
+            onClick={() => handleOpenPayment('membership_installment', nextPaymentAmount || installmentAmount)}
           >
             <CreditCard size={18} />
             <span>MAKE PAYMENT</span>
@@ -305,7 +306,7 @@ export default function PlayerDashboard() {
                     )}
                     <div>
                       <div className="font-bold text-xs text-slate-900">
-                        {inst.label || `Installment ${inst.number || idx + 1}`} — ₦{Number(inst.amount || 25000).toLocaleString()}
+                        {inst.label || `Installment ${inst.number || idx + 1}`} — ₦{Number(inst.amount || installmentAmount).toLocaleString()}
                       </div>
                       <div className="text-3xs text-slate-500">
                         {inst.status === 'paid' ? `Paid on ${inst.paid_at || 'Settled'} · Ref: ${inst.ref || 'SL001'}` : `Due for settlement`}
@@ -323,30 +324,20 @@ export default function PlayerDashboard() {
                 <div className="installment-item-row paid-row">
                   <div className="flex items-center gap-2">
                     <span className="inst-badge-status green">✅</span>
-                    <span className="font-bold text-xs text-slate-900">Installment 1 — ₦25,000</span>
+                    <span className="font-bold text-xs text-slate-900">Installment 1 (1st Half - 50%) — ₦{installmentAmount.toLocaleString()}</span>
                   </div>
                   <span className="badge badge-success text-xs font-bold">PAID</span>
                 </div>
-                <div className="installment-item-row paid-row">
+                <div className={`installment-item-row ${membershipOutstanding > 0 ? 'pending-row' : 'paid-row'}`}>
                   <div className="flex items-center gap-2">
-                    <span className="inst-badge-status green">✅</span>
-                    <span className="font-bold text-xs text-slate-900">Installment 2 — ₦25,000</span>
+                    <span className={`inst-badge-status ${membershipOutstanding > 0 ? 'red' : 'green'}`}>
+                      {membershipOutstanding > 0 ? '🔴' : '✅'}
+                    </span>
+                    <span className="font-bold text-xs text-slate-900">Installment 2 (2nd Half - 50%) — ₦{installmentAmount.toLocaleString()}</span>
                   </div>
-                  <span className="badge badge-success text-xs font-bold">PAID</span>
-                </div>
-                <div className="installment-item-row paid-row">
-                  <div className="flex items-center gap-2">
-                    <span className="inst-badge-status green">✅</span>
-                    <span className="font-bold text-xs text-slate-900">Installment 3 — ₦25,000</span>
-                  </div>
-                  <span className="badge badge-success text-xs font-bold">PAID</span>
-                </div>
-                <div className="installment-item-row pending-row">
-                  <div className="flex items-center gap-2">
-                    <span className="inst-badge-status red">🔴</span>
-                    <span className="font-bold text-xs text-slate-900">Installment 4 — ₦25,000</span>
-                  </div>
-                  <span className="badge badge-warning text-xs font-bold">DUE</span>
+                  <span className={`badge ${membershipOutstanding > 0 ? 'badge-warning' : 'badge-success'} text-xs font-bold`}>
+                    {membershipOutstanding > 0 ? 'DUE' : 'PAID'}
+                  </span>
                 </div>
               </>
             )}
@@ -356,10 +347,10 @@ export default function PlayerDashboard() {
           {membershipOutstanding > 0 ? (
             <button
               className="btn btn-primary w-full flex items-center justify-center gap-2 font-bold py-2.5"
-              onClick={() => handleOpenPayment('membership_installment', Math.min(25000, membershipOutstanding))}
+              onClick={() => handleOpenPayment('membership_installment', Math.min(installmentAmount, membershipOutstanding))}
             >
               <CreditCard size={16} />
-              <span>[PAY NEXT INSTALLMENT — ₦{Math.min(25000, membershipOutstanding).toLocaleString()}]</span>
+              <span>[PAY NEXT INSTALLMENT — ₦{Math.min(installmentAmount, membershipOutstanding).toLocaleString()}]</span>
             </button>
           ) : (
             <div className="flex items-center justify-center gap-2 p-3 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-xl font-bold text-xs">

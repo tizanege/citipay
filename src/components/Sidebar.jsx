@@ -24,8 +24,6 @@ export default function Sidebar() {
     { to: '/dashboard', icon: LayoutDashboard, label: 'Member Overview', badge: 'Active' },
     { to: '/payments', icon: CreditCard, label: 'Pay Fees & Dues', badge: 'Paystack' },
     { to: '/payment-history', icon: History, label: 'Official Receipts' },
-    { to: '/performance', icon: TrendingUp, label: 'Match Performance' },
-    { to: '/rankings', icon: Trophy, label: 'League Standings' },
     { to: '/profile', icon: User, label: 'Member Profile' }
   ]
 

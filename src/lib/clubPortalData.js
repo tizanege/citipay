@@ -20,7 +20,7 @@ export const initialClubs = [
     founded_year: 2021,
     membership_fee: 100000,
     monthly_social_dues: 5000,
-    max_installments: 4,
+    max_installments: 2,
     status: 'active'
   },
   {
@@ -39,7 +39,7 @@ export const initialClubs = [
     founded_year: 2018,
     membership_fee: 100000,
     monthly_social_dues: 5000,
-    max_installments: 4,
+    max_installments: 2,
     status: 'active'
   },
   {
@@ -58,7 +58,7 @@ export const initialClubs = [
     founded_year: 2015,
     membership_fee: 100000,
     monthly_social_dues: 5000,
-    max_installments: 4,
+    max_installments: 2,
     status: 'active'
   }
 ]
@@ -110,10 +110,8 @@ export const initialMembers = [
     last_payment_date: 'Sept 28, 2026',
     
     installments: [
-      { id: 'inst-1', number: 1, label: 'Installment 1', amount: 25000, status: 'paid', paid_at: '2026-06-15', ref: 'SL00101' },
-      { id: 'inst-2', number: 2, label: 'Installment 2', amount: 25000, status: 'paid', paid_at: '2026-07-20', ref: 'SL00115' },
-      { id: 'inst-3', number: 3, label: 'Installment 3', amount: 25000, status: 'paid', paid_at: '2026-08-25', ref: 'SL00124' },
-      { id: 'inst-4', number: 4, label: 'Installment 4', amount: 25000, status: 'paid', paid_at: '2026-09-28', ref: 'SL00130' }
+      { id: 'inst-1', number: 1, label: 'Installment 1 (1st Half - 50%)', amount: 50000, status: 'paid', paid_at: '2026-06-15', ref: 'SL00101' },
+      { id: 'inst-2', number: 2, label: 'Installment 2 (2nd Half - 50%)', amount: 50000, status: 'paid', paid_at: '2026-08-25', ref: 'SL00124' }
     ]
   },
   {
@@ -148,10 +146,8 @@ export const initialMembers = [
     last_payment_date: 'Sept 20, 2026',
     
     installments: [
-      { id: 'inst-1', number: 1, label: 'Installment 1', amount: 25000, status: 'paid', paid_at: '2026-06-15', ref: 'SL00102' },
-      { id: 'inst-2', number: 2, label: 'Installment 2', amount: 25000, status: 'paid', paid_at: '2026-07-20', ref: 'SL00116' },
-      { id: 'inst-3', number: 3, label: 'Installment 3', amount: 25000, status: 'paid', paid_at: '2026-08-25', ref: 'SL00125' },
-      { id: 'inst-4', number: 4, label: 'Installment 4', amount: 25000, amount_paid: 15000, status: 'pending', paid_at: null, ref: null }
+      { id: 'inst-1', number: 1, label: 'Installment 1 (1st Half - 50%)', amount: 50000, status: 'paid', paid_at: '2026-06-15', ref: 'SL00102' },
+      { id: 'inst-2', number: 2, label: 'Installment 2 (2nd Half - 50%)', amount: 50000, amount_paid: 40000, status: 'pending', paid_at: null, ref: null }
     ]
   },
   {
@@ -186,10 +182,8 @@ export const initialMembers = [
     last_payment_date: 'Aug 12, 2026',
     
     installments: [
-      { id: 'inst-1', number: 1, label: 'Installment 1', amount: 25000, status: 'paid', paid_at: '2026-06-15', ref: 'SL00103' },
-      { id: 'inst-2', number: 2, label: 'Installment 2', amount: 25000, status: 'paid', paid_at: '2026-07-20', ref: 'SL00117' },
-      { id: 'inst-3', number: 3, label: 'Installment 3', amount: 25000, amount_paid: 15000, status: 'pending', paid_at: null, ref: null },
-      { id: 'inst-4', number: 4, label: 'Installment 4', amount: 25000, amount_paid: 0, status: 'pending', paid_at: null, ref: null }
+      { id: 'inst-1', number: 1, label: 'Installment 1 (1st Half - 50%)', amount: 50000, status: 'paid', paid_at: '2026-06-15', ref: 'SL00103' },
+      { id: 'inst-2', number: 2, label: 'Installment 2 (2nd Half - 50%)', amount: 50000, amount_paid: 15000, status: 'pending', paid_at: null, ref: null }
     ]
   },
   // Additional Members to total 30

@@ -12,9 +12,12 @@ export default function RuleConfigModal() {
     setRulesConfigModalState,
     clubRules,
     updateClubRules,
+    updateClubFees,
     currentClub
   } = useCitiPay()
 
+  const [membershipFee, setMembershipFee] = useState(currentClub.membership_fee || 100000)
+  const [monthlyDues, setMonthlyDues] = useState(currentClub.monthly_social_dues || 5000)
   const [greenMax, setGreenMax] = useState(clubRules.green_max_balance || 0)
   const [yellowMax, setYellowMax] = useState(clubRules.yellow_max_balance || 20000)
   const [yellowDays, setYellowDays] = useState(clubRules.yellow_due_days_window || 14)
@@ -34,6 +37,12 @@ export default function RuleConfigModal() {
     setIsSaving(true)
 
     setTimeout(() => {
+      updateClubFees({
+        clubId: currentClub.id,
+        membership_fee: Number(membershipFee),
+        monthly_social_dues: Number(monthlyDues),
+        max_installments: 2
+      })
       updateClubRules({
         green_max_balance: Number(greenMax),
         yellow_max_balance: Number(yellowMax),
@@ -70,6 +79,62 @@ export default function RuleConfigModal() {
 
         {/* Form (Item 5 Requirement) */}
         <form onSubmit={handleSave} className="modal-body-portal flex flex-col gap-4">
+          {/* Club Dues & Membership Fee Configuration */}
+          <div className="rule-config-block" style={{ background: '#f8fafc', borderColor: '#cbd5e1' }}>
+            <div className="rule-config-header">
+              <div className="flex items-center gap-2">
+                <span className="status-dot-sm" style={{ background: '#2563eb' }} />
+                <strong className="text-xs font-extrabold text-slate-800">💰 DUES & MEMBERSHIP FEES</strong>
+              </div>
+              <span className="badge badge-accent text-3xs font-bold font-mono">2 Installments</span>
+            </div>
+
+            <div className="rule-config-inputs mt-2 flex flex-col gap-2.5">
+              <div className="flex items-center justify-between text-xs">
+                <div>
+                  <span className="text-slate-800 font-bold block">Season Membership Fee:</span>
+                  <span className="text-3xs text-slate-500">Split into 2 tranches of ₦{Math.round(Number(membershipFee || 0) / 2).toLocaleString()}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="font-bold text-slate-500">₦</span>
+                  <input
+                    type="number"
+                    className="rule-input-field font-mono font-bold"
+                    value={membershipFee}
+                    onChange={(e) => setMembershipFee(e.target.value)}
+                    required
+                    min="1000"
+                    step="1000"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between text-xs pt-2 border-t border-slate-200">
+                <div>
+                  <span className="text-slate-800 font-bold block">Monthly Social Dues:</span>
+                  <span className="text-3xs text-slate-500">Recurring monthly player obligation</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="font-bold text-slate-500">₦</span>
+                  <input
+                    type="number"
+                    className="rule-input-field font-mono font-bold"
+                    value={monthlyDues}
+                    onChange={(e) => setMonthlyDues(e.target.value)}
+                    required
+                    min="100"
+                    step="500"
+                  />
+                </div>
+              </div>
+
+              <div className="p-2.5 rounded-lg bg-blue-50/70 border border-blue-100 text-3xs text-blue-900 flex items-center justify-between">
+                <span>Payment Plan: <strong>2 Installments (50% / 50%)</strong></span>
+                <span className="font-mono font-bold">2x ₦{Math.round(Number(membershipFee || 0) / 2).toLocaleString()}</span>
+              </div>
+            </div>
+          </div>
+
           {/* Green Rule Block */}
           <div className="rule-config-block green-theme">
             <div className="rule-config-header">

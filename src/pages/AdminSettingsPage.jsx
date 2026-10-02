@@ -7,7 +7,9 @@ import { useCitiPay } from '../contexts/CitiPayContext'
 import './AdminDashboard.css'
 
 export default function AdminSettingsPage() {
-  const { clubRules, setRulesConfigModalState } = useCitiPay()
+  const { currentClub, clubRules, setRulesConfigModalState, updateClubFees } = useCitiPay()
+  const [seasonFee, setSeasonFee] = useState(currentClub.membership_fee || 100000)
+  const [socialDues, setSocialDues] = useState(currentClub.monthly_social_dues || 5000)
   const [paystackConfig, setPaystackConfig] = useState({
     publicKey: 'pk_live_948f20a91e48bc8271a04917',
     webhookUrl: 'https://citipay.citileague.ng/api/paystack-webhook',
@@ -19,6 +21,13 @@ export default function AdminSettingsPage() {
   const [savedSuccess, setSavedSuccess] = useState(false)
 
   const handleSave = () => {
+    updateClubFees({
+      clubId: currentClub.id,
+      membership_fee: Number(seasonFee),
+      monthly_social_dues: Number(socialDues),
+      max_installments: 2,
+      adminName: 'Federation Super Admin'
+    })
     setSavedSuccess(true)
     setTimeout(() => setSavedSuccess(false), 3000)
   }
@@ -52,7 +61,7 @@ export default function AdminSettingsPage() {
 
       {savedSuccess && (
         <div className="card p-3 mb-6 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-2">
-          <CheckCircle2 size={16} /> Federation governance parameters and Paystack integration settings updated successfully.
+          <CheckCircle2 size={16} /> Federation governance parameters, dues & membership fees, and Paystack integration settings updated successfully.
         </div>
       )}
 
@@ -61,8 +70,8 @@ export default function AdminSettingsPage() {
         <div className="card p-5">
           <div className="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
             <div>
-              <h3 className="section-title text-base font-extrabold text-slate-900">SEASON PARAMETERS</h3>
-              <p className="text-xs text-slate-500">Official tournament operating boundaries</p>
+              <h3 className="section-title text-base font-extrabold text-slate-900">SEASON PARAMETERS & FEES</h3>
+              <p className="text-xs text-slate-500">Official tournament operating boundaries & fee baseline</p>
             </div>
             <span className="badge badge-accent font-bold text-xs">Championship 2026/27</span>
           </div>
@@ -78,14 +87,39 @@ export default function AdminSettingsPage() {
               <strong className="font-mono text-emerald-700 font-bold">Gameweek 14 of 38</strong>
             </div>
 
-            <div className="flex justify-between py-2 border-b border-slate-100">
-              <span className="text-slate-500 font-medium">Player Fee Baseline Cap:</span>
-              <strong className="text-slate-900 font-mono">₦100,000 / Season</strong>
+            <div className="flex justify-between items-center py-2 border-b border-slate-100">
+              <span className="text-slate-500 font-medium">Player Season Fee Baseline:</span>
+              <div className="flex items-center gap-1">
+                <span className="font-bold text-slate-400">₦</span>
+                <input
+                  type="number"
+                  className="form-input-portal font-mono font-bold text-xs py-1 px-2 w-32"
+                  value={seasonFee}
+                  onChange={(e) => setSeasonFee(e.target.value)}
+                  step="1000"
+                  min="1000"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center py-2 border-b border-slate-100">
+              <span className="text-slate-500 font-medium">Monthly Social Dues Baseline:</span>
+              <div className="flex items-center gap-1">
+                <span className="font-bold text-slate-400">₦</span>
+                <input
+                  type="number"
+                  className="form-input-portal font-mono font-bold text-xs py-1 px-2 w-32"
+                  value={socialDues}
+                  onChange={(e) => setSocialDues(e.target.value)}
+                  step="500"
+                  min="100"
+                />
+              </div>
             </div>
 
             <div className="flex justify-between py-2 border-b border-slate-100">
               <span className="text-slate-500 font-medium">Max Allowed Installments:</span>
-              <strong className="text-slate-900 font-mono">4 Installment Tranches</strong>
+              <strong className="text-slate-900 font-mono">2 Installment Tranches (Twice per Season)</strong>
             </div>
 
             <div className="flex justify-between py-2">

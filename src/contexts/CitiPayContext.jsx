@@ -259,7 +259,7 @@ export function CitiPayProvider({ children }) {
         if (paymentType === 'membership' || paymentType === 'membership_installment') {
           newPaid = Math.min(m.membership_fee, m.membership_paid + Number(amount))
         } else if (paymentType === 'social_dues') {
-          newSocialPaid = 5000
+          newSocialPaid = Number(currentClub.monthly_social_dues || 5000)
         }
 
         const newOut = Math.max(0, m.membership_fee - newPaid)
@@ -278,7 +278,7 @@ export function CitiPayProvider({ children }) {
           membership_outstanding: newOut,
           membership_status: newOut === 0 ? 'paid' : 'partial',
           social_dues_paid: newSocialPaid,
-          social_dues_status: newSocialPaid >= 5000 ? 'paid' : 'due',
+          social_dues_status: newSocialPaid >= Number(currentClub.monthly_social_dues || 5000) ? 'paid' : 'due',
           status: newStatus,
           last_payment_date: 'Today',
           next_payment_label: newOut === 0 ? 'No payment currently due.' : `₦${newOut.toLocaleString()} remaining`,
@@ -352,7 +352,7 @@ export function CitiPayProvider({ children }) {
         if (paymentType === 'membership' || paymentType === 'membership_installment') {
           newPaid = Math.min(m.membership_fee, m.membership_paid + Number(amount))
         } else if (paymentType === 'social_dues') {
-          newSocialPaid = 5000
+          newSocialPaid = Number(currentClub.monthly_social_dues || 5000)
         }
 
         const newOut = Math.max(0, m.membership_fee - newPaid)
@@ -364,7 +364,7 @@ export function CitiPayProvider({ children }) {
           membership_outstanding: newOut,
           membership_status: newOut === 0 ? 'paid' : 'partial',
           social_dues_paid: newSocialPaid,
-          social_dues_status: newSocialPaid >= 5000 ? 'paid' : 'due',
+          social_dues_status: newSocialPaid >= Number(currentClub.monthly_social_dues || 5000) ? 'paid' : 'due',
           status: newStatus,
           last_payment_date: date || 'Today',
           next_payment_label: newOut === 0 ? 'No payment currently due.' : `₦${newOut.toLocaleString()} remaining`
@@ -509,6 +509,99 @@ export function CitiPayProvider({ children }) {
     }
   }, [clubRules, currentClub])
 
+  // Action: Admin Update Dues & Membership Fees
+  const updateClubFees = useCallback(async ({ clubId, membership_fee, monthly_social_dues, max_installments = 2, adminName = 'President' }) => {
+    const targetClubId = clubId || currentClub.id
+    const newFee = Number(membership_fee || currentClub.membership_fee || 100000)
+    const newDues = Number(monthly_social_dues || currentClub.monthly_social_dues || 5000)
+    const newMaxInst = Number(max_installments || 2)
+
+    // 1. Update clubs list
+    setClubs(prev => prev.map(c => {
+      if (c.id === targetClubId || c.slug === targetClubId || c.code === targetClubId) {
+        return {
+          ...c,
+          membership_fee: newFee,
+          monthly_social_dues: newDues,
+          max_installments: newMaxInst
+        }
+      }
+      return c
+    }))
+
+    // 2. Update members belonging to this club
+    setMembers(prev => prev.map(m => {
+      const isTarget = m.club_id === targetClubId || m.club_id === currentClub.id || (!targetClubId)
+      if (isTarget) {
+        const paid = Number(m.membership_paid || 0)
+        const newOutstanding = Math.max(0, newFee - paid)
+        const halfFee = Math.round(newFee / newMaxInst)
+
+        const updatedInstallments = [
+          {
+            id: 'inst-1',
+            number: 1,
+            label: 'Installment 1 (1st Half - 50%)',
+            amount: halfFee,
+            status: paid >= halfFee ? 'paid' : 'due',
+            paid_at: paid >= halfFee ? (m.installments?.[0]?.paid_at || '2026-06-15') : null,
+            ref: m.installments?.[0]?.ref || 'SL00101'
+          },
+          {
+            id: 'inst-2',
+            number: 2,
+            label: 'Installment 2 (2nd Half - 50%)',
+            amount: halfFee,
+            status: paid >= newFee ? 'paid' : 'due',
+            paid_at: paid >= newFee ? (m.installments?.[1]?.paid_at || '2026-08-25') : null,
+            ref: m.installments?.[1]?.ref || 'SL00124'
+          }
+        ]
+
+        return {
+          ...m,
+          membership_fee: newFee,
+          membership_outstanding: newOutstanding,
+          membership_status: newOutstanding === 0 ? 'paid' : paid > 0 ? 'partial' : 'unpaid',
+          social_dues_current_month: newDues,
+          next_payment_amount: newOutstanding > 0 ? Math.min(halfFee, newOutstanding) : 0,
+          next_payment_label: newOutstanding === 0 ? 'No payment currently due.' : `₦${newOutstanding.toLocaleString()} remaining`,
+          installments: updatedInstallments
+        }
+      }
+      return m
+    }))
+
+    // 3. Add to Audit Trail
+    const newLog = {
+      id: `log-${Date.now()}`,
+      timestamp: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + ' · Fee Structure Update',
+      actor_name: adminName,
+      actor_role: 'Club Administrator',
+      action: 'CLUB_FEES_UPDATED',
+      target_member_id: 'ALL_MEMBERS',
+      target_name: `${currentClub.name} Fee Structure`,
+      old_value: `Fee: ₦${currentClub.membership_fee.toLocaleString()} / Dues: ₦${currentClub.monthly_social_dues.toLocaleString()}`,
+      new_value: `Fee: ₦${newFee.toLocaleString()} / Dues: ₦${newDues.toLocaleString()}`,
+      reason: `Administrator updated club dues and membership fee amount.`,
+      details: `Membership fee adjusted to ₦${newFee.toLocaleString()} and monthly social dues to ₦${newDues.toLocaleString()} (${newMaxInst} installments).`
+    }
+    setAuditLogs(prev => [newLog, ...prev])
+
+    // 4. Background Supabase sync
+    try {
+      await dbService.updateClubFees(targetClubId, {
+        membership_fee: newFee,
+        monthly_social_dues: newDues,
+        max_installments: newMaxInst
+      }, adminName)
+    } catch (e) {
+      console.warn('Supabase club fees update sync error:', e)
+    }
+
+    return true
+  }, [currentClub])
+
   // Action: Player Availability Vote (Item 16)
   const setMemberAvailability = useCallback(async (vote) => {
     setAvailability(prev => {
@@ -611,6 +704,7 @@ export function CitiPayProvider({ children }) {
     recordManualPayment,
     overrideMemberStatus,
     updateClubRules,
+    updateClubFees,
     setMemberAvailability,
     sendReminder,
     

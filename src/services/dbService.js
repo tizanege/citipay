@@ -65,7 +65,7 @@ export const dbService = {
         ...c,
         membership_fee: Number(c.membership_fee || 100000),
         monthly_social_dues: Number(c.monthly_social_dues || 5000),
-        max_installments: Number(c.max_installments || 4)
+        max_installments: Number(c.max_installments || 2)
       }
       if (c.slug === 'sunday-league-fc' || c.code === 'SLFC') {
         return {
@@ -156,13 +156,11 @@ export const dbService = {
         social_dues_paid: 5000,
         social_dues_status: 'paid',
         last_payment_date: 'Recent',
-        next_payment_amount: membershipOutstanding > 0 ? Math.min(25000, membershipOutstanding) : 0,
+        next_payment_amount: membershipOutstanding > 0 ? Math.min(Math.round(membershipFee / 2), membershipOutstanding) : 0,
         next_payment_label: membershipOutstanding === 0 ? 'No payment currently due.' : `₦${membershipOutstanding.toLocaleString()} remaining`,
         installments: [
-          { id: 'inst-1', number: 1, label: 'Installment 1', amount: 25000, status: membershipPaid >= 25000 ? 'paid' : 'due', paid_at: '2026-06-15', ref: 'SL00101' },
-          { id: 'inst-2', number: 2, label: 'Installment 2', amount: 25000, status: membershipPaid >= 50000 ? 'paid' : 'due', paid_at: '2026-07-20', ref: 'SL00115' },
-          { id: 'inst-3', number: 3, label: 'Installment 3', amount: 25000, status: membershipPaid >= 75000 ? 'paid' : 'due', paid_at: '2026-08-25', ref: 'SL00124' },
-          { id: 'inst-4', number: 4, label: 'Installment 4', amount: 25000, status: membershipPaid >= 100000 ? 'paid' : 'due', paid_at: '2026-09-28', ref: 'SL00130' }
+          { id: 'inst-1', number: 1, label: 'Installment 1 (1st Half - 50%)', amount: Math.round(membershipFee / 2), status: membershipPaid >= Math.round(membershipFee / 2) ? 'paid' : 'due', paid_at: '2026-06-15', ref: 'SL00101' },
+          { id: 'inst-2', number: 2, label: 'Installment 2 (2nd Half - 50%)', amount: Math.round(membershipFee / 2), status: membershipPaid >= membershipFee ? 'paid' : 'due', paid_at: '2026-08-25', ref: 'SL00124' }
         ]
       }
     })
@@ -420,6 +418,39 @@ export const dbService = {
     })
 
     return data
+  },
+
+  async updateClubFees(clubId, { membership_fee, monthly_social_dues, max_installments = 2 }, adminName = 'Administrator') {
+    const payload = {
+      membership_fee: Number(membership_fee),
+      monthly_social_dues: Number(monthly_social_dues),
+      max_installments: Number(max_installments),
+      updated_at: new Date().toISOString()
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('clubs')
+        .update(payload)
+        .eq('id', clubId)
+        .select()
+        .maybeSingle()
+
+      if (error) console.warn('Supabase clubs update warning:', error.message)
+
+      await this.insertAuditLog({
+        actorName: adminName,
+        actorRole: 'Club Executive',
+        action: 'CLUB_FEES_UPDATED',
+        reason: `Club dues & membership fee updated: Season Fee ₦${payload.membership_fee.toLocaleString()}, Monthly Dues ₦${payload.monthly_social_dues.toLocaleString()}, Installments: ${payload.max_installments}`,
+        details: payload
+      })
+
+      return data
+    } catch (e) {
+      console.warn('dbService.updateClubFees error:', e.message)
+      return null
+    }
   },
 
   // ── 7. MATCHDAY AVAILABILITY ─────────────────────────────────────────────

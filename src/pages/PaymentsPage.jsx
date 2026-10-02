@@ -11,12 +11,14 @@ export default function PaymentsPage() {
   const { currentMember, currentClub, setPaymentModalState, setReceiptModalState } = useCitiPay()
 
   const paidPercent = Math.round((currentMember.membership_paid / currentMember.membership_fee) * 100)
+  const installmentAmount = Math.round((currentMember.membership_fee || 100000) / 2)
+  const nextInstallmentDue = currentMember.membership_outstanding > 0 ? Math.min(installmentAmount, currentMember.membership_outstanding) : 0
 
-  const handleOpenPayment = (type = 'membership_installment', defaultAmount = 25000) => {
+  const handleOpenPayment = (type = 'membership_installment', defaultAmount = nextInstallmentDue || installmentAmount) => {
     setPaymentModalState({
       isOpen: true,
       type,
-      defaultAmount: defaultAmount || currentMember.membership_outstanding || 25000
+      defaultAmount: defaultAmount || currentMember.membership_outstanding || installmentAmount
     })
   }
 
@@ -37,7 +39,7 @@ export default function PaymentsPage() {
 
         <button
           className="btn btn-primary flex items-center gap-2 font-bold py-2.5 px-5"
-          onClick={() => handleOpenPayment('membership_installment', 25000)}
+          onClick={() => handleOpenPayment('membership_installment', nextInstallmentDue || installmentAmount)}
         >
           <CreditCard size={17} />
           <span>[MAKE PAYMENT]</span>
@@ -129,7 +131,7 @@ export default function PaymentsPage() {
           <div className="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
             <div>
               <h3 className="section-title text-base font-extrabold text-slate-900">MEMBERSHIP PAYMENT PLAN</h3>
-              <p className="text-xs text-slate-500">Scheduled 4-part installment breakdown</p>
+              <p className="text-xs text-slate-500">Scheduled 2-part installment breakdown (Bi-annual)</p>
             </div>
             <span className="badge badge-success text-xs font-bold">{paidPercent}% Cleared</span>
           </div>
@@ -159,10 +161,10 @@ export default function PaymentsPage() {
 
           <button
             className="btn btn-primary w-full flex items-center justify-center gap-2 font-bold py-3"
-            onClick={() => handleOpenPayment('membership_installment', 25000)}
+            onClick={() => handleOpenPayment('membership_installment', nextInstallmentDue || installmentAmount)}
           >
             <CreditCard size={17} />
-            <span>[PAY NEXT INSTALLMENT — ₦25,000]</span>
+            <span>[PAY NEXT INSTALLMENT — ₦{(nextInstallmentDue || installmentAmount).toLocaleString()}]</span>
           </button>
         </div>
 

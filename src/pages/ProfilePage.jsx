@@ -112,7 +112,7 @@ export default function ProfilePage() {
             <div className="dossier-row">
               <span className="dossier-label">Subscription Status:</span>
               <span className="dossier-value font-semibold text-slate-800">
-                {currentMember.membership_outstanding === 0 ? 'Full Season Cleared (₦100,000)' : `Installment Plan (₦${currentMember.membership_paid.toLocaleString()} Paid)`}
+                {currentMember.membership_outstanding === 0 ? `Full Season Cleared (₦${(currentMember.membership_fee || 100000).toLocaleString()})` : `2-Part Installment Plan (₦${currentMember.membership_paid.toLocaleString()} Paid)`}
               </span>
             </div>
             <div className="dossier-row">
