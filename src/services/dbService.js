@@ -61,15 +61,21 @@ export const dbService = {
 
     if (error) throw error
     return (data || []).map(c => {
+      const base = {
+        ...c,
+        membership_fee: Number(c.membership_fee || 100000),
+        monthly_social_dues: Number(c.monthly_social_dues || 5000),
+        max_installments: Number(c.max_installments || 4)
+      }
       if (c.slug === 'sunday-league-fc' || c.code === 'SLFC') {
         return {
-          ...c,
+          ...base,
           primary_color: '#2563EB',
           secondary_color: '#DC2626',
           accent_color: '#FFFFFF'
         }
       }
-      return c
+      return base
     })
   },
 
@@ -146,10 +152,18 @@ export const dbService = {
         membership_paid: membershipPaid,
         membership_outstanding: membershipOutstanding,
         membership_status: membershipOutstanding === 0 ? 'paid' : membershipPaid > 0 ? 'partial' : 'unpaid',
+        social_dues_current_month: 5000,
         social_dues_paid: 5000,
         social_dues_status: 'paid',
         last_payment_date: 'Recent',
-        next_payment_label: membershipOutstanding === 0 ? 'No payment currently due.' : `₦${membershipOutstanding.toLocaleString()} remaining`
+        next_payment_amount: membershipOutstanding > 0 ? Math.min(25000, membershipOutstanding) : 0,
+        next_payment_label: membershipOutstanding === 0 ? 'No payment currently due.' : `₦${membershipOutstanding.toLocaleString()} remaining`,
+        installments: [
+          { id: 'inst-1', number: 1, label: 'Installment 1', amount: 25000, status: membershipPaid >= 25000 ? 'paid' : 'due', paid_at: '2026-06-15', ref: 'SL00101' },
+          { id: 'inst-2', number: 2, label: 'Installment 2', amount: 25000, status: membershipPaid >= 50000 ? 'paid' : 'due', paid_at: '2026-07-20', ref: 'SL00115' },
+          { id: 'inst-3', number: 3, label: 'Installment 3', amount: 25000, status: membershipPaid >= 75000 ? 'paid' : 'due', paid_at: '2026-08-25', ref: 'SL00124' },
+          { id: 'inst-4', number: 4, label: 'Installment 4', amount: 25000, status: membershipPaid >= 100000 ? 'paid' : 'due', paid_at: '2026-09-28', ref: 'SL00130' }
+        ]
       }
     })
   },

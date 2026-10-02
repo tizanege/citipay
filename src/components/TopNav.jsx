@@ -228,8 +228,8 @@ export default function TopNav() {
                 </div>
               ) : isClubAdmin ? (
                 <img
-                  src={currentClub.logo_url}
-                  alt={currentClub.name}
+                  src={currentClub?.logo_url || '/crests/sunday-league-fc.svg'}
+                  alt={currentClub?.name || 'Club'}
                   onError={(e) => {
                     e.currentTarget.onerror = null
                     e.currentTarget.src = '/crests/sunday-league-fc.svg'
@@ -237,8 +237,8 @@ export default function TopNav() {
                 />
               ) : (
                 <img
-                  src={currentMember.avatar_url}
-                  alt={currentMember.full_name}
+                  src={currentMember?.avatar_url || '/avatar-fallback.svg'}
+                  alt={currentMember?.full_name || 'Member'}
                   onError={(e) => {
                     e.currentTarget.onerror = null
                     e.currentTarget.src = '/avatar-fallback.svg'
@@ -248,10 +248,10 @@ export default function TopNav() {
             </div>
             <div className="user-text-column">
               <span className="user-display-name">
-                {isAdmin ? 'Federation' : isClubAdmin ? `${currentClub.code} Exec` : currentMember.full_name.split(' ')[0]}
+                {isAdmin ? 'Federation' : isClubAdmin ? `${currentClub?.code || 'SLFC'} Exec` : (currentMember?.full_name || 'Member').split(' ')[0]}
               </span>
               <span className="user-role-badge font-mono">
-                {isAdmin ? 'SUPER ADMIN' : isClubAdmin ? 'CLUB ADMIN' : currentMember.member_id}
+                {isAdmin ? 'SUPER ADMIN' : isClubAdmin ? 'CLUB ADMIN' : (currentMember?.member_id || 'SL001')}
               </span>
             </div>
             <ChevronDown size={14} className="text-slate-400" />

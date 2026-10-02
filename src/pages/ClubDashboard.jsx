@@ -128,7 +128,7 @@ export default function ClubDashboard() {
             <ArrowRight size={13} className="text-slate-300 group-hover:text-blue-600 transition-colors" />
           </div>
           <div className="font-bold text-xs text-slate-900">Collections Ledger</div>
-          <div className="text-3xs text-slate-500 font-medium">₦{adminMetrics.collectedRevenue.toLocaleString()} Collected</div>
+          <div className="text-3xs text-slate-500 font-medium">₦{(adminMetrics?.collectedRevenue || 0).toLocaleString()} Collected</div>
         </button>
 
         <button
@@ -240,7 +240,7 @@ export default function ClubDashboard() {
                 <span className="fin-stat-tag blue">30 Members</span>
               </div>
               <div className="fin-stat-value expected-val">
-                ₦{adminMetrics.expectedRevenue.toLocaleString()}
+                ₦{(adminMetrics?.expectedRevenue || 0).toLocaleString()}
               </div>
               <span className="fin-stat-sub text-slate-400">@ ₦100,000 / member season dues</span>
             </div>
@@ -254,7 +254,7 @@ export default function ClubDashboard() {
                 <span className="fin-stat-tag green">{collectionRate}% Rate</span>
               </div>
               <div className="fin-stat-value collected-val">
-                ₦{adminMetrics.collectedRevenue.toLocaleString()}
+                ₦{(adminMetrics?.collectedRevenue || 0).toLocaleString()}
               </div>
               <span className="fin-stat-sub text-blue-400 font-medium">Reconciled via Paystack & Bank</span>
             </div>
@@ -265,10 +265,10 @@ export default function ClubDashboard() {
             <div className="fin-stat-card">
               <div className="fin-stat-header">
                 <span className="fin-stat-title">OUTSTANDING BALANCE:</span>
-                <span className="fin-stat-tag rose">{adminMetrics.dueSoonYellow + adminMetrics.notEligibleRed} Unsettled</span>
+                <span className="fin-stat-tag rose">{(adminMetrics?.dueSoonYellow || 0) + (adminMetrics?.notEligibleRed || 0)} Unsettled</span>
               </div>
               <div className="fin-stat-value outstanding-val">
-                ₦{adminMetrics.outstandingBalance.toLocaleString()}
+                ₦{(adminMetrics?.outstandingBalance || 0).toLocaleString()}
               </div>
               <span className="fin-stat-sub text-rose-300 font-medium">Arrears & installment balances</span>
             </div>
@@ -381,8 +381,8 @@ export default function ClubDashboard() {
                   </td>
 
                   <td style={{ textAlign: 'right' }}>
-                    <span className={`font-mono text-xs font-bold ${member.membership_outstanding > 0 ? 'text-rose-600' : 'text-slate-900'}`}>
-                      ₦{member.membership_outstanding.toLocaleString()}
+                    <span className={`font-mono text-xs font-bold ${(member.membership_outstanding || 0) > 0 ? 'text-rose-600' : 'text-slate-900'}`}>
+                      ₦{(member.membership_outstanding || 0).toLocaleString()}
                     </span>
                   </td>
 

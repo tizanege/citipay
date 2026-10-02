@@ -121,8 +121,8 @@ export default function Sidebar() {
               </div>
             ) : isClubAdmin ? (
               <img
-                src={currentClub.logo_url}
-                alt={currentClub.name}
+                src={currentClub?.logo_url || '/crests/sunday-league-fc.svg'}
+                alt={currentClub?.name || 'Club'}
                 className="user-avatar-sm"
                 onError={(e) => {
                   e.currentTarget.onerror = null
@@ -131,8 +131,8 @@ export default function Sidebar() {
               />
             ) : (
               <img
-                src={currentMember.avatar_url}
-                alt={currentMember.full_name}
+                src={currentMember?.avatar_url || '/avatar-fallback.svg'}
+                alt={currentMember?.full_name || 'Member'}
                 className="user-avatar-sm"
                 onError={(e) => {
                   e.currentTarget.onerror = null
@@ -143,10 +143,10 @@ export default function Sidebar() {
 
             <div className="user-card-info">
               <div className="user-card-name">
-                {isAdmin ? 'Federation Admin' : isClubAdmin ? `${currentClub.name} Admin` : currentMember.full_name}
+                {isAdmin ? 'Federation Admin' : isClubAdmin ? `${currentClub?.name || 'Club'} Admin` : (currentMember?.full_name || 'Member')}
               </div>
               <div className="user-card-sub font-mono">
-                {isAdmin ? 'SUPER ADMIN · HQ' : isClubAdmin ? `${currentClub.code} · Executive` : `${currentMember.member_id} · #${currentMember.jersey_number || '10'}`}
+                {isAdmin ? 'SUPER ADMIN · HQ' : isClubAdmin ? `${currentClub?.code || 'SLFC'} · Executive` : `${currentMember?.member_id || 'SL001'} · #${currentMember?.jersey_number || '10'}`}
               </div>
             </div>
           </div>

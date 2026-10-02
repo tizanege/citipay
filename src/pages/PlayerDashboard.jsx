@@ -23,20 +23,27 @@ export default function PlayerDashboard() {
     switchMember
   } = useCitiPay()
 
-  const isGreen = currentMember.status === 'green'
-  const isYellow = currentMember.status === 'yellow'
-  const isRed = currentMember.status === 'red'
+  const member = currentMember || {}
+  const isGreen = member.status === 'green'
+  const isYellow = member.status === 'yellow'
+  const isRed = member.status === 'red'
+
+  const membershipFee = Number(member.membership_fee || 100000)
+  const membershipPaid = Number(member.membership_paid || 0)
+  const membershipOutstanding = Number(member.membership_outstanding ?? Math.max(0, membershipFee - membershipPaid))
+  const socialDuesCurrentMonth = Number(member.social_dues_current_month || 5000)
+  const nextPaymentAmount = Number(member.next_payment_amount ?? (membershipOutstanding > 0 ? Math.min(25000, membershipOutstanding) : 0))
 
   // Recent transactions for this player
-  const memberTxs = transactions.filter(
-    tx => tx.member_id === currentMember.member_id || tx.member_name === currentMember.full_name
+  const memberTxs = (transactions || []).filter(
+    tx => tx?.member_id === member.member_id || tx?.member_name === member.full_name
   ).slice(0, 4)
 
   const handleOpenPayment = (type = 'membership_installment', defaultAmount = 25000) => {
     setPaymentModalState({
       isOpen: true,
       type,
-      defaultAmount: defaultAmount || currentMember.membership_outstanding || 25000
+      defaultAmount: defaultAmount || membershipOutstanding || 25000
     })
   }
 
@@ -76,17 +83,17 @@ export default function PlayerDashboard() {
         <div className="welcome-left-col">
           <div className="flex items-center gap-2 mb-1">
             <span className="club-badge-micro">
-              <Trophy size={12} className="text-emerald-700" /> {currentClub.name}
+              <Trophy size={12} className="text-emerald-700" /> {currentClub?.name || 'Sunday League FC'}
             </span>
             <span className="text-xs text-slate-500 font-semibold font-mono">
-              Member ID: <strong>{currentMember.member_id}</strong>
+              Member ID: <strong>{member.member_id || 'SL001'}</strong>
             </span>
           </div>
           <h1 className="welcome-name-title">
-            WELCOME, {currentMember.full_name.split(' ')[0].toUpperCase()}
+            WELCOME, {(member.full_name || 'MEMBER').split(' ')[0].toUpperCase()}
           </h1>
           <p className="welcome-sub-desc">
-            {currentMember.nickname ? `"${currentMember.nickname}" · ` : ''}Jersey #{currentMember.jersey_number || '10'} · {currentMember.position || 'CAM'}
+            {member.nickname ? `"${member.nickname}" · ` : ''}Jersey #{member.jersey_number || '10'} · {member.position || 'CAM'}
           </p>
         </div>
 
@@ -102,7 +109,7 @@ export default function PlayerDashboard() {
       </div>
 
       {/* 4. THREE-COLOR ELIGIBILITY SYSTEM BANNER (Item 4 Requirement) */}
-      <div className={`eligibility-status-banner mb-6 ${currentMember.status}-banner`}>
+      <div className={`eligibility-status-banner mb-6 ${member.status || 'green'}-banner`}>
         <div className="eligibility-banner-inner">
           <div className="eligibility-icon-circle">
             {isGreen && <CheckCircle2 size={32} className="text-emerald-700" />}
@@ -112,7 +119,7 @@ export default function PlayerDashboard() {
 
           <div className="eligibility-text-wrap">
             <div className="eligibility-pill-tag">
-              <span className={`status-dot ${currentMember.status}`} />
+              <span className={`status-dot ${member.status || 'green'}`} />
               <span>
                 {isGreen && '🟢 GREEN — ELIGIBLE'}
                 {isYellow && '🟡 YELLOW — PAYMENT DUE SOON'}
@@ -130,12 +137,12 @@ export default function PlayerDashboard() {
               {isGreen && 'Your membership is currently up to date. You are cleared for all official club matchdays and training.'}
               {isYellow && (
                 <>
-                  Your account has an upcoming balance of <strong>₦{currentMember.membership_outstanding.toLocaleString()}</strong> due in 7 days.
+                  Your account has an upcoming balance of <strong>₦{membershipOutstanding.toLocaleString()}</strong> due in 7 days.
                 </>
               )}
               {isRed && (
                 <>
-                  Your account has an outstanding balance of <strong>₦{currentMember.membership_outstanding.toLocaleString()}</strong>.
+                  Your account has an outstanding balance of <strong>₦{membershipOutstanding.toLocaleString()}</strong>.
                   Your membership status is currently inactive per the club's payment rules.
                 </>
               )}
@@ -148,7 +155,7 @@ export default function PlayerDashboard() {
                 className={`btn font-extrabold flex items-center justify-center gap-2 py-3 px-6 ${
                   isRed ? 'btn-danger-prominent' : 'btn-warning-prominent'
                 }`}
-                onClick={() => handleOpenPayment('membership_installment', currentMember.membership_outstanding)}
+                onClick={() => handleOpenPayment('membership_installment', membershipOutstanding)}
               >
                 <CreditCard size={17} />
                 <span>[MAKE PAYMENT]</span>
@@ -179,26 +186,26 @@ export default function PlayerDashboard() {
         <div className="card payment-summary-card">
           <div className="flex justify-between items-start mb-2">
             <span className="card-kpi-lbl">MEMBERSHIP FEE</span>
-            <span className={`badge ${currentMember.membership_outstanding === 0 ? 'badge-success' : 'badge-warning'} text-xs font-bold`}>
-              {currentMember.membership_outstanding === 0 ? '🟢 PAID' : '🟡 PARTIAL'}
+            <span className={`badge ${membershipOutstanding === 0 ? 'badge-success' : 'badge-warning'} text-xs font-bold`}>
+              {membershipOutstanding === 0 ? '🟢 PAID' : '🟡 PARTIAL'}
             </span>
           </div>
 
           <div className="card-kpi-amount text-slate-900 font-mono">
-            ₦{currentMember.membership_fee.toLocaleString()}
+            ₦{membershipFee.toLocaleString()}
           </div>
 
           <div className="summary-breakdown-rows mt-3 pt-3 border-t border-slate-100">
             <div className="flex justify-between text-xs mb-1.5">
               <span className="text-slate-500">Paid:</span>
               <strong className="text-emerald-700 font-mono font-bold">
-                ₦{currentMember.membership_paid.toLocaleString()}
+                ₦{membershipPaid.toLocaleString()}
               </strong>
             </div>
             <div className="flex justify-between text-xs">
               <span className="text-slate-500">Outstanding:</span>
-              <strong className={`font-mono font-bold ${currentMember.membership_outstanding > 0 ? 'text-rose-600' : 'text-slate-900'}`}>
-                ₦{currentMember.membership_outstanding.toLocaleString()}
+              <strong className={`font-mono font-bold ${membershipOutstanding > 0 ? 'text-rose-600' : 'text-slate-900'}`}>
+                ₦{membershipOutstanding.toLocaleString()}
               </strong>
             </div>
           </div>
@@ -208,13 +215,13 @@ export default function PlayerDashboard() {
         <div className="card payment-summary-card">
           <div className="flex justify-between items-start mb-2">
             <span className="card-kpi-lbl">SOCIAL DUES</span>
-            <span className={`badge ${currentMember.social_dues_status === 'paid' ? 'badge-success' : 'badge-danger'} text-xs font-bold`}>
-              {currentMember.social_dues_status === 'paid' ? '🟢 PAID' : '🔴 DUE'}
+            <span className={`badge ${member.social_dues_status === 'paid' ? 'badge-success' : 'badge-danger'} text-xs font-bold`}>
+              {member.social_dues_status === 'paid' ? '🟢 PAID' : '🔴 DUE'}
             </span>
           </div>
 
           <div className="card-kpi-amount text-slate-900 font-mono">
-            ₦{currentMember.social_dues_current_month.toLocaleString()}
+            ₦{socialDuesCurrentMonth.toLocaleString()}
           </div>
 
           <div className="summary-breakdown-rows mt-3 pt-3 border-t border-slate-100">
@@ -224,8 +231,8 @@ export default function PlayerDashboard() {
             </div>
             <div className="flex justify-between text-xs">
               <span className="text-slate-500">Status:</span>
-              <strong className={currentMember.social_dues_status === 'paid' ? 'text-emerald-700 font-bold' : 'text-rose-600 font-bold'}>
-                {currentMember.social_dues_status === 'paid' ? 'Paid in Full' : 'Due for Payment'}
+              <strong className={member.social_dues_status === 'paid' ? 'text-emerald-700 font-bold' : 'text-rose-600 font-bold'}>
+                {member.social_dues_status === 'paid' ? 'Paid in Full' : 'Due for Payment'}
               </strong>
             </div>
           </div>
@@ -239,8 +246,8 @@ export default function PlayerDashboard() {
           </div>
 
           <div className="card-kpi-amount text-slate-900 text-lg font-bold">
-            {currentMember.next_payment_amount > 0 ? (
-              <span className="font-mono text-amber-600">₦{currentMember.next_payment_amount.toLocaleString()}</span>
+            {nextPaymentAmount > 0 ? (
+              <span className="font-mono text-amber-600">₦{nextPaymentAmount.toLocaleString()}</span>
             ) : (
               <span className="text-emerald-700 text-base font-bold">No payment currently due</span>
             )}
@@ -250,7 +257,7 @@ export default function PlayerDashboard() {
             <div className="flex justify-between text-xs">
               <span className="text-slate-500">Notice:</span>
               <span className="text-slate-700 font-medium text-right">
-                {currentMember.next_payment_label}
+                {member.next_payment_label || (membershipOutstanding === 0 ? 'No payment currently due.' : `₦${membershipOutstanding.toLocaleString()} remaining`)}
               </span>
             </div>
           </div>
@@ -273,22 +280,22 @@ export default function PlayerDashboard() {
           <div className="plan-stats-bar mb-4">
             <div className="plan-stat-item">
               <span className="plan-stat-lbl">Total:</span>
-              <strong className="plan-stat-val text-slate-900 font-mono">₦{currentMember.membership_fee.toLocaleString()}</strong>
+              <strong className="plan-stat-val text-slate-900 font-mono">₦{membershipFee.toLocaleString()}</strong>
             </div>
             <div className="plan-stat-item">
               <span className="plan-stat-lbl">Paid:</span>
-              <strong className="plan-stat-val text-emerald-700 font-mono">₦{currentMember.membership_paid.toLocaleString()}</strong>
+              <strong className="plan-stat-val text-emerald-700 font-mono">₦{membershipPaid.toLocaleString()}</strong>
             </div>
             <div className="plan-stat-item">
               <span className="plan-stat-lbl">Remaining:</span>
-              <strong className="plan-stat-val text-rose-600 font-mono">₦{currentMember.membership_outstanding.toLocaleString()}</strong>
+              <strong className="plan-stat-val text-rose-600 font-mono">₦{membershipOutstanding.toLocaleString()}</strong>
             </div>
           </div>
 
           {/* Payment Schedule (Item 9 format) */}
           <div className="installment-schedule-list flex flex-col gap-2.5 mb-4">
-            {currentMember.installments ? (
-              currentMember.installments.map((inst, idx) => (
+            {member.installments && member.installments.length > 0 ? (
+              member.installments.map((inst, idx) => (
                 <div key={inst.id || idx} className={`installment-item-row ${inst.status === 'paid' ? 'paid-row' : 'pending-row'}`}>
                   <div className="flex items-center gap-2.5">
                     {inst.status === 'paid' ? (
@@ -298,7 +305,7 @@ export default function PlayerDashboard() {
                     )}
                     <div>
                       <div className="font-bold text-xs text-slate-900">
-                        {inst.label || `Installment ${inst.number}`} — ₦{inst.amount.toLocaleString()}
+                        {inst.label || `Installment ${inst.number || idx + 1}`} — ₦{Number(inst.amount || 25000).toLocaleString()}
                       </div>
                       <div className="text-3xs text-slate-500">
                         {inst.status === 'paid' ? `Paid on ${inst.paid_at || 'Settled'} · Ref: ${inst.ref || 'SL001'}` : `Due for settlement`}
@@ -346,13 +353,13 @@ export default function PlayerDashboard() {
           </div>
 
           {/* Button (Item 9 requirement) */}
-          {currentMember.membership_outstanding > 0 ? (
+          {membershipOutstanding > 0 ? (
             <button
               className="btn btn-primary w-full flex items-center justify-center gap-2 font-bold py-2.5"
-              onClick={() => handleOpenPayment('membership_installment', Math.min(25000, currentMember.membership_outstanding))}
+              onClick={() => handleOpenPayment('membership_installment', Math.min(25000, membershipOutstanding))}
             >
               <CreditCard size={16} />
-              <span>[PAY NEXT INSTALLMENT — ₦{Math.min(25000, currentMember.membership_outstanding).toLocaleString()}]</span>
+              <span>[PAY NEXT INSTALLMENT — ₦{Math.min(25000, membershipOutstanding).toLocaleString()}]</span>
             </button>
           ) : (
             <div className="flex items-center justify-center gap-2 p-3 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-xl font-bold text-xs">
@@ -464,7 +471,7 @@ export default function PlayerDashboard() {
                     <span className="font-bold text-slate-900 text-xs">{tx.description}</span>
                   </td>
                   <td className="font-mono font-extrabold text-slate-900 text-xs">
-                    ₦{Number(tx.amount).toLocaleString()}
+                    ₦{Number(tx.amount || 0).toLocaleString()}
                   </td>
                   <td style={{ textAlign: 'center' }}>
                     <span className="badge badge-success text-xs font-bold">Paid</span>

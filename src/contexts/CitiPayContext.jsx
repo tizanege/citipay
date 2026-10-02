@@ -46,12 +46,12 @@ export function CitiPayProvider({ children }) {
 
   // Active Club Object
   const currentClub = useMemo(() => {
-    return clubs.find(c => c.id === selectedClubId || c.slug === selectedClubId || c.code === selectedClubId) || clubs[0]
+    return clubs.find(c => c.id === selectedClubId || c.slug === selectedClubId || c.code === selectedClubId) || clubs[0] || initialClubs[0]
   }, [clubs, selectedClubId])
 
   // Active Logged In Member Object
   const currentMember = useMemo(() => {
-    return members.find(m => m.id === currentMemberId || m.member_id === currentMemberId) || members[0]
+    return members.find(m => m.id === currentMemberId || m.member_id === currentMemberId) || members[0] || initialMembers[0]
   }, [members, currentMemberId])
 
   // ── Database Hydration & Sync ─────────────────────────────────────────────
