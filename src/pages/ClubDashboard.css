@@ -8,41 +8,43 @@
 .club-header-banner {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 1.25rem;
-  padding: 1.25rem 1.5rem;
+  border-radius: 1rem;
+  padding: 1rem 1.25rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  margin-bottom: 1rem;
 }
 
 .club-header-left {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.85rem;
 }
 
 .club-banner-crest {
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 0.875rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.75rem;
   object-fit: cover;
   border: 1.5px solid #e2e8f0;
 }
 
 .club-banner-title {
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   font-weight: 900;
   color: #0f172a;
   letter-spacing: -0.02em;
-  margin: 0.1rem 0;
+  margin: 0.05rem 0;
   font-family: var(--font-heading);
 }
 
 .club-banner-sub {
   color: #64748b;
-  font-weight: 600;
+  font-weight: 500;
   margin: 0;
+  font-size: 0.78rem;
 }
 
 /* KPI mini cards */
@@ -547,10 +549,13 @@
   font-size: 0.78rem;
   color: #1e293b;
   background: #f1f5f9;
-  padding: 0.2rem 0.5rem;
+  padding: 0.25rem 0.55rem;
   border-radius: 6px;
   border: 1px solid #e2e8f0;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap !important;
 }
 
 /* Clearance Badge */
@@ -646,4 +651,178 @@
 .squad-action-btn.btn-override:hover {
   background: #f1f5f9;
   border-color: #94a3b8;
+}
+
+.squad-action-btn.btn-login {
+  background: #f0fdf4;
+  color: #166534;
+  border-color: #bbf7d0;
+}
+
+.squad-action-btn.btn-login:hover {
+  background: #dcfce7;
+  border-color: #86efac;
+  color: #14532d;
+}
+
+/* ── View Mode Switcher (Table vs Cards) ── */
+.squad-view-switcher {
+  display: inline-flex;
+  align-items: center;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.625rem;
+  padding: 0.2rem;
+  gap: 0.15rem;
+}
+
+.squad-view-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #64748b;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.squad-view-btn:hover {
+  color: #0f172a;
+}
+
+.squad-view-btn.active {
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* ── Responsive Squad Cards View ── */
+.squad-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
+}
+
+.squad-player-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  padding: 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.squad-player-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px -4px rgba(15, 23, 42, 0.08);
+  border-color: #cbd5e1;
+}
+
+.squad-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.squad-card-player-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.squad-card-id-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  font-family: monospace;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.squad-card-dues-box {
+  background: #f8fafc;
+  border-radius: 0.75rem;
+  padding: 0.75rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.squad-card-dues-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.squad-card-actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.4rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.squad-card-actions .squad-action-btn {
+  justify-content: center;
+  padding: 0.45rem 0.6rem;
+}
+
+/* ── Mobile and Responsive Breakpoints ── */
+@media (max-width: 1024px) {
+  .club-header-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .club-header-right {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  .club-banner-title {
+    font-size: 1.2rem;
+  }
+
+  .squad-filter-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .squad-chips-wrap {
+    width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 0.25rem;
+  }
+
+  .squad-search-box {
+    max-width: 100%;
+    min-width: 100%;
+  }
+
+  .squad-filter-select {
+    width: 100%;
+  }
+
+  .squad-cards-grid {
+    grid-template-columns: 1fr;
+  }
 }

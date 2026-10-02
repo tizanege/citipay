@@ -6,14 +6,17 @@ import {
   ShieldCheck, Sparkles, CreditCard, Calendar, Star, DollarSign
 } from 'lucide-react'
 import { mockClubs } from '../lib/mockData'
+import { useCitiPay } from '../contexts/CitiPayContext'
 import './RegisterPage.css'
 
 export default function RegisterPage() {
   const navigate = useNavigate()
+  const { registerMember } = useCitiPay()
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(false)
+  const [registeredMember, setRegisteredMember] = useState(null)
 
   // Form states
   const [formData, setFormData] = useState({
@@ -92,12 +95,21 @@ export default function RegisterPage() {
     setError(null)
 
     setTimeout(() => {
+      const newMember = registerMember({
+        fullName: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        selectedClubId: formData.selectedClubId,
+        primaryPosition: formData.primaryPosition,
+        secondaryPosition: formData.secondaryPosition,
+        jerseyNumber: formData.jerseyNumber,
+        paymentType: formData.paymentType,
+        role: formData.role
+      })
+      setRegisteredMember(newMember)
       setLoading(false)
       setSuccess(true)
-      setTimeout(() => {
-        navigate('/dashboard')
-      }, 1800)
-    }, 1000)
+    }, 800)
   }
 
   const positions = [
@@ -210,15 +222,47 @@ export default function RegisterPage() {
           )}
 
           {success ? (
-            <div className="text-center py-8">
-              <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 border-2 border-emerald-300 flex items-center justify-center mx-auto mb-4">
+            <div className="text-center py-6">
+              <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 border-2 border-emerald-300 flex items-center justify-center mx-auto mb-3">
                 <CheckCircle2 size={36} />
               </div>
               <h3 className="text-xl font-extrabold text-slate-900 mb-1">Registration Complete!</h3>
-              <p className="text-sm text-slate-500 mb-4">
-                Welcome to <strong>{selectedClub.name}</strong>. Redirecting you to your player dashboard...
+              <p className="text-xs text-slate-500 mb-4">
+                Welcome to <strong>{selectedClub.name}</strong>. Your profile has been cleared and entered into the master registry.
               </p>
-              <div className="text-xs font-bold text-emerald-600">Setting up your profile dossier...</div>
+
+              {/* Unique Member ID Badge */}
+              <div className="my-5 p-4 bg-gradient-to-r from-emerald-950 to-slate-900 border border-emerald-500/40 rounded-2xl text-left max-w-sm mx-auto shadow-lg text-white">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-3xs uppercase font-extrabold tracking-wider text-emerald-400">
+                    YOUR UNIQUE MEMBER ID
+                  </span>
+                  <span className="text-3xs bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-bold border border-emerald-500/30">
+                    🟢 Cleared
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-2xl font-black text-emerald-300 tracking-wider">
+                    {registeredMember?.member_id || 'SL-XXXXX'}
+                  </span>
+                  <span className="text-3xs text-slate-400 font-mono">
+                    #{registeredMember?.jersey_number || '10'} · {registeredMember?.position || 'CAM'}
+                  </span>
+                </div>
+                <p className="text-4xs text-slate-400 mt-2">
+                  🔒 Randomly generated unique identifier (non-serial). Use this ID to check in on matchdays, access federation services, and sign into CitiPay.
+                </p>
+              </div>
+
+              <div className="flex justify-center gap-3 mt-4">
+                <button
+                  type="button"
+                  onClick={() => navigate('/dashboard')}
+                  className="btn btn-primary font-bold text-xs py-2.5 px-6 flex items-center gap-2"
+                >
+                  <ShieldCheck size={16} /> Enter Player Dashboard
+                </button>
+              </div>
             </div>
           ) : (
             <form onSubmit={step === 3 ? handleSubmit : (e) => { e.preventDefault(); nextStep(); }}>

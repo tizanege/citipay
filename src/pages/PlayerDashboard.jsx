@@ -87,7 +87,7 @@ export default function PlayerDashboard() {
               <Trophy size={12} className="text-emerald-700" /> {currentClub?.name || 'Sunday League FC'}
             </span>
             <span className="text-xs text-slate-500 font-semibold font-mono">
-              Member ID: <strong>{member.member_id || 'SL001'}</strong>
+              Member ID: <strong>{member.member_id || 'SL-8K4P2'}</strong>
             </span>
           </div>
           <h1 className="welcome-name-title">

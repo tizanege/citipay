@@ -75,12 +75,31 @@ export const initialClubRules = {
   updated_by: 'President'
 }
 
+import { generateBatchMemberIds } from './memberIdGenerator'
+
+// Core initial Member IDs (randomly generated, non-serial, unique)
+export const CORE_MEMBER_IDS = {
+  MICHAEL_ESU: 'SL-8K4P2',
+  DAVID_ADELEKE: 'SL-3M7R9',
+  CHUKWUDI_EZE: 'SL-9X2W4',
+  FEMI_BALOGUN: 'SL-4H6J7',
+  EMEKA_NWOSU: 'SL-7D2N8',
+  KELECHI_OKOCHA: 'SL-5B9T3',
+  DANIEL_OLADIPO: 'SL-2V8F6',
+  AHMED_LAWAL: 'SL-6Y3C1',
+  SULEIMAN_GARBA: 'SL-8P5M4',
+  TOBI_BAKARE: 'SL-3W7Q9'
+}
+
+// Pre-generated random unique IDs for squad members 11-30 to guarantee non-serial generation
+const squadRandomIds = generateBatchMemberIds(20, 'SL', Object.values(CORE_MEMBER_IDS))
+
 // 30 Sunday League FC Club Members (22 Green, 5 Yellow, 3 Red)
 export const initialMembers = [
   {
     id: 'mem-001',
-    member_id: 'SL20260011',
-    display_id: 'SL0011',
+    member_id: CORE_MEMBER_IDS.MICHAEL_ESU,
+    display_id: CORE_MEMBER_IDS.MICHAEL_ESU,
     full_name: 'Michael Esu',
     nickname: 'The Architect',
     email: 'michael.esu@sundayleague.ng',
@@ -116,8 +135,8 @@ export const initialMembers = [
   },
   {
     id: 'mem-002',
-    member_id: 'SL20260012',
-    display_id: 'SL0012',
+    member_id: CORE_MEMBER_IDS.DAVID_ADELEKE,
+    display_id: CORE_MEMBER_IDS.DAVID_ADELEKE,
     full_name: 'Player B (David Adeleke)',
     nickname: 'Flash',
     email: 'david.adeleke@sundayleague.ng',
@@ -152,8 +171,8 @@ export const initialMembers = [
   },
   {
     id: 'mem-003',
-    member_id: 'SL20260013',
-    display_id: 'SL0013',
+    member_id: CORE_MEMBER_IDS.CHUKWUDI_EZE,
+    display_id: CORE_MEMBER_IDS.CHUKWUDI_EZE,
     full_name: 'Player C (Chukwudi Eze)',
     nickname: 'The Rock',
     email: 'chukwudi.eze@sundayleague.ng',
@@ -188,7 +207,7 @@ export const initialMembers = [
   },
   // Additional Members to total 30
   {
-    id: 'mem-004', member_id: 'SL20260014', display_id: 'SL0014', full_name: 'Femi Balogun', nickname: 'Sniper',
+    id: 'mem-004', member_id: CORE_MEMBER_IDS.FEMI_BALOGUN, display_id: CORE_MEMBER_IDS.FEMI_BALOGUN, full_name: 'Femi Balogun', nickname: 'Sniper',
     email: 'femi.b@sundayleague.ng', phone: '+234 814 111 2233', avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=256&auto=format&fit=crop&q=80',
     role: 'member', club_id: 'club-sunday-league', jersey_number: 9, position: 'ST', date_joined: 'Jan 2024', rating: 83,
     status: 'green', membership_fee: 100000, membership_paid: 100000, membership_outstanding: 0, membership_status: 'paid',
@@ -196,7 +215,7 @@ export const initialMembers = [
     next_payment_label: 'No payment currently due.', next_payment_amount: 0, last_payment_date: 'Sept 26, 2026'
   },
   {
-    id: 'mem-005', member_id: 'SL20260015', display_id: 'SL0015', full_name: 'Emeka Nwosu', nickname: 'General',
+    id: 'mem-005', member_id: CORE_MEMBER_IDS.EMEKA_NWOSU, display_id: CORE_MEMBER_IDS.EMEKA_NWOSU, full_name: 'Emeka Nwosu', nickname: 'General',
     email: 'emeka.n@sundayleague.ng', phone: '+234 803 222 3344', avatar_url: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=256&auto=format&fit=crop&q=80',
     role: 'member', club_id: 'club-sunday-league', jersey_number: 5, position: 'CB', date_joined: 'Feb 2024', rating: 82,
     status: 'green', membership_fee: 100000, membership_paid: 100000, membership_outstanding: 0, membership_status: 'paid',
@@ -204,7 +223,7 @@ export const initialMembers = [
     next_payment_label: 'No payment currently due.', next_payment_amount: 0, last_payment_date: 'Sept 25, 2026'
   },
   {
-    id: 'mem-006', member_id: 'SL20260016', display_id: 'SL0016', full_name: 'Kelechi Okocha', nickname: 'Jay',
+    id: 'mem-006', member_id: CORE_MEMBER_IDS.KELECHI_OKOCHA, display_id: CORE_MEMBER_IDS.KELECHI_OKOCHA, full_name: 'Kelechi Okocha', nickname: 'Jay',
     email: 'kelechi.o@sundayleague.ng', phone: '+234 805 333 4455', avatar_url: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=256&auto=format&fit=crop&q=80',
     role: 'member', club_id: 'club-sunday-league', jersey_number: 8, position: 'CM', date_joined: 'May 2024', rating: 80,
     status: 'yellow', membership_fee: 100000, membership_paid: 85000, membership_outstanding: 15000, membership_status: 'partial',
@@ -212,7 +231,7 @@ export const initialMembers = [
     next_payment_label: '₦15,000 outstanding due in 9 days', next_payment_amount: 15000, last_payment_date: 'Sept 18, 2026'
   },
   {
-    id: 'mem-007', member_id: 'SL20260017', display_id: 'SL0017', full_name: 'Daniel Oladipo', nickname: 'Safe Hands',
+    id: 'mem-007', member_id: CORE_MEMBER_IDS.DANIEL_OLADIPO, display_id: CORE_MEMBER_IDS.DANIEL_OLADIPO, full_name: 'Daniel Oladipo', nickname: 'Safe Hands',
     email: 'daniel.o@sundayleague.ng', phone: '+234 818 444 5566', avatar_url: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=256&auto=format&fit=crop&q=80',
     role: 'member', club_id: 'club-sunday-league', jersey_number: 1, position: 'GK', date_joined: 'Jan 2024', rating: 82,
     status: 'green', membership_fee: 100000, membership_paid: 100000, membership_outstanding: 0, membership_status: 'paid',
@@ -220,7 +239,7 @@ export const initialMembers = [
     next_payment_label: 'No payment currently due.', next_payment_amount: 0, last_payment_date: 'Sept 27, 2026'
   },
   {
-    id: 'mem-008', member_id: 'SL20260018', display_id: 'SL0018', full_name: 'Ahmed Lawal', nickname: 'Turbo',
+    id: 'mem-008', member_id: CORE_MEMBER_IDS.AHMED_LAWAL, display_id: CORE_MEMBER_IDS.AHMED_LAWAL, full_name: 'Ahmed Lawal', nickname: 'Turbo',
     email: 'ahmed.l@sundayleague.ng', phone: '+234 802 555 6677', avatar_url: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=256&auto=format&fit=crop&q=80',
     role: 'member', club_id: 'club-sunday-league', jersey_number: 11, position: 'LW', date_joined: 'Apr 2024', rating: 79,
     status: 'red', membership_fee: 100000, membership_paid: 60000, membership_outstanding: 40000, membership_status: 'partial',
@@ -228,7 +247,7 @@ export const initialMembers = [
     next_payment_label: 'Your account has an outstanding balance of ₦40,000.', next_payment_amount: 40000, last_payment_date: 'Aug 05, 2026'
   },
   {
-    id: 'mem-009', member_id: 'SL20260019', display_id: 'SL0019', full_name: 'Suleiman Garba', nickname: 'Tank',
+    id: 'mem-009', member_id: CORE_MEMBER_IDS.SULEIMAN_GARBA, display_id: CORE_MEMBER_IDS.SULEIMAN_GARBA, full_name: 'Suleiman Garba', nickname: 'Tank',
     email: 'suleiman.g@sundayleague.ng', phone: '+234 809 666 7788', avatar_url: 'https://images.unsplash.com/photo-1528892952291-009c663ce843?w=256&auto=format&fit=crop&q=80',
     role: 'member', club_id: 'club-sunday-league', jersey_number: 6, position: 'CDM', date_joined: 'Jun 2024', rating: 78,
     status: 'yellow', membership_fee: 100000, membership_paid: 80000, membership_outstanding: 20000, membership_status: 'partial',
@@ -236,17 +255,17 @@ export const initialMembers = [
     next_payment_label: '₦20,000 outstanding due in 5 days', next_payment_amount: 20000, last_payment_date: 'Sept 14, 2026'
   },
   {
-    id: 'mem-010', member_id: 'SL20260020', display_id: 'SL0020', full_name: 'Tobi Bakare', nickname: 'Baks',
+    id: 'mem-010', member_id: CORE_MEMBER_IDS.TOBI_BAKARE, display_id: CORE_MEMBER_IDS.TOBI_BAKARE, full_name: 'Tobi Bakare', nickname: 'Baks',
     email: 'tobi.b@sundayleague.ng', phone: '+234 812 777 8899', avatar_url: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=256&auto=format&fit=crop&q=80',
     role: 'member', club_id: 'club-sunday-league', jersey_number: 2, position: 'RB', date_joined: 'Feb 2024', rating: 77,
     status: 'green', membership_fee: 100000, membership_paid: 100000, membership_outstanding: 0, membership_status: 'paid',
     social_dues_current_month: 5000, social_dues_paid: 5000, social_dues_status: 'paid',
     next_payment_label: 'No payment currently due.', next_payment_amount: 0, last_payment_date: 'Sept 24, 2026'
   },
-  // Generate remaining 20 members (18 Green, 1 Yellow, 1 Red)
+  // Generate remaining 20 members with randomly generated unique non-serial IDs
   ...Array.from({ length: 20 }, (_, i) => {
     const num = i + 21
-    const pad = String(num).padStart(2, '0')
+    const randomMemberId = squadRandomIds[i]
     const isYellow = i === 5 || i === 12
     const isRed = i === 18
     const status = isRed ? 'red' : isYellow ? 'yellow' : 'green'
@@ -256,8 +275,8 @@ export const initialMembers = [
 
     return {
       id: `mem-0${num}`,
-      member_id: `SL202600${pad}`,
-      display_id: `SL00${pad}`,
+      member_id: randomMemberId,
+      display_id: randomMemberId,
       full_name: `Squad Member ${num}`,
       nickname: `Player ${num}`,
       email: `member${num}@sundayleague.ng`,
@@ -292,7 +311,7 @@ export const initialTransactions = [
     date_display: 'Sep 28, 2026',
     description: 'Membership installment',
     member_name: 'Michael Esu',
-    member_id: 'SL20260011',
+    member_id: CORE_MEMBER_IDS.MICHAEL_ESU,
     club: 'Sunday League FC',
     amount: 50000,
     currency: 'NGN',
@@ -310,7 +329,7 @@ export const initialTransactions = [
     date_display: 'Sep 15, 2026',
     description: 'Membership',
     member_name: 'Michael Esu',
-    member_id: 'SL20260011',
+    member_id: CORE_MEMBER_IDS.MICHAEL_ESU,
     club: 'Sunday League FC',
     amount: 25000,
     currency: 'NGN',
@@ -328,7 +347,7 @@ export const initialTransactions = [
     date_display: 'Sep 01, 2026',
     description: 'Social Dues',
     member_name: 'Michael Esu',
-    member_id: 'SL20260011',
+    member_id: CORE_MEMBER_IDS.MICHAEL_ESU,
     club: 'Sunday League FC',
     amount: 5000,
     currency: 'NGN',
@@ -346,7 +365,7 @@ export const initialTransactions = [
     date_display: 'Aug 20, 2026',
     description: 'Club Official Matchday Jersey (Home & Away)',
     member_name: 'Michael Esu',
-    member_id: 'SL20260011',
+    member_id: CORE_MEMBER_IDS.MICHAEL_ESU,
     club: 'Sunday League FC',
     amount: 18000,
     currency: 'NGN',
@@ -368,7 +387,7 @@ export const initialAuditLogs = [
     actor_name: 'President',
     actor_role: 'Club President',
     action: 'STATUS_OVERRIDE',
-    target_member_id: 'SL20260011',
+    target_member_id: CORE_MEMBER_IDS.MICHAEL_ESU,
     target_name: 'Michael Esu',
     old_value: 'RED',
     new_value: 'GREEN',
@@ -381,7 +400,7 @@ export const initialAuditLogs = [
     actor_name: 'Club Treasurer',
     actor_role: 'Administrator',
     action: 'MANUAL_PAYMENT',
-    target_member_id: 'SL20260012',
+    target_member_id: CORE_MEMBER_IDS.DAVID_ADELEKE,
     target_name: 'David Adeleke',
     old_value: '₦25,000 Outstanding',
     new_value: '₦10,000 Outstanding',

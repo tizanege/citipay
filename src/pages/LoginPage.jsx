@@ -24,8 +24,9 @@ export default function LoginPage() {
   const navigate = useNavigate()
 
   // Form states (Item 1 & 2: Member ID / Phone / Email + Password / PIN)
+  const defaultMember = members[0]
   const [authMode, setAuthMode] = useState('member_id') // 'member_id' | 'email' | 'phone'
-  const [memberId, setMemberId] = useState('SL20260011')
+  const [memberId, setMemberId] = useState(defaultMember?.member_id || 'SL-8K4P2')
   const [password, setPassword] = useState('••••••••')
   const [pin, setPin] = useState('1234')
   const [showPassword, setShowPassword] = useState(false)
@@ -39,15 +40,26 @@ export default function LoginPage() {
 
     setTimeout(() => {
       setIsLoading(false)
-      // Check if matches a member
-      const cleanId = memberId.trim().toUpperCase()
-      const found = members.find(m => m.member_id.toUpperCase() === cleanId || m.display_id.toUpperCase() === cleanId || m.email.toLowerCase() === memberId.toLowerCase())
+      const cleanInput = memberId.trim()
+      const cleanNoDash = cleanInput.toUpperCase().replace(/[^A-Z0-9]/g, '')
+
+      // Robust match checking member_id (random/non-serial), display_id, or email
+      const found = members.find(m => {
+        const mNorm = (m.member_id || '').toUpperCase().replace(/[^A-Z0-9]/g, '')
+        const dNorm = (m.display_id || '').toUpperCase().replace(/[^A-Z0-9]/g, '')
+        return (
+          mNorm === cleanNoDash ||
+          dNorm === cleanNoDash ||
+          (m.email && m.email.toLowerCase() === cleanInput.toLowerCase()) ||
+          (m.phone && m.phone.replace(/[^0-9]/g, '') === cleanInput.replace(/[^0-9]/g, ''))
+        )
+      })
       
       if (found) {
         switchMember(found.id)
         setCurrentRole('member')
       } else {
-        switchMember('mem-001') // Default to Michael Esu
+        switchMember(defaultMember?.id || 'mem-001') // Default to Michael Esu
         setCurrentRole('member')
       }
       navigate('/dashboard')
@@ -113,7 +125,7 @@ export default function LoginPage() {
                 <Sparkles size={12} /> Featured Member
               </div>
               <div className="font-bold text-white text-sm">Michael Esu (CAM #10)</div>
-              <div className="text-xs text-slate-400 font-mono">Member ID: SL20260011 · 🟢 ELIGIBLE</div>
+              <div className="text-xs text-slate-400 font-mono">Member ID: {defaultMember?.member_id || 'SL-8K4P2'} · 🟢 ELIGIBLE</div>
             </div>
           </div>
           <span className="badge badge-success font-bold text-xs">Fees Cleared</span>
@@ -202,7 +214,7 @@ export default function LoginPage() {
                 <input
                   type="text"
                   className="form-input-portal pl-9 font-mono font-bold"
-                  placeholder={authMode === 'member_id' ? 'SL20260011 or SL0011' : authMode === 'phone' ? '+234 802 345 6789' : 'michael.esu@sundayleague.ng'}
+                  placeholder={authMode === 'member_id' ? `e.g. ${defaultMember?.member_id || 'SL-8K4P2'}` : authMode === 'phone' ? '+234 802 345 6789' : 'michael.esu@sundayleague.ng'}
                   value={memberId}
                   onChange={(e) => setMemberId(e.target.value)}
                   required

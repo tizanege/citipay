@@ -6,7 +6,7 @@ import {
   Building2, MapPin, Trophy, ArrowRight, Search, Filter,
   Sliders, Landmark, History, Send, Printer, Shield,
   PhoneCall, Check, X, Edit3, UserCheck, AlertTriangle,
-  TrendingUp, DollarSign
+  TrendingUp, DollarSign, UserPlus, KeyRound
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
 import './ClubDashboard.css'
@@ -24,6 +24,8 @@ export default function ClubDashboard() {
     setRulesConfigModalState,
     setReminderModalState,
     setReceiptModalState,
+    setAddPlayerModalState,
+    setSendCredentialsModalState,
     switchMember
   } = useCitiPay()
 
@@ -304,7 +306,7 @@ export default function ClubDashboard() {
               <Search size={15} className="text-slate-400" />
               <input
                 type="text"
-                placeholder="Search name, ID (e.g. SL0011)..."
+                placeholder="Search name, ID (e.g. SL-8K4P2)..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="text-xs"
@@ -336,8 +338,8 @@ export default function ClubDashboard() {
                 <th style={{ minWidth: '100px' }}>ID</th>
                 <th style={{ minWidth: '90px', textAlign: 'center' }}>Status</th>
                 <th style={{ minWidth: '130px', textAlign: 'right' }}>Outstanding</th>
-                <th style={{ minWidth: '120px' }}>Last Payment</th>
-                <th style={{ minWidth: '240px', textAlign: 'right' }}>Admin Actions</th>
+                <th style={{ minWidth: '135px', whiteSpace: 'nowrap' }}>Last Payment</th>
+                <th style={{ minWidth: '270px', textAlign: 'right', whiteSpace: 'nowrap' }}>Admin Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -368,7 +370,7 @@ export default function ClubDashboard() {
                   </td>
 
                   <td>
-                    <span className="font-mono text-xs font-bold text-slate-800">
+                    <span className="font-mono text-xs font-bold text-slate-800" style={{ whiteSpace: 'nowrap' }}>
                       {member.display_id || member.member_id}
                     </span>
                   </td>
@@ -386,13 +388,23 @@ export default function ClubDashboard() {
                     </span>
                   </td>
 
-                  <td>
+                  <td style={{ whiteSpace: 'nowrap' }}>
                     <span className="text-xs text-slate-700 font-medium">{member.last_payment_date || 'Sept 28'}</span>
                   </td>
 
-                  {/* 10 Admin Functions Actions Column (Item 11 Requirement) */}
-                  <td style={{ textAlign: 'right' }}>
+                  {/* Admin Actions */}
+                  <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
                     <div className="flex items-center justify-end gap-1.5 flex-wrap">
+                      {/* Email Login Details */}
+                      <button
+                        className="btn btn-secondary text-3xs py-1 px-2 font-bold text-emerald-800 bg-emerald-50 border-emerald-200"
+                        title="Dispatch Login Credentials via Email"
+                        onClick={() => setSendCredentialsModalState({ isOpen: true, member })}
+                      >
+                        <KeyRound size={11} className="inline mr-1" />
+                        Login
+                      </button>
+
                       {/* Change Status with Reason (Item 6) */}
                       <button
                         className="btn btn-secondary text-3xs py-1 px-2 font-bold"
@@ -431,7 +443,7 @@ export default function ClubDashboard() {
                           isOpen: true,
                           transaction: {
                             receipt_no: `SL-2026-REC-${member.display_id || '001'}`,
-                            reference: member.display_id || 'SL0011',
+                            reference: member.display_id || member.member_id || 'SL-8K4P2',
                             member_name: member.full_name,
                             member_id: member.member_id,
                             description: 'Membership fee clearance',

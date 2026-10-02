@@ -9,6 +9,8 @@ import RuleConfigModal from '../components/modals/RuleConfigModal'
 import ReminderModal from '../components/modals/ReminderModal'
 import OtpVerificationModal from '../components/modals/OtpVerificationModal'
 import PasswordResetModal from '../components/modals/PasswordResetModal'
+import AddPlayerModal from '../components/modals/AddPlayerModal'
+import SendCredentialsModal from '../components/modals/SendCredentialsModal'
 import './DashboardLayout.css'
 
 export default function DashboardLayout() {
@@ -31,6 +33,8 @@ export default function DashboardLayout() {
       <ReminderModal />
       <OtpVerificationModal />
       <PasswordResetModal />
+      <AddPlayerModal />
+      <SendCredentialsModal />
     </div>
   )
 }

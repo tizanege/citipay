@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import {
   Users, Search, Filter, ShieldCheck, Download, Award,
-  CheckCircle2, AlertTriangle, Shield, Check, Eye
+  CheckCircle2, AlertTriangle, Shield, Check, Eye, UserPlus, KeyRound
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
 import './AdminDashboard.css'
 
 export default function AdminPlayersPage() {
-  const { members, clubs, setReceiptModalState, setStatusOverrideModalState } = useCitiPay()
+  const { members, clubs, setReceiptModalState, setStatusOverrideModalState, setAddPlayerModalState, setSendCredentialsModalState } = useCitiPay()
   const [searchTerm, setSearchTerm] = useState('')
   const [clubFilter, setClubFilter] = useState('all')
   const [statusFilter, setStatusFilter] = useState('all')
@@ -47,6 +47,12 @@ export default function AdminPlayersPage() {
         </div>
 
         <div className="flex gap-2.5 flex-wrap">
+          <button
+            className="btn btn-primary flex items-center gap-1.5 text-xs font-bold py-2 px-3.5"
+            onClick={() => setAddPlayerModalState({ isOpen: true })}
+          >
+            <UserPlus size={15} /> + Register Player
+          </button>
           <button className="btn btn-secondary flex items-center gap-2 text-xs font-semibold" onClick={() => window.print()}>
             <Download size={15} /> Export Registry
           </button>
@@ -95,7 +101,7 @@ export default function AdminPlayersPage() {
             <Search size={15} className="text-slate-400" />
             <input
               type="text"
-              placeholder="Search player name, Member ID (e.g. SL0011), position..."
+              placeholder="Search player name, Member ID (e.g. SL-8K4P2), position..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="text-xs"
@@ -132,7 +138,7 @@ export default function AdminPlayersPage() {
       </div>
 
       {/* Players Table */}
-      <div className="card">
+      <div className="card-table-wrap">
         <div className="table-responsive">
           <table className="data-table">
             <thead>
@@ -141,10 +147,10 @@ export default function AdminPlayersPage() {
                 <th style={{ minWidth: '110px' }}>Member ID</th>
                 <th style={{ minWidth: '160px' }}>Affiliated Club</th>
                 <th style={{ minWidth: '90px' }}>Position</th>
-                <th style={{ minWidth: '100px', textAlign: 'center' }}>Clearance</th>
-                <th style={{ minWidth: '120px', textAlign: 'right' }}>Total Settled</th>
-                <th style={{ minWidth: '120px', textAlign: 'right' }}>Outstanding</th>
-                <th style={{ minWidth: '140px', textAlign: 'right' }}>Federation Action</th>
+                <th style={{ minWidth: '100px', textAlign: 'center', whiteSpace: 'nowrap' }}>Clearance</th>
+                <th style={{ minWidth: '120px', textAlign: 'right', whiteSpace: 'nowrap' }}>Total Settled</th>
+                <th style={{ minWidth: '120px', textAlign: 'right', whiteSpace: 'nowrap' }}>Outstanding</th>
+                <th style={{ minWidth: '200px', textAlign: 'right', whiteSpace: 'nowrap' }}>Federation Action</th>
               </tr>
             </thead>
             <tbody>
@@ -172,7 +178,7 @@ export default function AdminPlayersPage() {
                       </div>
                     </td>
 
-                    <td>
+                    <td style={{ whiteSpace: 'nowrap' }}>
                       <span className="font-mono text-xs font-bold text-slate-800">
                         {player.display_id || player.member_id}
                       </span>
@@ -191,7 +197,7 @@ export default function AdminPlayersPage() {
                       </span>
                     </td>
 
-                    <td style={{ textAlign: 'center' }}>
+                    <td style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>
                       <span className={`status-badge-mini ${player.status}`}>
                         {player.status === 'green' && '🟢 Cleared'}
                         {player.status === 'yellow' && '🟡 Due Soon'}
@@ -199,20 +205,28 @@ export default function AdminPlayersPage() {
                       </span>
                     </td>
 
-                    <td style={{ textAlign: 'right' }}>
+                    <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
                       <span className="font-mono text-xs font-bold text-emerald-700">
                         ₦{(player.membership_paid || 100000).toLocaleString()}
                       </span>
                     </td>
 
-                    <td style={{ textAlign: 'right' }}>
+                    <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
                       <span className={`font-mono text-xs font-bold ${player.membership_outstanding > 0 ? 'text-rose-600' : 'text-slate-400'}`}>
                         ₦{(player.membership_outstanding || 0).toLocaleString()}
                       </span>
                     </td>
 
-                    <td style={{ textAlign: 'right' }}>
+                    <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
                       <div className="flex items-center justify-end gap-1">
+                        <button
+                          className="btn btn-secondary text-3xs py-1 px-2 font-bold text-emerald-800 bg-emerald-50 border-emerald-200"
+                          title="Dispatch Login Credentials via Email"
+                          onClick={() => setSendCredentialsModalState({ isOpen: true, member: player })}
+                        >
+                          <KeyRound size={10} className="inline mr-0.5" />
+                          Login
+                        </button>
                         <button
                           className="btn btn-secondary text-3xs py-1 px-2 font-bold"
                           title="Override Player Eligibility Clearance"
@@ -227,7 +241,7 @@ export default function AdminPlayersPage() {
                             isOpen: true,
                             transaction: {
                               receipt_no: `SL-2026-REC-${player.display_id || '001'}`,
-                              reference: player.display_id || 'SL0011',
+                              reference: player.display_id || player.member_id || 'SL-8K4P2',
                               member_name: player.full_name,
                               member_id: player.member_id,
                               description: 'Championship Season Clearance',

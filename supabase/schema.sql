@@ -58,7 +58,7 @@ create table public.clubs (
 create table public.profiles (
   id uuid default gen_random_uuid() primary key,
   user_id uuid references auth.users(id) on delete set null,
-  member_id text unique not null, -- E.g. SL0011, SL0012
+  member_id text unique not null, -- E.g. SL-8K4P2 (randomly generated unique non-serial identifier)
   email text unique not null,
   phone text unique,
   pin_hash text,
@@ -324,6 +324,34 @@ create policy "installments_all_policy" on public.installments for all using (tr
 create policy "social_dues_all_policy" on public.social_dues for all using (true);
 
 -- =========================================================
+-- FUNCTION: generate_unique_member_id
+-- Generates a random, non-serial, collision-checked Member ID
+-- =========================================================
+create or replace function public.generate_unique_member_id(p_prefix text default 'SL')
+returns text as $$
+declare
+  charset text := '23456789ABCDEFGHJKMNPQRSTUVWXYZ';
+  res text;
+  i integer;
+  candidate text;
+  id_exists boolean;
+begin
+  loop
+    res := '';
+    for i in 1..5 loop
+      res := res || substr(charset, floor(random() * length(charset) + 1)::integer, 1);
+    end loop;
+    candidate := p_prefix || '-' || res;
+    
+    select exists(select 1 from public.profiles where member_id = candidate) into id_exists;
+    if not id_exists then
+      return candidate;
+    end if;
+  end loop;
+end;
+$$ language plpgsql;
+
+-- =========================================================
 -- AUTH TRIGGER: Synchronize auth.users with public.profiles
 -- =========================================================
 create or replace function public.handle_new_user()
@@ -343,7 +371,10 @@ begin
     new.id,
     new.email,
     coalesce(new.raw_user_meta_data->>'full_name', split_part(new.email, '@', 1)),
-    coalesce(new.raw_user_meta_data->>'member_id', 'SL' || substr(replace(new.id::text, '-', ''), 1, 5)),
+    coalesce(
+      new.raw_user_meta_data->>'member_id',
+      public.generate_unique_member_id('SL')
+    ),
     coalesce(new.raw_user_meta_data->>'role', 'member'),
     '11111111-1111-1111-1111-111111111111',
     'green'
@@ -411,11 +442,11 @@ insert into public.club_eligibility_rules (
 insert into public.profiles (
   id, member_id, email, full_name, nickname, role, club_id, eligibility_status, account_status
 ) values
-  ('aaaaaaaa-0001-0001-0001-000000000001', 'SL0011', 'michael.esu@sundayleaguefc.ng', 'Michael Esu', 'M-Esu', 'member', '11111111-1111-1111-1111-111111111111', 'green', 'active'),
-  ('aaaaaaaa-0001-0001-0001-000000000002', 'SL0012', 'david.adeleke@sundayleaguefc.ng', 'Player B (David Adeleke)', 'Davido', 'member', '11111111-1111-1111-1111-111111111111', 'yellow', 'active'),
-  ('aaaaaaaa-0001-0001-0001-000000000003', 'SL0013', 'chidi.okafor@sundayleaguefc.ng', 'Player C (Chidi Okafor)', 'Chi-Chi', 'member', '11111111-1111-1111-1111-111111111111', 'red', 'active'),
-  ('aaaaaaaa-0001-0001-0001-000000000004', 'SL0014', 'emeka.nwosu@sundayleaguefc.ng', 'Emeka Nwosu', 'Emzy', 'member', '11111111-1111-1111-1111-111111111111', 'green', 'active'),
-  ('aaaaaaaa-0001-0001-0001-000000000005', 'SL0015', 'tunde.balogun@sundayleaguefc.ng', 'Tunde Balogun', 'T-Bal', 'member', '11111111-1111-1111-1111-111111111111', 'green', 'active')
+  ('aaaaaaaa-0001-0001-0001-000000000001', 'SL-8K4P2', 'michael.esu@sundayleaguefc.ng', 'Michael Esu', 'M-Esu', 'member', '11111111-1111-1111-1111-111111111111', 'green', 'active'),
+  ('aaaaaaaa-0001-0001-0001-000000000002', 'SL-3M7R9', 'david.adeleke@sundayleaguefc.ng', 'Player B (David Adeleke)', 'Davido', 'member', '11111111-1111-1111-1111-111111111111', 'yellow', 'active'),
+  ('aaaaaaaa-0001-0001-0001-000000000003', 'SL-9X2W4', 'chidi.okafor@sundayleaguefc.ng', 'Player C (Chidi Okafor)', 'Chi-Chi', 'member', '11111111-1111-1111-1111-111111111111', 'red', 'active'),
+  ('aaaaaaaa-0001-0001-0001-000000000004', 'SL-7D2N8', 'emeka.nwosu@sundayleaguefc.ng', 'Emeka Nwosu', 'Emzy', 'member', '11111111-1111-1111-1111-111111111111', 'green', 'active'),
+  ('aaaaaaaa-0001-0001-0001-000000000005', 'SL-4H6J7', 'tunde.balogun@sundayleaguefc.ng', 'Tunde Balogun', 'T-Bal', 'member', '11111111-1111-1111-1111-111111111111', 'green', 'active')
 on conflict (member_id) do nothing;
 
 -- 4. Players Dossier
@@ -451,6 +482,6 @@ insert into public.payments (
 insert into public.audit_logs (
   actor_name, actor_role, action, target_member_id, target_name, old_value, new_value, reason
 ) values
-  ('President / Admin', 'Club Administrator', 'MANUAL_PAYMENT', 'SL0012', 'Player B (David Adeleke)', '₦50,000 Outstanding', '₦10,000 Outstanding', 'Verified direct bank transfer to Sunday League FC Access Bank account. Reference: BANK-99211.'),
-  ('President', 'Club President', 'STATUS_OVERRIDE', 'SL0012', 'Player B (David Adeleke)', 'RED', 'YELLOW', 'Granted 14-day grace extension for balance reconciliation before Gameweek 14.'),
+  ('President / Admin', 'Club Administrator', 'MANUAL_PAYMENT', 'SL-3M7R9', 'Player B (David Adeleke)', '₦50,000 Outstanding', '₦10,000 Outstanding', 'Verified direct bank transfer to Sunday League FC Access Bank account. Reference: BANK-99211.'),
+  ('President', 'Club President', 'STATUS_OVERRIDE', 'SL-3M7R9', 'Player B (David Adeleke)', 'RED', 'YELLOW', 'Granted 14-day grace extension for balance reconciliation before Gameweek 14.'),
   ('Citi Football Federation', 'League HQ', 'CONFIG_RULES_UPDATED', 'ALL_CLUBS', 'Sunday League FC Rules', 'Default Rules', 'Custom Thresholds', 'Configured 2026/27 Championship financial clearance thresholds.');

@@ -9,6 +9,12 @@ import {
 } from '../lib/clubPortalData'
 import { dbService } from '../services/dbService'
 import { supabase } from '../lib/supabase'
+import {
+  generateRandomMemberId,
+  isMemberIdMatch,
+  generateTempPassword,
+  generateAccessPin
+} from '../lib/memberIdGenerator'
 
 const CitiPayContext = createContext(null)
 
@@ -43,6 +49,8 @@ export function CitiPayProvider({ children }) {
   const [reminderModalState, setReminderModalState] = useState({ isOpen: false, member: null, channel: 'whatsapp' })
   const [otpModalState, setOtpModalState] = useState({ isOpen: false, memberId: '' })
   const [resetPassModalState, setResetPassModalState] = useState({ isOpen: false })
+  const [addPlayerModalState, setAddPlayerModalState] = useState({ isOpen: false })
+  const [sendCredentialsModalState, setSendCredentialsModalState] = useState({ isOpen: false, member: null })
 
   // Active Club Object
   const currentClub = useMemo(() => {
@@ -51,7 +59,7 @@ export function CitiPayProvider({ children }) {
 
   // Active Logged In Member Object
   const currentMember = useMemo(() => {
-    return members.find(m => m.id === currentMemberId || m.member_id === currentMemberId) || members[0] || initialMembers[0]
+    return members.find(m => m.id === currentMemberId || isMemberIdMatch(m.member_id, currentMemberId)) || members[0] || initialMembers[0]
   }, [members, currentMemberId])
 
   // ── Database Hydration & Sync ─────────────────────────────────────────────
@@ -634,9 +642,149 @@ export function CitiPayProvider({ children }) {
 
   // Action: Switch Active Member (for demoing different players)
   const switchMember = useCallback((memberId) => {
-    const found = members.find(m => m.id === memberId || m.member_id === memberId)
+    const found = members.find(m => m.id === memberId || isMemberIdMatch(m.member_id, memberId))
     if (found) {
       setCurrentMemberId(found.id)
+    }
+  }, [members])
+
+  // Action: Register New Member with Random Unique Non-Serial Member ID & Login Credentials
+  const registerMember = useCallback((memberData) => {
+    const existingIds = members.map(m => m.member_id)
+    const clubCode = currentClub?.code || 'SL'
+    // Generate random non-serial unique member ID
+    const uniqueMemberId = memberData.memberId || generateRandomMemberId({
+      prefix: clubCode,
+      length: 5,
+      existingIds
+    })
+
+    const tempPassword = memberData.tempPassword || generateTempPassword()
+    const pin = memberData.pin || generateAccessPin()
+
+    const fee = currentClub?.membership_fee || 100000
+    const isPaid = memberData.paymentType === 'full'
+    const paidAmount = isPaid ? fee : (memberData.initialPayment || 0)
+    const outAmount = Math.max(0, fee - paidAmount)
+
+    const newMember = {
+      id: `mem-${Date.now()}`,
+      member_id: uniqueMemberId,
+      display_id: uniqueMemberId,
+      full_name: memberData.fullName || memberData.full_name || 'New Registered Player',
+      nickname: memberData.nickname || (memberData.fullName ? memberData.fullName.split(' ')[0] : 'Player'),
+      email: memberData.email || `player-${Date.now()}@sundayleague.ng`,
+      phone: memberData.phone || '+234 800 000 0000',
+      avatar_url: memberData.avatarUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=256&auto=format&fit=crop&q=80',
+      role: memberData.role || 'member',
+      club_id: memberData.selectedClubId || currentClub.id,
+      jersey_number: parseInt(memberData.jerseyNumber, 10) || (Math.floor(Math.random() * 88) + 12),
+      position: memberData.primaryPosition || memberData.position || 'CAM',
+      temp_password: tempPassword,
+      pin: pin,
+      credentials_sent_at: memberData.sendEmail ? new Date().toISOString() : null,
+      date_joined: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      rating: 76,
+      status: outAmount === 0 ? 'green' : outAmount <= 20000 ? 'yellow' : 'red',
+      membership_fee: fee,
+      membership_paid: paidAmount,
+      membership_outstanding: outAmount,
+      membership_status: outAmount === 0 ? 'paid' : paidAmount > 0 ? 'partial' : 'unpaid',
+      social_dues_current_month: currentClub?.monthly_social_dues || 5000,
+      social_dues_paid: 5000,
+      social_dues_status: 'paid',
+      next_payment_label: outAmount === 0 ? 'No payment currently due.' : `₦${outAmount.toLocaleString()} outstanding due soon`,
+      next_payment_amount: outAmount,
+      last_payment_date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      installments: [
+        { id: `inst-${Date.now()}-1`, number: 1, label: 'Installment 1 (1st Half - 50%)', amount: Math.round(fee / 2), status: paidAmount >= Math.round(fee / 2) ? 'paid' : 'pending' },
+        { id: `inst-${Date.now()}-2`, number: 2, label: 'Installment 2 (2nd Half - 50%)', amount: Math.round(fee / 2), status: paidAmount >= fee ? 'paid' : 'pending' }
+      ]
+    }
+
+    setMembers(prev => [newMember, ...prev])
+    setCurrentMemberId(newMember.id)
+
+    // Add Audit Log for Registration
+    const regLog = {
+      id: `log-reg-${Date.now()}`,
+      timestamp: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' · Registration',
+      actor_name: currentRole === 'club_admin' ? 'Club Administrator' : newMember.full_name,
+      actor_role: currentRole === 'club_admin' ? 'Club Admin' : 'New Member',
+      action: 'MEMBER_REGISTERED',
+      target_member_id: newMember.member_id,
+      target_name: newMember.full_name,
+      old_value: 'Unregistered',
+      new_value: `Active (${newMember.member_id})`,
+      reason: 'Player registered successfully with randomly generated non-serial Member ID.',
+      details: `Assigned ID ${newMember.member_id} · Kit #${newMember.jersey_number} · Clearance: ${newMember.status.toUpperCase()}.`
+    }
+
+    const logsToAdd = [regLog]
+
+    if (memberData.sendEmail) {
+      logsToAdd.unshift({
+        id: `log-cred-${Date.now() + 1}`,
+        timestamp: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' · Email Dispatched',
+        actor_name: 'Club Administrator',
+        actor_role: 'Automated Dispatch',
+        action: 'CREDENTIALS_DISPATCHED',
+        target_member_id: newMember.member_id,
+        target_name: newMember.full_name,
+        old_value: 'Pending Onboarding',
+        new_value: `Sent to ${newMember.email}`,
+        reason: `Dispatched official login credentials (Member ID: ${newMember.member_id}, PIN: ${pin}) to ${newMember.email}.`,
+        details: `Temporary Password: ${tempPassword} · Login URL: /login · Sent via CitiLeague SMTP Mailer.`
+      })
+    }
+
+    setAuditLogs(prev => [...logsToAdd, ...prev])
+
+    return newMember
+  }, [members, currentClub, currentRole])
+
+  // Action: Send / Re-send Login Credentials via Email
+  const sendMemberCredentials = useCallback(async ({ memberId, email, tempPassword, pin }) => {
+    const target = members.find(m => m.id === memberId || isMemberIdMatch(m.member_id, memberId))
+    if (!target) return null
+
+    const pwd = tempPassword || target.temp_password || generateTempPassword()
+    const accessPin = pin || target.pin || generateAccessPin()
+    const targetEmail = email || target.email
+
+    setMembers(prev => prev.map(m => {
+      if (m.id === target.id) {
+        return {
+          ...m,
+          email: targetEmail,
+          temp_password: pwd,
+          pin: accessPin,
+          credentials_sent_at: new Date().toISOString()
+        }
+      }
+      return m
+    }))
+
+    const newLog = {
+      id: `log-cred-${Date.now()}`,
+      timestamp: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' · Credentials Emailed',
+      actor_name: 'Club Administrator',
+      actor_role: 'Club Administration',
+      action: 'CREDENTIALS_DISPATCHED',
+      target_member_id: target.member_id,
+      target_name: target.full_name,
+      old_value: 'N/A',
+      new_value: `Dispatched to ${targetEmail}`,
+      reason: `Sent official CitiLeague login credentials & temporary password to ${target.full_name} (${targetEmail}).`,
+      details: `Member ID: ${target.member_id} · Temp Password: ${pwd} · PIN: ${accessPin} · Direct Portal Link included.`
+    }
+    setAuditLogs(prev => [newLog, ...prev])
+
+    return {
+      member: target,
+      email: targetEmail,
+      tempPassword: pwd,
+      pin: accessPin
     }
   }, [members])
 
@@ -707,6 +855,8 @@ export function CitiPayProvider({ children }) {
     updateClubFees,
     setMemberAvailability,
     sendReminder,
+    registerMember,
+    sendMemberCredentials,
     
     // Modals
     paymentModalState,
@@ -724,7 +874,11 @@ export function CitiPayProvider({ children }) {
     otpModalState,
     setOtpModalState,
     resetPassModalState,
-    setResetPassModalState
+    setResetPassModalState,
+    addPlayerModalState,
+    setAddPlayerModalState,
+    sendCredentialsModalState,
+    setSendCredentialsModalState
   }
 
   return (

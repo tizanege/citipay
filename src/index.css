@@ -170,9 +170,38 @@ a {
 }
 
 /* ── Global Bulletproof Table Styles ── */
+.card-table-wrap {
+  padding: 0 !important;
+  overflow: hidden !important;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-subtle);
+}
+
 .table-responsive {
   width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+}
+
+.table-responsive::-webkit-scrollbar {
+  height: 6px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: #F1F5F9;
+  border-radius: 9999px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 9999px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
 }
 
 .data-table {
@@ -184,8 +213,8 @@ a {
 
 .data-table th {
   background: #F8FAFC;
-  padding: 0.9rem 1.25rem;
-  font-size: 0.75rem;
+  padding: 0.85rem 1.1rem;
+  font-size: 0.72rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -196,9 +225,9 @@ a {
 }
 
 .data-table td {
-  padding: 1.1rem 1.25rem;
+  padding: 0.95rem 1.1rem;
   border-bottom: 1px solid var(--border-color);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: var(--text-secondary);
   background: #FFFFFF;
   vertical-align: middle;
@@ -210,6 +239,12 @@ a {
 
 .data-table tbody tr:last-child td {
   border-bottom: none;
+}
+
+/* Actions column styling */
+.actions-col {
+  text-align: right;
+  white-space: nowrap;
 }
 
 /* ── Buttons ── */

@@ -66,7 +66,7 @@ export default function PasswordResetModal() {
                 <input
                   type="text"
                   className="form-input-portal text-sm font-semibold"
-                  placeholder="e.g. SL20260011 or michael.esu@sundayleague.ng"
+                  placeholder="e.g. SL-8K4P2 or michael.esu@sundayleague.ng"
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
                   required
