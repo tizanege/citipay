@@ -42,7 +42,8 @@ function PublicRoute({ children }) {
 export default function App() {
   return (
     <Routes>
-      {/* Public routes */}
+      {/* Public routes - Login is now the primary entrance */}
+      <Route path="/" element={<PublicRoute><LoginPage /></PublicRoute>} />
       <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
       <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
 
@@ -79,9 +80,8 @@ export default function App() {
         <Route path="/admin/settings" element={<AdminSettingsPage />} />
       </Route>
 
-      {/* Default Catch-all */}
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      {/* Default Catch-all redirects to the login main page */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )
 }
