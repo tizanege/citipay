@@ -5,7 +5,8 @@ import {
   initialTransactions,
   initialClubRules,
   initialAuditLogs,
-  initialAvailability
+  initialAvailability,
+  initialLeagueSettings
 } from '../lib/clubPortalData'
 import { dbService } from '../services/dbService'
 import { supabase } from '../lib/supabase'
@@ -30,7 +31,41 @@ export function CitiPayProvider({ children }) {
   const [transactions, setTransactions] = useState(initialTransactions)
   const [clubRules, setClubRules] = useState(initialClubRules)
   const [auditLogs, setAuditLogs] = useState(initialAuditLogs)
-  const [availability, setAvailability] = useState(initialAvailability)
+  
+  const [leagueSettings, setLeagueSettings] = useState(() => {
+    try {
+      const saved = localStorage.getItem('citipay_league_settings')
+      if (saved) return JSON.parse(saved)
+    } catch (e) {
+      console.warn('Failed to load saved league settings:', e)
+    }
+    return initialLeagueSettings
+  })
+
+  const [availability, setAvailability] = useState(() => {
+    try {
+      const saved = localStorage.getItem('citipay_league_settings')
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (parsed.current_matchday) {
+          return {
+            ...initialAvailability,
+            gameweek: `GAMEWEEK ${parsed.current_matchday}`
+          }
+        }
+      }
+    } catch (e) {}
+    return initialAvailability
+  })
+
+  // Persist league settings updates
+  useEffect(() => {
+    try {
+      localStorage.setItem('citipay_league_settings', JSON.stringify(leagueSettings))
+    } catch (e) {
+      console.warn('Failed to save league settings to localStorage:', e)
+    }
+  }, [leagueSettings])
 
   // 3. Database Sync & Connectivity State
   const [dbStatus, setDbStatus] = useState({
@@ -51,6 +86,7 @@ export function CitiPayProvider({ children }) {
   const [resetPassModalState, setResetPassModalState] = useState({ isOpen: false })
   const [addPlayerModalState, setAddPlayerModalState] = useState({ isOpen: false })
   const [sendCredentialsModalState, setSendCredentialsModalState] = useState({ isOpen: false, member: null })
+  const [leagueSettingsModalState, setLeagueSettingsModalState] = useState({ isOpen: false })
 
   // Active Club Object
   const currentClub = useMemo(() => {
@@ -234,7 +270,8 @@ export function CitiPayProvider({ children }) {
     if (paymentType === 'membership') typeDesc = 'Full Season Membership'
     else if (paymentType === 'membership_installment') typeDesc = 'Membership installment'
     else if (paymentType === 'social_dues') typeDesc = 'Monthly Social Dues (September 2026)'
-    else if (paymentType === 'merchandise') typeDesc = 'Official Club Merchandise & Kit'
+    else if (paymentType === 'merchandise' || paymentType === 'merchandise_jersey') typeDesc = 'Official Matchday Jersey (Home & Away)'
+    else if (paymentType === 'merchandise_bib') typeDesc = 'Official Training Bib Pack'
     else typeDesc = 'Other Club-Approved Payment'
 
     const newTx = {
@@ -610,6 +647,51 @@ export function CitiPayProvider({ children }) {
     return true
   }, [currentClub])
 
+  // Action: Super Admin update League Parameters (Matchday, Jersey price, Bib price)
+  const updateLeagueSettings = useCallback(({ current_matchday, jersey_price, bib_price, season_title, competition_name, adminName = 'Chief Segun Adeleke (Super Admin)' }) => {
+    setLeagueSettings(prev => {
+      const nextMatchday = current_matchday !== undefined && current_matchday !== '' ? Math.max(1, Math.min(38, Number(current_matchday))) : prev.current_matchday
+      const nextJerseyPrice = jersey_price !== undefined && jersey_price !== '' ? Math.max(0, Number(jersey_price)) : prev.jersey_price
+      const nextBibPrice = bib_price !== undefined && bib_price !== '' ? Math.max(0, Number(bib_price)) : prev.bib_price
+
+      const updated = {
+        ...prev,
+        current_matchday: nextMatchday,
+        jersey_price: nextJerseyPrice,
+        bib_price: nextBibPrice,
+        season_title: season_title || prev.season_title,
+        competition_name: competition_name || prev.competition_name,
+        last_updated: new Date().toISOString(),
+        updated_by: adminName
+      }
+
+      // Sync availability fixture gameweek string
+      setAvailability(avail => ({
+        ...avail,
+        gameweek: `GAMEWEEK ${nextMatchday}`
+      }))
+
+      // Create live audit log
+      const newLog = {
+        id: `log-${Date.now()}`,
+        timestamp: new Date().toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) + ' WAT',
+        actor_name: adminName,
+        actor_role: 'Federation Super Admin',
+        action: 'LEAGUE_SETTINGS_UPDATED',
+        target_member_id: 'FED-HQ',
+        target_name: 'League & Apparel Parameters',
+        old_value: `GW${prev.current_matchday} · Jersey ₦${prev.jersey_price.toLocaleString()} · Bib ₦${prev.bib_price.toLocaleString()}`,
+        new_value: `GW${updated.current_matchday} · Jersey ₦${updated.jersey_price.toLocaleString()} · Bib ₦${updated.bib_price.toLocaleString()}`,
+        reason: `Matchday set to Gameweek ${updated.current_matchday}. Official Jersey set to ₦${updated.jersey_price.toLocaleString()}, Training Bib set to ₦${updated.bib_price.toLocaleString()}.`,
+        details: `Updated by ${adminName}. Matchday ${updated.current_matchday} of ${updated.total_matchdays}. Live player store prices synced.`
+      }
+      setAuditLogs(logs => [newLog, ...logs])
+
+      return updated
+    })
+    return true
+  }, [])
+
   // Action: Player Availability Vote (Item 16)
   const setMemberAvailability = useCallback(async (vote) => {
     setAvailability(prev => {
@@ -630,7 +712,7 @@ export function CitiPayProvider({ children }) {
       await dbService.upsertAvailability({
         userId: currentMember.id,
         clubId: currentClub.id,
-        gameweek: 'Gameweek 14',
+        gameweek: `Gameweek ${leagueSettings.current_matchday}`,
         matchDate: '2026-10-04',
         opponent: 'Victoria Island FC',
         status: vote
@@ -638,7 +720,7 @@ export function CitiPayProvider({ children }) {
     } catch (e) {
       console.warn('Supabase availability sync:', e.message)
     }
-  }, [currentMember, currentClub])
+  }, [currentMember, currentClub, leagueSettings.current_matchday])
 
   // Action: Switch Active Member (for demoing different players)
   const switchMember = useCallback((memberId) => {
@@ -846,6 +928,8 @@ export function CitiPayProvider({ children }) {
     auditLogs,
     availability,
     adminMetrics,
+    leagueSettings,
+    setLeagueSettings,
     
     // Actions
     processOnlinePayment,
@@ -853,6 +937,7 @@ export function CitiPayProvider({ children }) {
     overrideMemberStatus,
     updateClubRules,
     updateClubFees,
+    updateLeagueSettings,
     setMemberAvailability,
     sendReminder,
     registerMember,
@@ -878,7 +963,9 @@ export function CitiPayProvider({ children }) {
     addPlayerModalState,
     setAddPlayerModalState,
     sendCredentialsModalState,
-    setSendCredentialsModalState
+    setSendCredentialsModalState,
+    leagueSettingsModalState,
+    setLeagueSettingsModalState
   }
 
   return (

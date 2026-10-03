@@ -3,14 +3,15 @@ import { useNavigate } from 'react-router-dom'
 import {
   Trophy, Users, CreditCard, Building2, TrendingUp,
   Shield, CheckCircle2, AlertTriangle, Download, ArrowUpRight,
-  ShieldCheck, Activity, DollarSign, Sliders, Landmark, ArrowRight
+  ShieldCheck, Activity, DollarSign, Sliders, Landmark, ArrowRight,
+  Shirt, Calendar, Edit3
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
 import './AdminDashboard.css'
 
 export default function AdminDashboard() {
   const navigate = useNavigate()
-  const { clubs, members, adminMetrics, auditLogs, setRulesConfigModalState } = useCitiPay()
+  const { clubs, members, adminMetrics, auditLogs, setRulesConfigModalState, leagueSettings, setLeagueSettingsModalState } = useCitiPay()
 
   return (
     <div className="admin-dashboard-wrap">
@@ -27,6 +28,12 @@ export default function AdminDashboard() {
           <p className="text-xs text-slate-500 mt-1">Cross-club payment ledgers, member eligibility clearance, and automated Paystack audit trails</p>
         </div>
         <div className="flex gap-2.5 flex-wrap">
+          <button
+            className="btn btn-secondary flex items-center gap-1.5 text-xs font-bold"
+            onClick={() => setLeagueSettingsModalState({ isOpen: true })}
+          >
+            <Shirt size={14} className="text-emerald-600" /> Set Matchday & Prices
+          </button>
           <button
             className="btn btn-secondary flex items-center gap-2 text-xs font-semibold"
             onClick={() => setRulesConfigModalState({ isOpen: true })}
@@ -155,15 +162,25 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className="admin-metric-card">
+        <div className="admin-metric-card cursor-pointer hover:border-amber-300 transition-colors" onClick={() => setLeagueSettingsModalState({ isOpen: true })}>
           <div className="flex justify-between items-start mb-2">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Championship Status</span>
             <div className="admin-metric-icon-box bg-amber-50 text-amber-600">
               <Trophy size={18} />
             </div>
           </div>
-          <div className="text-2xl font-extrabold text-amber-600 font-heading">Gameweek 14</div>
-          <div className="text-xs text-slate-500 mt-1 font-medium">Next Match: Saturday, 4:00 PM</div>
+          <div className="flex items-baseline justify-between">
+            <div className="text-2xl font-extrabold text-amber-600 font-heading">
+              Gameweek {leagueSettings.current_matchday}
+            </div>
+            <span className="text-3xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-200 hover:bg-blue-100 flex items-center gap-1">
+              <Edit3 size={10} /> Edit
+            </span>
+          </div>
+          <div className="text-2xs text-slate-500 mt-1 font-medium flex items-center justify-between">
+            <span>Jersey: <strong className="text-slate-800">₦{Number(leagueSettings.jersey_price).toLocaleString()}</strong></span>
+            <span>Bib: <strong className="text-slate-800">₦{Number(leagueSettings.bib_price).toLocaleString()}</strong></span>
+          </div>
         </div>
       </div>
 

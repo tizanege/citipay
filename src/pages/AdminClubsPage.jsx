@@ -7,7 +7,7 @@ import { useCitiPay } from '../contexts/CitiPayContext'
 import './AdminDashboard.css'
 
 export default function AdminClubsPage() {
-  const { clubs, members, transactions, setRulesConfigModalState, setSelectedClubId } = useCitiPay()
+  const { clubs, members, transactions, setRulesConfigModalState, setSelectedClubId, leagueSettings } = useCitiPay()
   const [searchTerm, setSearchTerm] = useState('')
 
   const filteredClubs = clubs.filter(c =>
@@ -97,7 +97,7 @@ export default function AdminClubsPage() {
             </div>
           </div>
           <div className="text-2xl font-extrabold text-amber-600 font-heading">2026/27</div>
-          <div className="text-xs text-slate-500 mt-1 font-medium">Gameweek 14 In Progress</div>
+          <div className="text-xs text-slate-500 mt-1 font-medium">Gameweek {leagueSettings.current_matchday} In Progress</div>
         </div>
       </div>
 

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   X, CreditCard, ShieldCheck, CheckCircle2, ChevronRight,
   Sparkles, Check, ArrowRight, Wallet, Landmark, Smartphone,
@@ -14,7 +14,8 @@ export default function MakePaymentModal() {
     processOnlinePayment,
     setReceiptModalState,
     currentMember,
-    currentClub
+    currentClub,
+    leagueSettings
   } = useCitiPay()
 
   const halfMembership = Math.round((currentMember.membership_fee || currentClub?.membership_fee || 100000) / 2)
@@ -27,6 +28,24 @@ export default function MakePaymentModal() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [successTx, setSuccessTx] = useState(null)
 
+  // Sync state whenever modal opens or defaults change
+  useEffect(() => {
+    if (paymentModalState.isOpen) {
+      const type = paymentModalState.type || 'membership_installment'
+      setPaymentType(type)
+      if (paymentModalState.defaultAmount) {
+        setAmount(paymentModalState.defaultAmount)
+      } else if (type === 'merchandise' || type === 'merchandise_jersey') {
+        setAmount(leagueSettings?.jersey_price || 18000)
+      } else if (type === 'merchandise_bib') {
+        setAmount(leagueSettings?.bib_price || 6500)
+      } else if (type === 'membership_installment') {
+        setAmount(defaultInstAmount)
+      }
+      setSuccessTx(null)
+    }
+  }, [paymentModalState.isOpen, paymentModalState.type, paymentModalState.defaultAmount, leagueSettings?.jersey_price, leagueSettings?.bib_price, defaultInstAmount])
+
   if (!paymentModalState.isOpen) return null
 
   const handleTypeChange = (type) => {
@@ -34,7 +53,8 @@ export default function MakePaymentModal() {
     if (type === 'membership') setAmount(currentMember.membership_outstanding || currentMember.membership_fee || 100000)
     else if (type === 'membership_installment') setAmount(defaultInstAmount)
     else if (type === 'social_dues') setAmount(currentClub?.monthly_social_dues || 5000)
-    else if (type === 'merchandise') setAmount(18000)
+    else if (type === 'merchandise' || type === 'merchandise_jersey') setAmount(leagueSettings?.jersey_price || 18000)
+    else if (type === 'merchandise_bib') setAmount(leagueSettings?.bib_price || 6500)
     else if (type === 'other_approved') setAmount(10000)
   }
 
@@ -179,14 +199,28 @@ export default function MakePaymentModal() {
 
                   <button
                     type="button"
-                    className={`payment-type-option ${paymentType === 'merchandise' ? 'active' : ''}`}
-                    onClick={() => handleTypeChange('merchandise')}
+                    className={`payment-type-option ${paymentType === 'merchandise' || paymentType === 'merchandise_jersey' ? 'active' : ''}`}
+                    onClick={() => handleTypeChange('merchandise_jersey')}
                   >
                     <div className="flex items-center gap-2">
                       <div className="type-dot" />
                       <div className="text-left">
-                        <div className="font-bold text-xs text-slate-900">Merchandise & Kits</div>
-                        <div className="text-2xs text-slate-500">Official Club Jersey pack</div>
+                        <div className="font-bold text-xs text-slate-900">Official Matchday Jersey</div>
+                        <div className="text-2xs text-slate-500">₦{(leagueSettings?.jersey_price || 18000).toLocaleString()} (Customized Kit)</div>
+                      </div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`payment-type-option ${paymentType === 'merchandise_bib' ? 'active' : ''}`}
+                    onClick={() => handleTypeChange('merchandise_bib')}
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="type-dot" />
+                      <div className="text-left">
+                        <div className="font-bold text-xs text-slate-900">Official Training Bib</div>
+                        <div className="text-2xs text-slate-500">₦{(leagueSettings?.bib_price || 6500).toLocaleString()} (Scrimmage Pack)</div>
                       </div>
                     </div>
                   </button>

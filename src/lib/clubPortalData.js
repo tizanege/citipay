@@ -435,3 +435,17 @@ export const initialAvailability = {
     no: 2
   }
 }
+
+// Global League & Apparel Settings (Super Admin Configured)
+export const initialLeagueSettings = {
+  current_matchday: 14,
+  total_matchdays: 38,
+  season_title: 'Championship 2026/27',
+  competition_name: 'Citi Football Premier Championship',
+  jersey_price: 18000,
+  bib_price: 6500,
+  currency: 'NGN',
+  last_updated: '2026-10-03T10:00:00Z',
+  updated_by: 'Chief Segun Adeleke (Super Admin)'
+}
+

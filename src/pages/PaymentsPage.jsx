@@ -8,7 +8,7 @@ import { useCitiPay } from '../contexts/CitiPayContext'
 import './PaymentsPage.css'
 
 export default function PaymentsPage() {
-  const { currentMember, currentClub, setPaymentModalState, setReceiptModalState } = useCitiPay()
+  const { currentMember, currentClub, setPaymentModalState, setReceiptModalState, leagueSettings } = useCitiPay()
 
   const paidPercent = Math.round((currentMember.membership_paid / currentMember.membership_fee) * 100)
   const installmentAmount = Math.round((currentMember.membership_fee || 100000) / 2)
@@ -195,9 +195,25 @@ export default function PaymentsPage() {
               </div>
               <button
                 className="btn btn-secondary text-xs font-bold py-2 px-4"
-                onClick={() => handleOpenPayment('merchandise', 18000)}
+                onClick={() => handleOpenPayment('merchandise_jersey', leagueSettings?.jersey_price || 18000)}
               >
-                Buy ₦18,000
+                Buy ₦{(leagueSettings?.jersey_price || 18000).toLocaleString()}
+              </button>
+            </div>
+          </div>
+
+          <div className="card p-4 hover:border-amber-300 transition-colors">
+            <div className="flex justify-between items-start">
+              <div>
+                <span className="badge badge-warning text-3xs font-bold uppercase mb-1 block">Training Gear</span>
+                <h4 className="font-bold text-sm text-slate-900">Official Training Bib</h4>
+                <p className="text-xs text-slate-500 mt-0.5">Numbered scrimmage pinnie pack for weekly training sessions</p>
+              </div>
+              <button
+                className="btn btn-secondary text-xs font-bold py-2 px-4"
+                onClick={() => handleOpenPayment('merchandise_bib', leagueSettings?.bib_price || 6500)}
+              >
+                Buy ₦{(leagueSettings?.bib_price || 6500).toLocaleString()}
               </button>
             </div>
           </div>

@@ -19,7 +19,8 @@ export default function ClubSquadPage() {
     setReminderModalState,
     setReceiptModalState,
     setAddPlayerModalState,
-    setSendCredentialsModalState
+    setSendCredentialsModalState,
+    leagueSettings
   } = useCitiPay()
 
   const [searchTerm, setSearchTerm] = useState('')
@@ -74,7 +75,7 @@ export default function ClubSquadPage() {
               <span className="badge badge-success flex items-center gap-1 font-bold text-xs">
                 <ShieldCheck size={12} /> {currentClub.code} Executive Command
               </span>
-              <span className="badge badge-accent font-bold text-xs">Gameweek 14 Clearance</span>
+              <span className="badge badge-accent font-bold text-xs">Gameweek {leagueSettings.current_matchday} Clearance</span>
             </div>
             <h1 className="club-banner-title">Squad Roster & Matchday Clearance</h1>
             <p className="club-banner-sub flex items-center gap-1 text-xs">

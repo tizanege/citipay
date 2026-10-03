@@ -11,6 +11,7 @@ import OtpVerificationModal from '../components/modals/OtpVerificationModal'
 import PasswordResetModal from '../components/modals/PasswordResetModal'
 import AddPlayerModal from '../components/modals/AddPlayerModal'
 import SendCredentialsModal from '../components/modals/SendCredentialsModal'
+import EditLeagueSettingsModal from '../components/modals/EditLeagueSettingsModal'
 import './DashboardLayout.css'
 
 export default function DashboardLayout() {
@@ -35,6 +36,7 @@ export default function DashboardLayout() {
       <PasswordResetModal />
       <AddPlayerModal />
       <SendCredentialsModal />
+      <EditLeagueSettingsModal />
     </div>
   )
 }

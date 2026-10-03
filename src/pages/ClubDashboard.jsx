@@ -26,7 +26,8 @@ export default function ClubDashboard() {
     setReceiptModalState,
     setAddPlayerModalState,
     setSendCredentialsModalState,
-    switchMember
+    switchMember,
+    leagueSettings
   } = useCitiPay()
 
   const [searchTerm, setSearchTerm] = useState('')
@@ -180,7 +181,7 @@ export default function ClubDashboard() {
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="section-title text-base font-extrabold text-slate-900">CLUB PAYMENT OVERVIEW</h3>
-                <span className="badge badge-accent font-bold text-3xs">Gameweek 14</span>
+                <span className="badge badge-accent font-bold text-3xs">Gameweek {leagueSettings.current_matchday}</span>
               </div>
               <p className="text-xs text-slate-500">Live roster clearance & financial collections ledger</p>
             </div>

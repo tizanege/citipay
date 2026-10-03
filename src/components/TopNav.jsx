@@ -25,7 +25,8 @@ export default function TopNav() {
     setManualPaymentModalState,
     setRulesConfigModalState,
     dbStatus,
-    recheckDatabase
+    recheckDatabase,
+    leagueSettings
   } = useCitiPay()
 
   const [showRoleMenu, setShowRoleMenu] = useState(false)
@@ -169,7 +170,7 @@ export default function TopNav() {
                     <div className="notif-card-item unread">
                       <div className="notif-dot-marker" />
                       <div>
-                        <div className="font-bold text-xs text-slate-900">Gameweek 14 Clearance Audit</div>
+                        <div className="font-bold text-xs text-slate-900">Gameweek {leagueSettings?.current_matchday || 14} Clearance Audit</div>
                         <div className="text-3xs text-slate-500 mt-0.5">Sunday League FC roster 22/30 verified</div>
                       </div>
                     </div>
@@ -179,7 +180,7 @@ export default function TopNav() {
                     <div className="notif-card-item unread">
                       <div className="notif-dot-marker" />
                       <div>
-                        <div className="font-bold text-xs text-slate-900">Gameweek 14 Roster Open</div>
+                        <div className="font-bold text-xs text-slate-900">Gameweek {leagueSettings?.current_matchday || 14} Roster Open</div>
                         <div className="text-3xs text-slate-500 mt-0.5">22 green cleared, 5 in yellow grace period</div>
                       </div>
                     </div>
@@ -196,7 +197,7 @@ export default function TopNav() {
                     <div className="notif-card-item unread">
                       <div className="notif-dot-marker" />
                       <div>
-                        <div className="font-bold text-xs text-slate-900">Gameweek 14 Matchday Squad</div>
+                        <div className="font-bold text-xs text-slate-900">Gameweek {leagueSettings?.current_matchday || 14} Matchday Squad</div>
                         <div className="text-3xs text-slate-500 mt-0.5">Your status: 🟢 Cleared for kickoff</div>
                       </div>
                     </div>
