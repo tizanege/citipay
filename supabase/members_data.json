@@ -1,0 +1,1206 @@
+[
+  {
+    "row": 2,
+    "name": "Eko",
+    "email": "eko@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "yellow",
+    "renewal_date": "June 10th",
+    "cycle_status": "\u2705",
+    "next_renewal_date": "September 10th",
+    "payment_status_note": "80000 message",
+    "next_cycle_status": "",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": "Paid \u2705"
+      },
+      "march": {
+        "date": "March 29th",
+        "status": "Paid\u2705"
+      },
+      "june_july": {
+        "date": "June 29th",
+        "status": "",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 3,
+    "name": "Afoo",
+    "email": "afoo@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "green",
+    "renewal_date": "June 10th",
+    "cycle_status": "\u2705",
+    "next_renewal_date": "September 10th",
+    "payment_status_note": "80000 sent out a message",
+    "next_cycle_status": "Paid \u2705",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": ""
+      },
+      "march": {
+        "date": "",
+        "status": "Paid \u2705)"
+      },
+      "june_july": {
+        "date": "46202.0",
+        "status": "Paid \u2705",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 4,
+    "name": "Badmus",
+    "email": "badmus@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "green",
+    "renewal_date": "June 10th",
+    "cycle_status": "\u2705",
+    "next_renewal_date": "September 10th",
+    "payment_status_note": "80000 messaged",
+    "next_cycle_status": "Paid \u2705",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": "Paid \u2705"
+      },
+      "march": {
+        "date": "March 29th",
+        "status": "Paid\u2705"
+      },
+      "june_july": {
+        "date": "June 29th",
+        "status": "",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 5,
+    "name": "Paige",
+    "email": "paige@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "green",
+    "renewal_date": "June 13th",
+    "cycle_status": "\u2705",
+    "next_renewal_date": "September 10th",
+    "payment_status_note": "80000 message",
+    "next_cycle_status": "Paid \u2705",
+    "historical_milestones": {
+      "january": {
+        "date": "January 11th",
+        "status": "Paid \u2705"
+      },
+      "march": {
+        "date": "June 22nd, 2026",
+        "status": "Paid\u2705"
+      },
+      "june_july": {
+        "date": "June 29th",
+        "status": "Paid \u2705",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 6,
+    "name": "Lucky",
+    "email": "lucky@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "green",
+    "renewal_date": "June 10th",
+    "cycle_status": "\u2705",
+    "next_renewal_date": "September 10th",
+    "payment_status_note": "80000 message",
+    "next_cycle_status": "Paid \u2705",
+    "historical_milestones": {
+      "january": {
+        "date": "January 11th",
+        "status": "Paid \u2705"
+      },
+      "march": {
+        "date": "March 29th",
+        "status": "Paid"
+      },
+      "june_july": {
+        "date": "June 29th",
+        "status": "",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 7,
+    "name": "Tope",
+    "email": "tope@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "green",
+    "renewal_date": "July 30th",
+    "cycle_status": "\u2705",
+    "next_renewal_date": "October 30th",
+    "payment_status_note": "80000.0",
+    "next_cycle_status": "Paid \u2705",
+    "historical_milestones": {
+      "january": {
+        "date": "January 11th",
+        "status": "Paid\u2705"
+      },
+      "march": {
+        "date": "46195.0",
+        "status": "Paid\u2705"
+      },
+      "june_july": {
+        "date": "June 29th",
+        "status": "Paid\u2705",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 8,
+    "name": "Kunle",
+    "email": "kunle@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "green",
+    "renewal_date": "June 10th",
+    "cycle_status": "\u2705",
+    "next_renewal_date": "September 10th",
+    "payment_status_note": "80000 message",
+    "next_cycle_status": "Paid \u2705",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": ""
+      },
+      "march": {
+        "date": "",
+        "status": ""
+      },
+      "june_july": {
+        "date": "June 29th",
+        "status": "Paid \u2705",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 9,
+    "name": "Ade",
+    "email": "ade@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "green",
+    "renewal_date": "June 10th",
+    "cycle_status": "\u2705",
+    "next_renewal_date": "September 10th",
+    "payment_status_note": "80000 message",
+    "next_cycle_status": "Paid \u2705",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": "Paid \u2705"
+      },
+      "march": {
+        "date": "March 29th",
+        "status": "Paid\u2705"
+      },
+      "june_july": {
+        "date": "June 29th",
+        "status": "Paid \u2705",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 10,
+    "name": "Junior",
+    "email": "junior@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "yellow",
+    "renewal_date": "June 10th",
+    "cycle_status": "\u2705",
+    "next_renewal_date": "September 10th",
+    "payment_status_note": "80000.0",
+    "next_cycle_status": "",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": ""
+      },
+      "march": {
+        "date": "",
+        "status": ""
+      },
+      "june_july": {
+        "date": "",
+        "status": "",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 11,
+    "name": "Charles",
+    "email": "charles@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "yellow",
+    "renewal_date": "August 10th",
+    "cycle_status": "\u2705",
+    "next_renewal_date": "November 10th",
+    "payment_status_note": "80000.0",
+    "next_cycle_status": "",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": ""
+      },
+      "march": {
+        "date": "",
+        "status": ""
+      },
+      "june_july": {
+        "date": "June 29th",
+        "status": "",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 12,
+    "name": "Rado",
+    "email": "rado@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "yellow",
+    "renewal_date": "August 10th",
+    "cycle_status": "\u2705",
+    "next_renewal_date": "November 10th",
+    "payment_status_note": "80000.0",
+    "next_cycle_status": "",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": "Paid\u2705"
+      },
+      "march": {
+        "date": "March 29th",
+        "status": ""
+      },
+      "june_july": {
+        "date": "",
+        "status": "",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 13,
+    "name": "Bee",
+    "email": "bee@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "yellow",
+    "renewal_date": "June 10th",
+    "cycle_status": "\u2705",
+    "next_renewal_date": "September 10th",
+    "payment_status_note": "80000 message",
+    "next_cycle_status": "",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": ""
+      },
+      "march": {
+        "date": "",
+        "status": ""
+      },
+      "june_july": {
+        "date": "",
+        "status": "",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 14,
+    "name": "Mila",
+    "email": "mila@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "green",
+    "renewal_date": "June 10th",
+    "cycle_status": "\u2705",
+    "next_renewal_date": "September 10th",
+    "payment_status_note": "80000 message",
+    "next_cycle_status": "Paid \u2705",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": "Paid\u2705"
+      },
+      "march": {
+        "date": "March 29th",
+        "status": ""
+      },
+      "june_july": {
+        "date": "June 29th",
+        "status": "",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 15,
+    "name": "Femi",
+    "email": "femi@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "yellow",
+    "renewal_date": "June 10th",
+    "cycle_status": "\u2705",
+    "next_renewal_date": "September 10th",
+    "payment_status_note": "80000 message",
+    "next_cycle_status": "",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": ""
+      },
+      "march": {
+        "date": "",
+        "status": ""
+      },
+      "june_july": {
+        "date": "",
+        "status": "",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 16,
+    "name": "AB",
+    "email": "ab@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "green",
+    "renewal_date": "June 10th",
+    "cycle_status": "\u2705",
+    "next_renewal_date": "September 10th",
+    "payment_status_note": "80000.0",
+    "next_cycle_status": "Paid \u2705",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": ""
+      },
+      "march": {
+        "date": "",
+        "status": "Paid\u2705"
+      },
+      "june_july": {
+        "date": "",
+        "status": "",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 17,
+    "name": "Lion",
+    "email": "lion@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 80000,
+    "eligibility_status": "red",
+    "renewal_date": "June 10th",
+    "cycle_status": "Not paid",
+    "next_renewal_date": "September 10th",
+    "payment_status_note": "80000 message",
+    "next_cycle_status": "",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": ""
+      },
+      "march": {
+        "date": "",
+        "status": "Paid\u2705"
+      },
+      "june_july": {
+        "date": "",
+        "status": "",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 18,
+    "name": "Calm",
+    "email": "calm@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "green",
+    "renewal_date": "June 10th",
+    "cycle_status": "\u2705",
+    "next_renewal_date": "September 10th",
+    "payment_status_note": "80000 message",
+    "next_cycle_status": "Paid \u2705",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": ""
+      },
+      "march": {
+        "date": "",
+        "status": "Paid \u2705"
+      },
+      "june_july": {
+        "date": "",
+        "status": "",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 19,
+    "name": "Esu",
+    "email": "esu@sundayleaguefc.ng",
+    "quarterly_fee": 160000,
+    "debt": 0,
+    "eligibility_status": "green",
+    "renewal_date": "June 10th",
+    "cycle_status": "\u2705",
+    "next_renewal_date": "September 10th",
+    "payment_status_note": "80000 message",
+    "next_cycle_status": "Paid \u2705",
+    "historical_milestones": {
+      "january": {
+        "date": "January 11th",
+        "status": "Paid \u2705"
+      },
+      "march": {
+        "date": "March 29th",
+        "status": "Paid \u2705"
+      },
+      "june_july": {
+        "date": "June 29th",
+        "status": "Paid for 6 months\u2705",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 20,
+    "name": "Bluee",
+    "email": "bluee@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "green",
+    "renewal_date": "July 16th",
+    "cycle_status": "\u2705",
+    "next_renewal_date": "October 16th",
+    "payment_status_note": "80000.0",
+    "next_cycle_status": "Paid \u2705",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": "Paid \u2705"
+      },
+      "march": {
+        "date": "March 29th",
+        "status": "Paid\u2705"
+      },
+      "june_july": {
+        "date": "",
+        "status": "Paid \u2705",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 21,
+    "name": "Topboss",
+    "email": "topboss@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "green",
+    "renewal_date": "August 10th",
+    "cycle_status": "\u2705",
+    "next_renewal_date": "November 10th",
+    "payment_status_note": "80000.0",
+    "next_cycle_status": "Paid\u2705",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": ""
+      },
+      "march": {
+        "date": "",
+        "status": "Paid \u2705"
+      },
+      "june_july": {
+        "date": "",
+        "status": "",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 22,
+    "name": "Kaybee",
+    "email": "kaybee@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 20000,
+    "eligibility_status": "yellow",
+    "renewal_date": "July 24th",
+    "cycle_status": "\u2705",
+    "next_renewal_date": "October 4th",
+    "payment_status_note": "80000.0",
+    "next_cycle_status": "Paid \u2705",
+    "historical_milestones": {
+      "january": {
+        "date": "January 11th",
+        "status": "Paid\u2705"
+      },
+      "march": {
+        "date": "March 29th",
+        "status": "Paid\u2705 balance 30k"
+      },
+      "june_july": {
+        "date": "",
+        "status": "Paid remain 20k",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 23,
+    "name": "Hollowman",
+    "email": "hollowman@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "yellow",
+    "renewal_date": "July 2nd",
+    "cycle_status": "\u2705",
+    "next_renewal_date": "October 2nd",
+    "payment_status_note": "80000.0",
+    "next_cycle_status": "",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": ""
+      },
+      "march": {
+        "date": "",
+        "status": ""
+      },
+      "june_july": {
+        "date": "",
+        "status": "",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 24,
+    "name": "Alex",
+    "email": "alex@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 30000,
+    "eligibility_status": "red",
+    "renewal_date": "June 10th",
+    "cycle_status": "\u2705",
+    "next_renewal_date": "September 10th",
+    "payment_status_note": "80000 message",
+    "next_cycle_status": "",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": "Paid\u2705remains 30k"
+      },
+      "march": {
+        "date": "March 29th",
+        "status": ""
+      },
+      "june_july": {
+        "date": "",
+        "status": "",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 25,
+    "name": "AY",
+    "email": "ay@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "yellow",
+    "renewal_date": "August 17th",
+    "cycle_status": "\u2705",
+    "next_renewal_date": "November 17th",
+    "payment_status_note": "80000.0",
+    "next_cycle_status": "",
+    "historical_milestones": {
+      "january": {
+        "date": "January 11th",
+        "status": "Paid \u2705"
+      },
+      "march": {
+        "date": "March 29th",
+        "status": "Paid \u2705"
+      },
+      "june_july": {
+        "date": "June 29th",
+        "status": "",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 26,
+    "name": "Francis",
+    "email": "francis@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "yellow",
+    "renewal_date": "July 12th",
+    "cycle_status": "\u2705",
+    "next_renewal_date": "October 12th",
+    "payment_status_note": "80000.0",
+    "next_cycle_status": "",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": ""
+      },
+      "march": {
+        "date": "",
+        "status": ""
+      },
+      "june_july": {
+        "date": "",
+        "status": "",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 27,
+    "name": "Sero",
+    "email": "sero@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 30000,
+    "eligibility_status": "red",
+    "renewal_date": "June 10th",
+    "cycle_status": "\u2705",
+    "next_renewal_date": "September 10th",
+    "payment_status_note": "80000 message",
+    "next_cycle_status": "",
+    "historical_milestones": {
+      "january": {
+        "date": "January 11th",
+        "status": "Paid\u2705"
+      },
+      "march": {
+        "date": "March 29th",
+        "status": "Paid\u2705, balance 30k"
+      },
+      "june_july": {
+        "date": "June 29th",
+        "status": "Paid \u2705 balance 30k",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 28,
+    "name": "Muhammed",
+    "email": "muhammed@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "green",
+    "renewal_date": "July 20th",
+    "cycle_status": "\u2705",
+    "next_renewal_date": "October 20th",
+    "payment_status_note": "80000.0",
+    "next_cycle_status": "Paid \u2705",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": ""
+      },
+      "march": {
+        "date": "",
+        "status": ""
+      },
+      "june_july": {
+        "date": "June 21 / July 12th",
+        "status": "Paid \u2705",
+        "extra": "Paid \u2705"
+      }
+    }
+  },
+  {
+    "row": 29,
+    "name": "William",
+    "email": "william@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "yellow",
+    "renewal_date": "June 10th",
+    "cycle_status": "\u2705",
+    "next_renewal_date": "September 10th",
+    "payment_status_note": "80000 message",
+    "next_cycle_status": "null",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": ""
+      },
+      "march": {
+        "date": "",
+        "status": ""
+      },
+      "june_july": {
+        "date": "",
+        "status": "",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 30,
+    "name": "Olamide",
+    "email": "olamide@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 80000,
+    "eligibility_status": "red",
+    "renewal_date": "June 10th",
+    "cycle_status": "Not paid",
+    "next_renewal_date": "September 10th",
+    "payment_status_note": "80000.0",
+    "next_cycle_status": "null",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": ""
+      },
+      "march": {
+        "date": "",
+        "status": ""
+      },
+      "june_july": {
+        "date": "",
+        "status": "",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 31,
+    "name": "Uvi",
+    "email": "uvi@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "yellow",
+    "renewal_date": "June 12th",
+    "cycle_status": "\u2705",
+    "next_renewal_date": "September 10th",
+    "payment_status_note": "80000.0",
+    "next_cycle_status": "null",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": ""
+      },
+      "march": {
+        "date": "",
+        "status": ""
+      },
+      "june_july": {
+        "date": "",
+        "status": "",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 32,
+    "name": "Mudashir",
+    "email": "mudashir@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 80000,
+    "eligibility_status": "red",
+    "renewal_date": "June 10th",
+    "cycle_status": "Not paid",
+    "next_renewal_date": "September 10th",
+    "payment_status_note": "80000.0",
+    "next_cycle_status": "null",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": ""
+      },
+      "march": {
+        "date": "",
+        "status": ""
+      },
+      "june_july": {
+        "date": "",
+        "status": "",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 33,
+    "name": "Samuel",
+    "email": "samuel@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "green",
+    "renewal_date": "",
+    "cycle_status": "",
+    "next_renewal_date": "",
+    "payment_status_note": "",
+    "next_cycle_status": "",
+    "historical_milestones": {
+      "january": {
+        "date": "January 11th",
+        "status": "Paid \u2705"
+      },
+      "march": {
+        "date": "March 29th",
+        "status": "Paid\u2705"
+      },
+      "june_july": {
+        "date": "",
+        "status": "Paid )",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 34,
+    "name": "Babakay",
+    "email": "babakay@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "green",
+    "renewal_date": "",
+    "cycle_status": "",
+    "next_renewal_date": "",
+    "payment_status_note": "",
+    "next_cycle_status": "",
+    "historical_milestones": {
+      "january": {
+        "date": "January 22nd",
+        "status": "Paid \u2705"
+      },
+      "march": {
+        "date": "March 29th",
+        "status": ""
+      },
+      "june_july": {
+        "date": "",
+        "status": "",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 35,
+    "name": "David",
+    "email": "david@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "green",
+    "renewal_date": "",
+    "cycle_status": "",
+    "next_renewal_date": "",
+    "payment_status_note": "",
+    "next_cycle_status": "",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": "Paid \u2705"
+      },
+      "march": {
+        "date": "March 29th",
+        "status": "Paid\u2705"
+      },
+      "june_july": {
+        "date": "July 12th",
+        "status": "",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 36,
+    "name": "Joshua",
+    "email": "joshua@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "green",
+    "renewal_date": "",
+    "cycle_status": "",
+    "next_renewal_date": "",
+    "payment_status_note": "",
+    "next_cycle_status": "",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": "Paid \u2705"
+      },
+      "march": {
+        "date": "March 29th",
+        "status": ""
+      },
+      "june_july": {
+        "date": "July 12th",
+        "status": "Paid",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 37,
+    "name": "Khalid",
+    "email": "khalid@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "green",
+    "renewal_date": "",
+    "cycle_status": "",
+    "next_renewal_date": "",
+    "payment_status_note": "",
+    "next_cycle_status": "",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": ""
+      },
+      "march": {
+        "date": "",
+        "status": "Paid \u2705"
+      },
+      "june_july": {
+        "date": "July 12th",
+        "status": "",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 38,
+    "name": "Jay",
+    "email": "jay@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "green",
+    "renewal_date": "",
+    "cycle_status": "",
+    "next_renewal_date": "",
+    "payment_status_note": "",
+    "next_cycle_status": "",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": ""
+      },
+      "march": {
+        "date": "Joined 15 Feb renewal is May 15",
+        "status": ""
+      },
+      "june_july": {
+        "date": "May 15th",
+        "status": "",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 39,
+    "name": "Makenzy",
+    "email": "makenzy@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "green",
+    "renewal_date": "",
+    "cycle_status": "",
+    "next_renewal_date": "",
+    "payment_status_note": "",
+    "next_cycle_status": "",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": ""
+      },
+      "march": {
+        "date": "",
+        "status": ""
+      },
+      "june_july": {
+        "date": "June 1st",
+        "status": "",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 40,
+    "name": "Whyte",
+    "email": "whyte@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "green",
+    "renewal_date": "",
+    "cycle_status": "",
+    "next_renewal_date": "",
+    "payment_status_note": "",
+    "next_cycle_status": "",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": ""
+      },
+      "march": {
+        "date": "Joined March 23rd next renewal date is June 23rd",
+        "status": ""
+      },
+      "june_july": {
+        "date": "June 23rd",
+        "status": "",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 41,
+    "name": "Kamil",
+    "email": "kamil@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "green",
+    "renewal_date": "",
+    "cycle_status": "",
+    "next_renewal_date": "",
+    "payment_status_note": "",
+    "next_cycle_status": "",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": ""
+      },
+      "march": {
+        "date": "",
+        "status": ""
+      },
+      "june_july": {
+        "date": "June 22nd",
+        "status": "",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 42,
+    "name": "SK",
+    "email": "sk@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "green",
+    "renewal_date": "",
+    "cycle_status": "",
+    "next_renewal_date": "",
+    "payment_status_note": "",
+    "next_cycle_status": "",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": ""
+      },
+      "march": {
+        "date": "",
+        "status": ""
+      },
+      "june_july": {
+        "date": "June 22nd",
+        "status": "Paid",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 43,
+    "name": "Bruno",
+    "email": "bruno@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "green",
+    "renewal_date": "",
+    "cycle_status": "",
+    "next_renewal_date": "",
+    "payment_status_note": "",
+    "next_cycle_status": "",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": ""
+      },
+      "march": {
+        "date": "",
+        "status": ""
+      },
+      "june_july": {
+        "date": "8th June",
+        "status": "",
+        "extra": ""
+      }
+    }
+  },
+  {
+    "row": 44,
+    "name": "Hammed",
+    "email": "hammed@sundayleaguefc.ng",
+    "quarterly_fee": 80000,
+    "debt": 0,
+    "eligibility_status": "green",
+    "renewal_date": "",
+    "cycle_status": "",
+    "next_renewal_date": "",
+    "payment_status_note": "",
+    "next_cycle_status": "",
+    "historical_milestones": {
+      "january": {
+        "date": "",
+        "status": ""
+      },
+      "march": {
+        "date": "",
+        "status": ""
+      },
+      "june_july": {
+        "date": "20th June",
+        "status": "",
+        "extra": ""
+      }
+    }
+  }
+]

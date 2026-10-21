@@ -21,30 +21,30 @@ export default function Sidebar() {
 
   // 1. Member Access Level Navigation
   const playerNav = [
-    { to: '/dashboard', icon: LayoutDashboard, label: 'Member Overview', badge: 'Active' },
-    { to: '/payments', icon: CreditCard, label: 'Pay Fees & Dues', badge: 'Paystack' },
-    { to: '/payment-history', icon: History, label: 'Official Receipts' },
-    { to: '/profile', icon: User, label: 'Member Profile' }
+    { to: '/dashboard', icon: LayoutDashboard, label: 'Overview' },
+    { to: '/payments', icon: CreditCard, label: 'Payments' },
+    { to: '/payment-history', icon: History, label: 'Receipts' },
+    { to: '/profile', icon: User, label: 'Profile' }
   ]
 
   // 2. Club Executive Access Level Navigation
   const clubNav = [
-    { to: '/club/dashboard', icon: LayoutDashboard, label: 'Executive Hub' },
-    { to: '/club/players', icon: Users, label: 'Squad & Eligibility' },
-    { to: '/club/payments', icon: CreditCard, label: 'Collections Ledger' },
-    { to: '/club/receipts', icon: History, label: 'Club Receipts' },
-    { to: '/club/audit', icon: Shield, label: 'Club Audit Trail' },
-    { to: '/club/profile', icon: Building2, label: 'Club Profile & Rules' }
+    { to: '/club/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+    { to: '/club/players', icon: Users, label: 'Players' },
+    { to: '/club/payments', icon: CreditCard, label: 'Payments' },
+    { to: '/club/receipts', icon: History, label: 'Receipts' },
+    { to: '/club/audit', icon: Shield, label: 'Audit Trail' },
+    { to: '/club/profile', icon: Building2, label: 'Settings' }
   ]
 
   // 3. Super Admin / Federation Access Level Navigation
   const adminNav = [
-    { to: '/admin/dashboard', icon: LayoutDashboard, label: 'Federation Command' },
-    { to: '/admin/clubs', icon: Building2, label: 'Affiliated Clubs' },
-    { to: '/admin/players', icon: Users, label: 'League Player Registry' },
-    { to: '/admin/payments', icon: CreditCard, label: 'Paystack Revenue' },
-    { to: '/admin/audit', icon: Shield, label: 'Master Audit Trail' },
-    { to: '/admin/settings', icon: Sliders, label: 'Governance & Rules' }
+    { to: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+    { to: '/admin/clubs', icon: Building2, label: 'Clubs' },
+    { to: '/admin/players', icon: Users, label: 'Players' },
+    { to: '/admin/payments', icon: CreditCard, label: 'Revenue' },
+    { to: '/admin/audit', icon: Shield, label: 'Audit Trail' },
+    { to: '/admin/settings', icon: Sliders, label: 'Settings' }
   ]
 
   const activeNav = isAdmin ? adminNav : isClubAdmin ? clubNav : playerNav
@@ -77,8 +77,8 @@ export default function Sidebar() {
             <Trophy size={20} className="text-white" />
           </div>
           <div className="brand-text">
-            <span className="brand-name">Citi Football</span>
-            <span className="brand-tagline">Club Payment Portal</span>
+            <span className="brand-name">CitiPay</span>
+            <span className="brand-tagline">League Portal</span>
           </div>
         </div>
 
@@ -86,14 +86,14 @@ export default function Sidebar() {
         <div className="portal-pill-container">
           <div className={`portal-tag-pill ${isAdmin ? 'admin-pill' : isClubAdmin ? 'club-pill' : 'player-pill'}`}>
             <span className="portal-dot" />
-            <span>{isAdmin ? 'Super Admin Mode' : isClubAdmin ? `${currentClub.code} Admin Hub` : 'Member Portal'}</span>
+            <span>{isAdmin ? 'Admin' : isClubAdmin ? `${currentClub.code} Exec` : 'Player'}</span>
           </div>
         </div>
 
         {/* Navigation Links */}
         <nav className="sidebar-nav">
           <div className="nav-section-title">
-            {isAdmin ? 'Federation Navigation' : isClubAdmin ? `${currentClub.code} Navigation` : 'Member Navigation'}
+            Menu
           </div>
           {activeNav.map(({ to, icon: Icon, label, badge }) => (
             <NavLink

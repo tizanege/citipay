@@ -50,217 +50,280 @@ export default function PlayerDashboard() {
 
   return (
     <div className="portal-dashboard-wrapper">
-      {/* Quick Member Persona Switcher Toolbar (Testing Bar) */}
-      <div className="persona-quick-bar mb-4">
-        <div className="flex items-center gap-2">
-          <span className="text-3xs font-extrabold uppercase text-slate-500 tracking-wider">
-            Quick Persona Switch:
-          </span>
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <button
-              className={`persona-switch-pill ${currentMember.id === 'mem-001' ? 'active' : ''}`}
-              onClick={() => switchMember('mem-001')}
-            >
-              <span className="dot green" /> Michael Esu (🟢 Eligible)
-            </button>
-            <button
-              className={`persona-switch-pill ${currentMember.id === 'mem-002' ? 'active' : ''}`}
-              onClick={() => switchMember('mem-002')}
-            >
-              <span className="dot yellow" /> Player B (🟡 Due Soon)
-            </button>
-            <button
-              className={`persona-switch-pill ${currentMember.id === 'mem-003' ? 'active' : ''}`}
-              onClick={() => switchMember('mem-003')}
-            >
-              <span className="dot red" /> Player C (🔴 Not Eligible)
-            </button>
-          </div>
-        </div>
-      </div>
 
-      {/* 3. MEMBER WELCOME & IDENTITY HEADER (Item 3 Requirement) */}
-      <div className="member-welcome-header mb-5">
-        <div className="welcome-left-col">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="club-badge-micro">
-              <Trophy size={12} className="text-emerald-700" /> {currentClub?.name || 'Sunday League FC'}
-            </span>
-            <span className="text-xs text-slate-500 font-semibold font-mono">
-              Member ID: <strong>{member.member_id || 'SL-8K4P2'}</strong>
+      {/* SUPERPOWER-INSPIRED DASHBOARD HEADER */}
+      <div className="superpower-profile-row mb-6">
+        <div className="superpower-profile-left">
+          <div className="superpower-name-row">
+            <h1 className="superpower-player-name">{member.full_name || 'Sophia Caldwell'}</h1>
+            <span className="superpower-verified-badge">
+              <ShieldCheck size={14} className="text-emerald-500" />
+              <span>#{member.jersey_number || '10'} · {member.position || 'CAM'}</span>
             </span>
           </div>
-          <h1 className="welcome-name-title">
-            WELCOME, {(member.full_name || 'MEMBER').split(' ')[0].toUpperCase()}
-          </h1>
-          <p className="welcome-sub-desc">
-            {member.nickname ? `"${member.nickname}" · ` : ''}Jersey #{member.jersey_number || '10'} · {member.position || 'CAM'}
+          <p className="superpower-subtext">
+            {currentClub?.name || 'Sunday League FC'} · Member ID: <span className="font-mono">{member.member_id || 'SL-8K4P2'}</span>
           </p>
         </div>
 
-        <div className="welcome-right-col">
-          <button
-            className="btn btn-primary btn-make-payment-hero flex items-center gap-2"
-            onClick={() => handleOpenPayment('membership_installment', nextPaymentAmount || installmentAmount)}
-          >
-            <CreditCard size={18} />
-            <span>MAKE PAYMENT</span>
+        {/* Top Count Stats (Dot Matrix Style: Total, Optimal, Due, Out of range) */}
+        <div className="superpower-stats-bar">
+          <div className="sp-counter-item">
+            <div className="sp-counter-value sp-dot-matrix">106</div>
+            <div className="sp-counter-label">
+              <span className="sp-mini-badge yellow">Total</span>
+            </div>
+          </div>
+          <div className="sp-counter-item">
+            <div className="sp-counter-value sp-dot-matrix">{isGreen ? '80' : '45'}</div>
+            <div className="sp-counter-label">
+              <span className="sp-pill-label">Cleared</span>
+            </div>
+          </div>
+          <div className="sp-counter-item">
+            <div className="sp-counter-value sp-dot-matrix">{isYellow ? '21' : '12'}</div>
+            <div className="sp-counter-label">
+              <span className="sp-pill-label">In Grace</span>
+            </div>
+          </div>
+          <div className="sp-counter-item">
+            <div className="sp-counter-value sp-dot-matrix">{isRed ? '5' : '0'}</div>
+            <div className="sp-counter-label">
+              <span className="sp-pill-label alert">Due Flag</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Action Widgets on Right (Upload & Matchday Radar) */}
+        <div className="superpower-quick-actions">
+          <div className="sp-action-card" onClick={() => navigate('/payment-history')}>
+            <div className="sp-action-title">
+              <span>Payment Receipts</span>
+              <span className="sp-plus-icon">+</span>
+            </div>
+            <div className="sp-action-sub">{memberTxs.length} files on file</div>
+          </div>
+
+          <div className="sp-action-card pulse-card" onClick={() => handleOpenPayment('membership_installment')}>
+            <div className="sp-action-title">
+              <span>Quick Settle</span>
+              <span className="sp-plus-icon">+</span>
+            </div>
+            <div className="sp-radar-glow">
+              <div className="sp-radar-core" />
+              <div className="sp-radar-ring" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* TIMELINE / SEASON CHECK-IN BAR */}
+      <div className="superpower-timeline-card mb-6">
+        <div className="sp-timeline-track">
+          <span className="sp-timeline-month">August</span>
+          <div className="sp-timeline-dots">
+            <span className="sp-tl-dot done" />
+            <span className="sp-tl-dot done" />
+            <span className="sp-tl-dot done" />
+            <div className="sp-timeline-pill-floating">
+              <Sparkles size={12} className="text-amber-500" />
+              <span>Matchday Fitness Peak (+4.8 rating)</span>
+            </div>
+            <span className="sp-tl-dot current" />
+            <span className="sp-tl-dot future" />
+            <span className="sp-tl-dot future" />
+          </div>
+          <span className="sp-timeline-month">November</span>
+        </div>
+      </div>
+
+      {/* DUAL GLOWING HERO CARDS (Superpower Score & Biological/Matchday Age) */}
+      <div className="superpower-hero-grid mb-6">
+        {/* Card 1: Superpower Eligibility Score */}
+        <div className={`sp-hero-card ${isRed ? 'sp-hero-danger' : isYellow ? 'sp-hero-warning' : 'sp-hero-green'}`}>
+          <div className="sp-hero-card-header">
+            <span className="sp-hero-label">Player Clearance Score</span>
+          </div>
+          <div className="sp-hero-body">
+            <div className="sp-hero-big-number sp-dot-matrix">
+              {isGreen ? '94' : isYellow ? '70' : '38'}
+            </div>
+            <div className="sp-hero-status-pill">
+              {isGreen ? 'Matchday Ready · 100% Cleared' : isYellow ? 'On Track · Grace Period' : 'Action Required · Ineligible'}
+            </div>
+          </div>
+          {/* Micro dots equalizer */}
+          <div className="sp-hero-equalizer">
+            <span style={{ height: '30%' }} />
+            <span style={{ height: '60%' }} />
+            <span style={{ height: '40%' }} />
+            <span style={{ height: '80%' }} />
+            <span style={{ height: '100%' }} />
+            <span style={{ height: '70%' }} />
+            <span style={{ height: '90%' }} />
+            <span style={{ height: '50%' }} />
+            <span style={{ height: '75%' }} />
+            <span style={{ height: '85%' }} />
+          </div>
+        </div>
+
+        {/* Card 2: Matchday Readiness / Performance Age */}
+        <div className="sp-hero-card sp-hero-amber">
+          <div className="sp-hero-card-header">
+            <span className="sp-hero-label">Matchday Peak Index</span>
+          </div>
+          <div className="sp-hero-body">
+            <div className="sp-hero-big-number sp-dot-matrix">
+              {member.jersey_number || '25'}
+            </div>
+            <div className="sp-hero-status-pill amber">
+              Top 5% League Conditioning
+            </div>
+          </div>
+          {/* Vertical gauge ruler */}
+          <div className="sp-hero-gauge-ruler">
+            {Array.from({ length: 24 }).map((_, i) => (
+              <span key={i} className={`gauge-tick ${i === 14 ? 'active-tick' : ''}`} />
+            ))}
+          </div>
+        </div>
+
+        {/* Card 3: Pending Verification Box */}
+        <div className="sp-pending-kit-card">
+          <div className="flex justify-between items-start mb-2">
+            <span className="text-xs font-medium text-slate-500">Upcoming Fixture Window</span>
+            <button className="text-slate-400 hover:text-slate-600 text-xs">✕</button>
+          </div>
+          <div className="sp-pending-counter">
+            <span className="sp-pending-num font-mono">3-5</span>
+            <span className="sp-pending-unit">Days</span>
+          </div>
+          <div className="sp-progress-line mb-3">
+            <div className="sp-progress-filled" style={{ width: '65%' }} />
+          </div>
+          <p className="text-3xs text-slate-400">
+            Next matchday squad submission deadline approaching for Gameweek 14.
+          </p>
+        </div>
+      </div>
+
+      {/* FINANCIAL BIOMARKERS CAROUSEL / ROW */}
+      <div className="superpower-biomarkers-section mb-6">
+        <div className="flex justify-between items-center mb-3">
+          <div>
+            <h3 className="sp-section-heading">Financial Biomarkers</h3>
+            <p className="sp-section-sub">A snapshot of your dues, balance, and ledger health</p>
+          </div>
+          <button className="sp-see-all-btn" onClick={() => navigate('/payments')}>
+            See All
           </button>
         </div>
-      </div>
 
-      {/* 4. THREE-COLOR ELIGIBILITY SYSTEM BANNER (Item 4 Requirement) */}
-      <div className={`eligibility-status-banner mb-6 ${member.status || 'green'}-banner`}>
-        <div className="eligibility-banner-inner">
-          <div className="eligibility-icon-circle">
-            {isGreen && <CheckCircle2 size={32} className="text-emerald-700" />}
-            {isYellow && <Clock size={32} className="text-amber-700" />}
-            {isRed && <AlertCircle size={32} className="text-rose-700" />}
-          </div>
-
-          <div className="eligibility-text-wrap">
-            <div className="eligibility-pill-tag">
-              <span className={`status-dot ${member.status || 'green'}`} />
-              <span>
-                {isGreen && '🟢 GREEN — ELIGIBLE'}
-                {isYellow && '🟡 YELLOW — PAYMENT DUE SOON'}
-                {isRed && '🔴 RED — NOT ELIGIBLE'}
-              </span>
+        <div className="sp-biomarkers-grid">
+          {/* Biomarker 1: Membership Fee */}
+          <div className="sp-bio-card">
+            <div className="sp-bio-header">
+              <span className="sp-bio-icon">💳</span>
+              <span className="sp-bio-type">Annual Dues</span>
             </div>
-
-            <h2 className="eligibility-main-heading">
-              {isGreen && 'YOU ARE ELIGIBLE'}
-              {isYellow && 'PAYMENT DUE SOON'}
-              {isRed && 'NOT ELIGIBLE'}
-            </h2>
-
-            <p className="eligibility-explanation">
-              {isGreen && 'Your membership is currently up to date. You are cleared for all official club matchdays and training.'}
-              {isYellow && (
-                <>
-                  Your account has an upcoming balance of <strong>₦{membershipOutstanding.toLocaleString()}</strong> due in 7 days.
-                </>
-              )}
-              {isRed && (
-                <>
-                  Your account has an outstanding balance of <strong>₦{membershipOutstanding.toLocaleString()}</strong>.
-                  Your membership status is currently inactive per the club's payment rules.
-                </>
-              )}
-            </p>
+            <div className="sp-bio-value">
+              <span className="sp-bio-num">₦{membershipPaid.toLocaleString()}</span>
+              <span className="sp-bio-unit">/ ₦{membershipFee.toLocaleString()}</span>
+            </div>
+            <div className="sp-bio-label">
+              {membershipOutstanding === 0 ? '🟢 Fully Settled' : `🔴 ₦${membershipOutstanding.toLocaleString()} Due`}
+            </div>
+            <div className="sp-sparkline-bars">
+              <span style={{ height: '40%' }} />
+              <span style={{ height: '70%' }} />
+              <span style={{ height: '90%' }} />
+              <span style={{ height: '100%' }} />
+            </div>
           </div>
 
-          <div className="eligibility-action-wrap">
-            {!isGreen ? (
-              <button
-                className={`btn font-extrabold flex items-center justify-center gap-2 py-3 px-6 ${
-                  isRed ? 'btn-danger-prominent' : 'btn-warning-prominent'
-                }`}
-                onClick={() => handleOpenPayment('membership_installment', membershipOutstanding)}
-              >
-                <CreditCard size={17} />
-                <span>[MAKE PAYMENT]</span>
-              </button>
-            ) : (
-              <div className="cleared-badge-box">
-                <ShieldCheck size={20} className="text-emerald-700" />
-                <span className="text-xs font-bold text-emerald-800">Matchday Cleared</span>
-              </div>
-            )}
+          {/* Biomarker 2: Social Dues */}
+          <div className="sp-bio-card">
+            <div className="sp-bio-header">
+              <span className="sp-bio-icon">🏆</span>
+              <span className="sp-bio-type">Monthly Socials</span>
+            </div>
+            <div className="sp-bio-value">
+              <span className="sp-bio-num">₦{socialDuesCurrentMonth.toLocaleString()}</span>
+              <span className="sp-bio-unit">/ month</span>
+            </div>
+            <div className="sp-bio-label">
+              {member.social_dues_status === 'paid' ? '🟢 Settled for September' : '🟡 Pending Settlement'}
+            </div>
+            <div className="sp-sparkline-wave">
+              <svg viewBox="0 0 100 20" className="w-full h-5 text-emerald-500 fill-none stroke-current stroke-2">
+                <path d="M0,15 Q25,0 50,12 T100,8" />
+              </svg>
+            </div>
+          </div>
 
-            {isRed && (
-              <button
-                className="btn btn-secondary text-xs flex items-center justify-center gap-1.5 py-2 mt-1"
-                onClick={() => alert('Contacting Club Administration: President (+234 802 345 6789) / admin@sundayleague.ng')}
-              >
-                <PhoneCall size={13} />
-                <span>Contact Club Administration</span>
-              </button>
-            )}
+          {/* Biomarker 3: Next Installment */}
+          <div className="sp-bio-card">
+            <div className="sp-bio-header">
+              <span className="sp-bio-icon">⚡</span>
+              <span className="sp-bio-type">Next Milestone</span>
+            </div>
+            <div className="sp-bio-value">
+              <span className="sp-bio-num">
+                {nextPaymentAmount > 0 ? `₦${nextPaymentAmount.toLocaleString()}` : '₦0'}
+              </span>
+              <span className="sp-bio-unit">scheduled</span>
+            </div>
+            <div className="sp-bio-label">
+              {nextPaymentAmount > 0 ? 'Due in 7 days' : 'Zero balance due'}
+            </div>
+            <div className="sp-sparkline-dots">
+              <span className="dot active" />
+              <span className="dot active" />
+              <span className="dot" />
+              <span className="dot" />
+            </div>
           </div>
         </div>
       </div>
 
-      {/* 3. PAYMENT SUMMARY & SOCIAL DUES & NEXT PAYMENT (Item 3 Mobile-First Grid) */}
-      <div className="grid-3 mb-6">
-        {/* Card 1: Membership Fee Summary */}
-        <div className="card payment-summary-card">
-          <div className="flex justify-between items-start mb-2">
-            <span className="card-kpi-lbl">MEMBERSHIP FEE</span>
-            <span className={`badge ${membershipOutstanding === 0 ? 'badge-success' : 'badge-warning'} text-xs font-bold`}>
-              {membershipOutstanding === 0 ? '🟢 PAID' : '🟡 PARTIAL'}
-            </span>
+      {/* TOP CLUB GEAR & RECOVERY (Superpower Supplements Inspiration) */}
+      <div className="superpower-supplements-section mb-6">
+        <div className="flex justify-between items-center mb-3">
+          <div>
+            <h3 className="sp-section-heading">Club Gear & Performance Pack</h3>
+            <p className="sp-section-sub">Official gear and recovery essentials allocated for your squad tier</p>
           </div>
-
-          <div className="card-kpi-amount text-slate-900 font-mono">
-            ₦{membershipFee.toLocaleString()}
-          </div>
-
-          <div className="summary-breakdown-rows mt-3 pt-3 border-t border-slate-100">
-            <div className="flex justify-between text-xs mb-1.5">
-              <span className="text-slate-500">Paid:</span>
-              <strong className="text-emerald-700 font-mono font-bold">
-                ₦{membershipPaid.toLocaleString()}
-              </strong>
-            </div>
-            <div className="flex justify-between text-xs">
-              <span className="text-slate-500">Outstanding:</span>
-              <strong className={`font-mono font-bold ${membershipOutstanding > 0 ? 'text-rose-600' : 'text-slate-900'}`}>
-                ₦{membershipOutstanding.toLocaleString()}
-              </strong>
-            </div>
-          </div>
+          <button className="sp-see-all-btn" onClick={() => alert('Club kit store opening soon!')}>
+            See All
+          </button>
         </div>
 
-        {/* Card 2: Social Dues Summary */}
-        <div className="card payment-summary-card">
-          <div className="flex justify-between items-start mb-2">
-            <span className="card-kpi-lbl">SOCIAL DUES</span>
-            <span className={`badge ${member.social_dues_status === 'paid' ? 'badge-success' : 'badge-danger'} text-xs font-bold`}>
-              {member.social_dues_status === 'paid' ? '🟢 PAID' : '🔴 DUE'}
-            </span>
-          </div>
-
-          <div className="card-kpi-amount text-slate-900 font-mono">
-            ₦{socialDuesCurrentMonth.toLocaleString()}
-          </div>
-
-          <div className="summary-breakdown-rows mt-3 pt-3 border-t border-slate-100">
-            <div className="flex justify-between text-xs mb-1.5">
-              <span className="text-slate-500">Current Month:</span>
-              <strong className="text-slate-900">September 2026</strong>
+        <div className="sp-supplements-grid">
+          <div className="sp-supp-card">
+            <span className="sp-supp-badge yellow">Official Kit</span>
+            <div className="sp-supp-orb green-orb">
+              <span>👕</span>
             </div>
-            <div className="flex justify-between text-xs">
-              <span className="text-slate-500">Status:</span>
-              <strong className={member.social_dues_status === 'paid' ? 'text-emerald-700 font-bold' : 'text-rose-600 font-bold'}>
-                {member.social_dues_status === 'paid' ? 'Paid in Full' : 'Due for Payment'}
-              </strong>
+            <div className="sp-supp-title">2026 Matchday Jersey</div>
+            <div className="sp-supp-price">₦18,500</div>
+          </div>
+
+          <div className="sp-supp-card">
+            <span className="sp-supp-badge yellow">Recovery</span>
+            <div className="sp-supp-orb blue-orb">
+              <span>⚡</span>
             </div>
-          </div>
-        </div>
-
-        {/* Card 3: Next Payment */}
-        <div className="card payment-summary-card">
-          <div className="flex justify-between items-start mb-2">
-            <span className="card-kpi-lbl">NEXT PAYMENT</span>
-            <Calendar size={18} className="text-slate-400" />
+            <div className="sp-supp-title">Electrolyte & Iso Fuel</div>
+            <div className="sp-supp-price">₦8,200</div>
           </div>
 
-          <div className="card-kpi-amount text-slate-900 text-lg font-bold">
-            {nextPaymentAmount > 0 ? (
-              <span className="font-mono text-amber-600">₦{nextPaymentAmount.toLocaleString()}</span>
-            ) : (
-              <span className="text-emerald-700 text-base font-bold">No payment currently due</span>
-            )}
-          </div>
-
-          <div className="summary-breakdown-rows mt-3 pt-3 border-t border-slate-100">
-            <div className="flex justify-between text-xs">
-              <span className="text-slate-500">Notice:</span>
-              <span className="text-slate-700 font-medium text-right">
-                {member.next_payment_label || (membershipOutstanding === 0 ? 'No payment currently due.' : `₦${membershipOutstanding.toLocaleString()} remaining`)}
-              </span>
+          <div className="sp-supp-card">
+            <span className="sp-supp-badge">Standard</span>
+            <div className="sp-supp-orb orange-orb">
+              <span>🛡️</span>
             </div>
+            <div className="sp-supp-title">Carbon Shin Guards</div>
+            <div className="sp-supp-price">₦14,000</div>
           </div>
         </div>
       </div>

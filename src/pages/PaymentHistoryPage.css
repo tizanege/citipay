@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Payment History Page: Spacious Fintech Ledger Styling
+   Payment History Page: Minimalist Fintech Ledger Styling
    ========================================================================== */
 
 .payment-history-page-wrapper {
@@ -8,11 +8,15 @@
 }
 
 .ledger-controls-card {
-  padding: 1.25rem 1.75rem;
+  padding: 1rem 1.25rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem;
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-subtle);
 }
 
 @media (max-width: 768px) {
@@ -26,52 +30,60 @@
   flex: 1;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  background: #FFFFFF;
+  gap: 0.5rem;
+  background: #FAFAFA;
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  padding: 0.65rem 1rem;
+  border-radius: var(--radius-md);
+  padding: 0.45rem 0.75rem;
+  transition: all var(--transition-fast);
+}
+
+.search-box-wrap:focus-within {
+  background: #FFFFFF;
+  border-color: #09090B;
+  box-shadow: 0 0 0 3px rgba(9, 9, 11, 0.05);
 }
 
 .search-box-wrap input {
-  border: none;
-  background: transparent;
+  border: none !important;
+  background: transparent !important;
   width: 100%;
-  font-size: 0.88rem;
+  font-size: 0.8125rem !important;
   color: var(--text-primary);
-  outline: none;
-  box-shadow: none;
-  padding: 0;
+  outline: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
 }
 
 .filter-box-wrap {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  background: #FFFFFF;
+  gap: 0.5rem;
+  background: #FAFAFA;
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  padding: 0.65rem 1rem;
+  border-radius: var(--radius-md);
+  padding: 0.45rem 0.75rem;
 }
 
 .filter-box-wrap select {
-  border: none;
-  background: transparent;
-  font-size: 0.85rem;
-  font-weight: 600;
+  border: none !important;
+  background: transparent !important;
+  font-size: 0.8125rem !important;
+  font-weight: 500;
   color: var(--text-secondary);
-  outline: none;
-  box-shadow: none;
-  padding: 0;
+  outline: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  cursor: pointer;
 }
 
 .ledger-table-card {
-  padding: 1.25rem 1.5rem;
+  padding: 1rem 1.25rem;
 }
 
 .receipt-download-btn {
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   border-radius: var(--radius-md);
   background: #FFFFFF;
   border: 1px solid var(--border-color);
@@ -80,11 +92,11 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--transition-fast);
 }
 
 .receipt-download-btn:hover {
-  background: #EFF6FF;
-  color: #1D4ED8;
-  border-color: #BFDBFE;
+  background: #F4F4F5;
+  color: #09090B;
+  border-color: var(--border-hover);
 }

@@ -120,8 +120,8 @@ export default function EditLeagueSettingsModal() {
                     <Minus size={16} />
                   </button>
 
-                  <div className="relative flex-1">
-                    <span className="absolute left-3 top-2.5 text-xs font-bold text-slate-400">GW</span>
+                  <div className="input-affix">
+                    <span className="input-affix-label">GW</span>
                     <input
                       type="number"
                       min="1"

@@ -1,11 +1,11 @@
 /* ==========================================================================
-   Admin Dashboard & Federation Command Center
+   Admin Dashboard & Federation Command Center — Minimalist Architecture
    ========================================================================== */
 
 .admin-dashboard-wrap {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
   max-width: var(--content-max-w);
   margin: 0 auto;
 }
@@ -15,58 +15,59 @@
   justify-content: space-between;
   align-items: center;
   background: #FFFFFF;
-  padding: 1.5rem 2rem;
-  border-radius: var(--radius-2xl);
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius-lg);
   border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-subtle);
   flex-wrap: wrap;
-  gap: 1.25rem;
+  gap: 1rem;
 }
 
 .admin-metric-card {
   background: #FFFFFF;
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-xl);
-  padding: 1.35rem 1.5rem;
-  box-shadow: var(--shadow-sm);
-  transition: all var(--transition-fast);
+  border-radius: var(--radius-lg);
+  padding: 1.15rem 1.35rem;
+  box-shadow: var(--shadow-subtle);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .admin-metric-card:hover {
   border-color: var(--border-hover);
-  box-shadow: var(--shadow-hover);
-  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 
 .admin-metric-icon-box {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 1px solid var(--border-color);
+  background: #FAFAFA;
 }
 
 .club-overview-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1.25rem;
-  padding: 0.9rem 1.15rem;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   background: #FFFFFF;
   transition: all var(--transition-fast);
 }
 
 .club-overview-row:hover {
   border-color: var(--border-hover);
-  background: #F8FAFC;
+  background: #FAFAFA;
 }
 
 .club-logo-thumb {
-  width: 42px;
-  height: 42px;
+  width: 36px;
+  height: 36px;
   border-radius: var(--radius-md);
   object-fit: contain;
   background: #FFFFFF;
@@ -78,72 +79,90 @@
 .audit-stream-row {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  gap: 1.25rem;
-  padding: 0.9rem 1.15rem;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 0.75rem 1rem;
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   background: #FFFFFF;
   transition: all var(--transition-fast);
+  min-width: 0;
+  overflow: hidden;
 }
 
 .audit-stream-row:hover {
   border-color: var(--border-hover);
-  background: #F8FAFC;
+  background: #FAFAFA;
 }
 
-/* ── Federation Club Cards (Affiliated Clubs Registry) ── */
+.audit-stream-row .truncate {
+  white-space: normal;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
+}
+
+.audit-stream-row .text-right {
+  max-width: 45%;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.admin-dashboard-wrap > * { min-width: 0; }
+.admin-dashboard-wrap .card { min-width: 0; overflow: hidden; }
+
+/* ── Minimalist Federation Club Cards ────────────────── */
 .federation-club-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 1.125rem;
-  padding: 1.5rem;
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.35rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 1.25rem;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02), 0 6px 16px -4px rgba(15, 23, 42, 0.04);
+  gap: 1rem;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  box-shadow: var(--shadow-subtle);
 }
 
 .federation-club-card:hover {
-  transform: translateY(-2px);
-  border-color: #cbd5e1;
-  box-shadow: 0 12px 24px -6px rgba(15, 23, 42, 0.08);
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-sm);
 }
 
 .club-card-top {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
 }
 
 .club-crest-container {
-  width: 72px !important;
-  height: 72px !important;
-  min-width: 72px !important;
-  min-height: 72px !important;
-  max-width: 72px !important;
-  max-height: 72px !important;
-  border-radius: 1rem;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  border: 1.5px solid #e2e8f0;
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  min-height: 48px !important;
+  max-width: 48px !important;
+  max-height: 48px !important;
+  border-radius: var(--radius-md);
+  background: #FAFAFA;
+  border: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 6px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  padding: 4px;
   flex-shrink: 0;
   overflow: hidden;
 }
 
 .club-crest-img {
-  width: 58px !important;
-  height: 58px !important;
-  max-width: 58px !important;
-  max-height: 58px !important;
+  width: 38px !important;
+  height: 38px !important;
+  max-width: 38px !important;
+  max-height: 38px !important;
   object-fit: contain !important;
   display: block;
 }
@@ -151,51 +170,51 @@
 .club-compliance-pill {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.3rem 0.65rem;
-  border-radius: 9999px;
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
-  color: #1e40af;
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
+  gap: 0.3rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-full);
+  background: #ECFDF5;
+  border: 1px solid #A7F3D0;
+  color: #047857;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
   white-space: nowrap;
 }
 
 .club-compliance-dot {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
-  background: #2563eb;
+  background: #10B981;
 }
 
 .club-card-title {
-  font-size: 1.15rem;
-  font-weight: 800;
-  color: #0f172a;
-  margin: 0 0 0.25rem 0;
-  letter-spacing: -0.02em;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.15rem 0;
+  letter-spacing: -0.015em;
 }
 
 .club-card-sub {
   font-size: 0.75rem;
-  color: #64748b;
+  color: var(--text-muted);
   display: flex;
   align-items: center;
   gap: 0.35rem;
-  margin: 0 0 1rem 0;
+  margin: 0 0 0.85rem 0;
 }
 
 .club-specs-panel {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.875rem;
-  padding: 0.85rem 1rem;
+  background: #FAFAFA;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 0.85rem;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 0.25rem;
+  gap: 0.4rem;
+  margin-bottom: 0.2rem;
 }
 
 .club-spec-row {
@@ -206,13 +225,218 @@
 }
 
 .club-spec-row:not(:last-child) {
-  padding-bottom: 0.45rem;
-  border-bottom: 1px solid #edf2f7;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .club-card-actions {
   display: flex;
+  gap: 0.45rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* ── Mobile Responsive Adjustments ─────────────────── */
+@media (max-width: 768px) {
+  .admin-header-banner {
+    padding: 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.85rem;
+  }
+
+  .admin-header-banner .flex {
+    width: 100%;
+  }
+
+  .admin-header-banner .btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .club-overview-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.65rem;
+  }
+
+  .audit-stream-row {
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .audit-stream-row .text-right {
+    max-width: 100%;
+    text-align: left;
+  }
+
+  .federation-club-card {
+    padding: 1rem;
+  }
+}
+
+/* ── View Mode Switcher (Grid vs Table) ─────────────────── */
+.view-mode-toggle-bar {
+  display: flex;
+  align-items: center;
+  background: #F4F4F6;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 9999px;
+  padding: 0.2rem;
+  gap: 0.2rem;
+}
+
+.view-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 9999px;
+  border: none;
+  background: transparent;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #71717A;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-toggle-btn:hover {
+  color: #18181B;
+}
+
+.view-toggle-btn.active {
+  background: #FFFFFF;
+  color: #18181B;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* ── Superpower Players Grid Layout ─────────────────────── */
+.admin-players-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 1.25rem;
+}
+
+.player-grid-card {
+  background: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 28px;
+  padding: 1.35rem 1.45rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+}
+
+.player-grid-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+}
+
+.player-grid-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.player-grid-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #F4F4F6;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.player-grid-name {
+  font-family: var(--font-display, var(--font-heading));
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #18181B;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.player-grid-sub {
+  font-size: 0.72rem;
+  color: #71717A;
+  margin-top: 0.15rem;
+}
+
+.player-grid-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #F4F4F6;
+  border-radius: 9999px;
+  padding: 0.5rem 1rem;
   gap: 0.5rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid #f1f5f9;
+}
+
+.player-grid-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.player-meta-lbl {
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #A1A1AA;
+}
+
+.player-meta-val {
+  font-size: 0.75rem;
+  color: #18181B;
+}
+
+.player-club-pill {
+  display: inline-block;
+  padding: 0.1rem 0.45rem;
+  border-radius: 9999px;
+  color: #FFFFFF;
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1.2;
+  width: fit-content;
+}
+
+.player-grid-finance-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.25rem 0.25rem 0.25rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.finance-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.finance-lbl {
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #71717A;
+}
+
+.finance-val {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.player-grid-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding-top: 0.45rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
 }

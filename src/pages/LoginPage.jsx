@@ -80,35 +80,35 @@ export default function LoginPage() {
         <div className="auth-hero-top">
           <div className="auth-hero-brand">
             <div className="auth-hero-logo-box">
-              <Trophy size={22} className="text-white" />
+              <Trophy size={18} />
             </div>
             <div>
-              <span className="font-extrabold text-white text-lg tracking-tight font-heading">Citi Football</span>
-              <span className="text-emerald-400 font-bold text-xs block uppercase tracking-wider">Club Payment Portal</span>
+              <span className="font-semibold text-white text-base tracking-tight font-heading">CitiPay</span>
+              <span className="text-slate-400 text-xs block">Football Financial Platform</span>
             </div>
           </div>
 
           <h1 className="auth-hero-title">
-            Secure Digital <span>Club Member Payments.</span>
+            Streamlined payments <span>for modern clubs.</span>
           </h1>
           <p className="auth-hero-desc">
-            The dedicated financial portal for <strong>Sunday League FC</strong> and affiliated Citi Football clubs. Check instant matchday eligibility, settle Paystack installments, and access official club receipts.
+            Direct player registration, matchday eligibility tracking, and instant Paystack settlements for affiliated clubs.
           </p>
         </div>
 
         {/* Live League Statistics Grid */}
         <div className="auth-hero-stats-grid">
           <div className="auth-stat-card">
-            <div className="auth-stat-val text-emerald-400">₦2.45M</div>
-            <div className="auth-stat-lbl">Fees Collected</div>
+            <div className="auth-stat-val text-white">₦2.45M</div>
+            <div className="auth-stat-lbl">Fees Settled</div>
           </div>
           <div className="auth-stat-card">
             <div className="auth-stat-val text-white">22 / 30</div>
-            <div className="auth-stat-lbl">🟢 Eligible Squad</div>
+            <div className="auth-stat-lbl">Eligible Squad</div>
           </div>
           <div className="auth-stat-card">
-            <div className="auth-stat-val text-amber-400">100%</div>
-            <div className="auth-stat-lbl">Paystack Secured</div>
+            <div className="auth-stat-val text-white">100%</div>
+            <div className="auth-stat-lbl">Paystack Verified</div>
           </div>
         </div>
 
@@ -121,22 +121,22 @@ export default function LoginPage() {
               className="spotlight-avatar"
             />
             <div>
-              <div className="text-xs font-bold text-emerald-400 flex items-center gap-1">
-                <Sparkles size={12} /> Featured Member
+              <div className="text-xs font-medium text-emerald-400 flex items-center gap-1">
+                <Sparkles size={11} /> Featured Player
               </div>
-              <div className="font-bold text-white text-sm">Michael Esu (CAM #10)</div>
-              <div className="text-xs text-slate-400 font-mono">Member ID: {defaultMember?.member_id || 'SL-8K4P2'} · 🟢 ELIGIBLE</div>
+              <div className="font-semibold text-white text-sm">Michael Esu (CAM #10)</div>
+              <div className="text-xs text-slate-400 font-mono">ID: {defaultMember?.member_id || 'SL-8K4P2'} · Cleared</div>
             </div>
           </div>
-          <span className="badge badge-success font-bold text-xs">Fees Cleared</span>
+          <span className="badge badge-success text-xs">Eligible</span>
         </div>
 
         <div className="auth-hero-footer">
-          <span className="flex items-center gap-1.5"><ShieldCheck size={14} className="text-emerald-400" /> Paystack Direct</span>
+          <span className="flex items-center gap-1.5"><ShieldCheck size={13} className="text-emerald-400" /> Paystack Secured</span>
           <span>·</span>
           <span>Sunday League FC</span>
           <span>·</span>
-          <span>Citi Football Platform</span>
+          <span>Citi Football</span>
         </div>
       </div>
 
@@ -144,64 +144,58 @@ export default function LoginPage() {
       <div className="auth-form-panel">
         <div className="auth-form-card">
           <div className="auth-form-header">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="badge badge-success text-2xs font-bold">Phase 1 Payment Portal</span>
-            </div>
-            <h2 className="auth-form-title">Member Sign In</h2>
-            <p className="auth-form-sub">Sign in with your unique Member ID and password or PIN</p>
+            <span className="badge badge-secondary text-2xs font-medium mb-2">CitiPay Portal</span>
+            <h2 className="auth-form-title">Sign In</h2>
+            <p className="auth-form-sub">Sign in with your Member ID, Phone, or Email</p>
           </div>
 
           {error && (
-            <div className="p-3 mb-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold">
+            <div className="p-3 mb-4 rounded-md bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
               {error}
             </div>
           )}
 
-          <form onSubmit={handleLogin} className="flex flex-col gap-4">
+          <form onSubmit={handleLogin} className="flex flex-col gap-3.5">
             {/* 2. CLUB SELECTION (Item 2 Requirement) */}
             <div>
               <label className="form-label-portal">
-                <Building2 size={13} className="inline mr-1 text-slate-500" />
-                SELECT CLUB
+                Club Organization
               </label>
               <select
-                className="form-input-portal font-bold text-slate-900 bg-white"
+                className="form-input-portal font-medium text-slate-900 bg-white"
                 value={selectedClubId}
                 onChange={(e) => setSelectedClubId(e.target.value)}
               >
                 {clubs.map(c => (
                   <option key={c.id} value={c.id}>
-                    {c.name} {c.id === 'club-sunday-league' ? '(Active Primary Club)' : '(Other Club)'}
+                    {c.name} {c.id === 'club-sunday-league' ? '(Primary)' : ''}
                   </option>
                 ))}
               </select>
-              <p className="text-3xs text-slate-500 mt-1">
-                Loads official {currentClub.name} branding, subscription rules, and dues.
-              </p>
             </div>
 
             {/* 1. MEMBER LOGIN CREDENTIALS (Item 1 Requirement) */}
             <div>
               <div className="flex justify-between items-center mb-1">
-                <label className="form-label-portal mb-0">LOGIN IDENTIFIER</label>
-                <div className="flex gap-2 text-2xs">
+                <label className="form-label-portal mb-0">Identifier</label>
+                <div className="flex gap-1.5 text-2xs">
                   <button
                     type="button"
-                    className={`font-semibold ${authMode === 'member_id' ? 'text-emerald-600 underline' : 'text-slate-500'}`}
+                    className={`px-1.5 py-0.5 rounded ${authMode === 'member_id' ? 'bg-slate-200 text-slate-900 font-medium' : 'text-slate-500'}`}
                     onClick={() => setAuthMode('member_id')}
                   >
                     Member ID
                   </button>
                   <button
                     type="button"
-                    className={`font-semibold ${authMode === 'phone' ? 'text-emerald-600 underline' : 'text-slate-500'}`}
+                    className={`px-1.5 py-0.5 rounded ${authMode === 'phone' ? 'bg-slate-200 text-slate-900 font-medium' : 'text-slate-500'}`}
                     onClick={() => setAuthMode('phone')}
                   >
                     Phone
                   </button>
                   <button
                     type="button"
-                    className={`font-semibold ${authMode === 'email' ? 'text-emerald-600 underline' : 'text-slate-500'}`}
+                    className={`px-1.5 py-0.5 rounded ${authMode === 'email' ? 'bg-slate-200 text-slate-900 font-medium' : 'text-slate-500'}`}
                     onClick={() => setAuthMode('email')}
                   >
                     Email
@@ -210,10 +204,10 @@ export default function LoginPage() {
               </div>
 
               <div className="relative">
-                <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <User size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type="text"
-                  className="form-input-portal pl-9 font-mono font-bold"
+                  className="form-input-portal pl-9 font-mono"
                   placeholder={authMode === 'member_id' ? `e.g. ${defaultMember?.member_id || 'SL-8K4P2'}` : authMode === 'phone' ? '+234 802 345 6789' : 'michael.esu@sundayleague.ng'}
                   value={memberId}
                   onChange={(e) => setMemberId(e.target.value)}
@@ -225,22 +219,22 @@ export default function LoginPage() {
             {/* Password / PIN Input */}
             <div>
               <div className="flex justify-between items-center mb-1">
-                <label className="form-label-portal mb-0">PASSWORD OR 4-DIGIT PIN</label>
+                <label className="form-label-portal mb-0">Password / PIN</label>
                 <button
                   type="button"
-                  className="text-2xs text-emerald-700 font-bold hover:underline"
+                  className="text-2xs text-slate-500 font-medium hover:text-slate-900"
                   onClick={() => setResetPassModalState({ isOpen: true })}
                 >
-                  Forgot Password?
+                  Forgot?
                 </button>
               </div>
 
               <div className="relative">
-                <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <Lock size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   className="form-input-portal pl-9 pr-10"
-                  placeholder="Enter your password or PIN"
+                  placeholder="Enter password or PIN"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -250,39 +244,39 @@ export default function LoginPage() {
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                   onClick={() => setShowPassword(!showPassword)}
                 >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
                 </button>
               </div>
             </div>
 
-            {/* Security Options: OTP trigger */}
-            <div className="flex items-center justify-between py-1">
-              <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-600">
-                <input type="checkbox" className="rounded text-emerald-600" defaultChecked />
-                <span>Remember this device</span>
+            {/* Security Options */}
+            <div className="flex items-center justify-between py-0.5">
+              <label className="flex items-center gap-1.5 cursor-pointer text-xs text-slate-600">
+                <input type="checkbox" className="rounded" defaultChecked />
+                <span>Remember me</span>
               </label>
               <button
                 type="button"
-                className="text-2xs text-slate-500 font-semibold flex items-center gap-1 hover:text-emerald-700"
+                className="text-2xs text-slate-500 font-medium flex items-center gap-1 hover:text-slate-900"
                 onClick={() => setOtpModalState({ isOpen: true, memberId })}
               >
                 <Smartphone size={12} />
-                <span>Login with OTP</span>
+                <span>OTP Login</span>
               </button>
             </div>
 
             {/* Sign In Button */}
             <button
               type="submit"
-              className="btn btn-primary w-full flex items-center justify-center gap-2 font-bold py-3 text-sm mt-1"
+              className="btn btn-primary w-full flex items-center justify-center gap-2 py-2.5 text-sm mt-1"
               disabled={isLoading}
             >
               {isLoading ? (
-                <span>Verifying Member ID...</span>
+                <span>Authenticating...</span>
               ) : (
                 <>
-                  <span>SIGN IN TO PORTAL</span>
-                  <ArrowRight size={17} />
+                  <span>Sign In</span>
+                  <ArrowRight size={15} />
                 </>
               )}
             </button>
