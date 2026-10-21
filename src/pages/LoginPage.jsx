@@ -176,26 +176,26 @@ export default function LoginPage() {
 
             {/* 1. MEMBER LOGIN CREDENTIALS (Item 1 Requirement) */}
             <div>
-              <div className="flex justify-between items-center mb-1">
+              <div className="flex justify-between items-center mb-1.5">
                 <label className="form-label-portal mb-0">Identifier</label>
-                <div className="flex gap-1.5 text-2xs">
+                <div className="auth-identifier-tabs">
                   <button
                     type="button"
-                    className={`px-1.5 py-0.5 rounded ${authMode === 'member_id' ? 'bg-slate-200 text-slate-900 font-medium' : 'text-slate-500'}`}
+                    className={`auth-tab-btn ${authMode === 'member_id' ? 'active' : ''}`}
                     onClick={() => setAuthMode('member_id')}
                   >
                     Member ID
                   </button>
                   <button
                     type="button"
-                    className={`px-1.5 py-0.5 rounded ${authMode === 'phone' ? 'bg-slate-200 text-slate-900 font-medium' : 'text-slate-500'}`}
+                    className={`auth-tab-btn ${authMode === 'phone' ? 'active' : ''}`}
                     onClick={() => setAuthMode('phone')}
                   >
                     Phone
                   </button>
                   <button
                     type="button"
-                    className={`px-1.5 py-0.5 rounded ${authMode === 'email' ? 'bg-slate-200 text-slate-900 font-medium' : 'text-slate-500'}`}
+                    className={`auth-tab-btn ${authMode === 'email' ? 'active' : ''}`}
                     onClick={() => setAuthMode('email')}
                   >
                     Email

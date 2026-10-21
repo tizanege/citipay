@@ -1,0 +1,144 @@
+/* ==========================================================================
+   Pagination Component — Superpower Minimalist Design System
+   Refined Pill Navigation, Page Indicators & Per-Page Controls
+   ========================================================================== */
+
+.pagination-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1.25rem;
+  background: #FFFFFF;
+  border-top: 1px solid var(--border-color, #E4E4E7);
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+}
+
+.pagination-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: #71717A;
+  font-weight: 500;
+}
+
+.pagination-info strong {
+  color: #09090B;
+  font-weight: 700;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.pagination-pages {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.pagination-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #3F3F46;
+  background: #FFFFFF;
+  border: 1px solid #E4E4E7;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: #F4F4F6;
+  color: #09090B;
+  border-color: #D4D4D8;
+}
+
+.pagination-btn.active {
+  background: #09090B;
+  color: #FFFFFF;
+  border-color: #09090B;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  border-color: #F4F4F5;
+  background: #FAFAFA;
+}
+
+.pagination-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0 0.65rem;
+}
+
+.pagination-ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 30px;
+  color: #A1A1AA;
+  font-size: 0.75rem;
+  user-select: none;
+}
+
+.pagination-size-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  color: #71717A;
+  font-weight: 500;
+}
+
+.pagination-size-select {
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  border: 1px solid #E4E4E7;
+  background: #F4F4F6;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #18181B;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.pagination-size-select:focus {
+  border-color: #09090B;
+  background: #FFFFFF;
+}
+
+@media (max-width: 640px) {
+  .pagination-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.65rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .pagination-controls {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .pagination-info {
+    justify-content: space-between;
+  }
+}

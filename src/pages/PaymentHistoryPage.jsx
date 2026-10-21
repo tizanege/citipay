@@ -4,12 +4,15 @@ import {
   FileText, Calendar, ArrowUpRight, ShieldCheck, Printer
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
+import Pagination from '../components/Pagination'
 import './PaymentHistoryPage.css'
 
 export default function PaymentHistoryPage() {
   const { transactions, currentMember, setReceiptModalState } = useCitiPay()
   const [searchTerm, setSearchTerm] = useState('')
   const [filterType, setFilterType] = useState('all')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
 
   const filteredTransactions = transactions.filter(tx => {
     const matchesSearch =
@@ -21,6 +24,9 @@ export default function PaymentHistoryPage() {
     const matchesType = filterType === 'all' || tx.payment_type === filterType
     return matchesSearch && matchesType
   })
+
+  const totalItems = filteredTransactions.length
+  const paginatedTransactions = filteredTransactions.slice((currentPage - 1) * pageSize, currentPage * pageSize)
 
   return (
     <div className="payment-history-page-wrapper">
@@ -91,54 +97,73 @@ export default function PaymentHistoryPage() {
               </tr>
             </thead>
             <tbody>
-              {filteredTransactions.map((tx) => (
-                <tr
-                  key={tx.id}
-                  className="cursor-pointer hover:bg-slate-50 transition-colors"
-                  onClick={() => setReceiptModalState({ isOpen: true, transaction: tx })}
-                >
-                  <td>
-                    <div className="flex items-center gap-1.5 text-slate-800 font-semibold text-xs">
-                      <Calendar size={13} className="text-slate-400" />
-                      <span>{tx.date_display}</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="font-bold text-slate-900 text-xs">{tx.description}</div>
-                    <div className="text-3xs text-slate-500 font-mono mt-0.5">{tx.method}</div>
-                  </td>
-                  <td style={{ textAlign: 'right' }}>
-                    <span className="font-extrabold text-slate-900 font-mono text-sm">
-                      ₦{Number(tx.amount).toLocaleString()}
-                    </span>
-                  </td>
-                  <td style={{ textAlign: 'center' }}>
-                    <span className="badge badge-success text-xs font-bold flex items-center justify-center gap-1">
-                      <CheckCircle2 size={11} /> Paid
-                    </span>
-                  </td>
-                  <td>
-                    <span className="font-mono text-xs font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                      {tx.reference}
-                    </span>
-                  </td>
-                  <td style={{ textAlign: 'center' }}>
-                    <button
-                      className="btn btn-secondary text-2xs py-1 px-2.5 font-bold flex items-center gap-1 mx-auto"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setReceiptModalState({ isOpen: true, transaction: tx })
-                      }}
-                    >
-                      <FileText size={12} />
-                      <span>Receipt</span>
-                    </button>
+              {filteredTransactions.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="text-center py-8 text-slate-400 text-xs">
+                    No payment history records found matching your criteria.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                paginatedTransactions.map((tx) => (
+                  <tr
+                    key={tx.id}
+                    className="cursor-pointer hover:bg-slate-50 transition-colors"
+                    onClick={() => setReceiptModalState({ isOpen: true, transaction: tx })}
+                  >
+                    <td>
+                      <div className="flex items-center gap-1.5 text-slate-800 font-semibold text-xs">
+                        <Calendar size={13} className="text-slate-400" />
+                        <span>{tx.date_display}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="font-bold text-slate-900 text-xs">{tx.description}</div>
+                      <div className="text-3xs text-slate-500 font-mono mt-0.5">{tx.method}</div>
+                    </td>
+                    <td style={{ textAlign: 'right' }}>
+                      <span className="font-extrabold text-slate-900 font-mono text-sm">
+                        ₦{Number(tx.amount).toLocaleString()}
+                      </span>
+                    </td>
+                    <td style={{ textAlign: 'center' }}>
+                      <span className="badge badge-success text-xs font-bold flex items-center justify-center gap-1">
+                        <CheckCircle2 size={11} /> Paid
+                      </span>
+                    </td>
+                    <td>
+                      <span className="font-mono text-xs font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                        {tx.reference}
+                      </span>
+                    </td>
+                    <td style={{ textAlign: 'center' }}>
+                      <button
+                        className="btn btn-secondary text-2xs py-1 px-2.5 font-bold flex items-center gap-1 mx-auto"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setReceiptModalState({ isOpen: true, transaction: tx })
+                        }}
+                      >
+                        <FileText size={12} />
+                        <span>Receipt</span>
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
+        <Pagination
+          totalItems={totalItems}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          onPageChange={setCurrentPage}
+          onPageSizeChange={(newSize) => {
+            setPageSize(newSize)
+            setCurrentPage(1)
+          }}
+          itemName="payments"
+        />
       </div>
     </div>
   )

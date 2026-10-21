@@ -5,13 +5,12 @@ import {
   ChevronLeft, Check, Upload, CheckCircle2, AlertCircle,
   ShieldCheck, Sparkles, CreditCard, Calendar, Star, DollarSign
 } from 'lucide-react'
-import { mockClubs } from '../lib/mockData'
 import { useCitiPay } from '../contexts/CitiPayContext'
 import './RegisterPage.css'
 
 export default function RegisterPage() {
   const navigate = useNavigate()
-  const { registerMember } = useCitiPay()
+  const { registerMember, clubs } = useCitiPay()
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -29,7 +28,7 @@ export default function RegisterPage() {
     role: 'player',
 
     // Step 2: Football Profile
-    selectedClubId: mockClubs[0]?.id || '',
+    selectedClubId: clubs?.[0]?.id || '',
     primaryPosition: 'CAM',
     secondaryPosition: 'LW',
     preferredFoot: 'Right',
@@ -56,7 +55,7 @@ export default function RegisterPage() {
     setFormData(prev => ({ ...prev, selectedClubId: clubId }))
   }
 
-  const selectedClub = mockClubs.find(c => c.id === formData.selectedClubId) || mockClubs[0]
+  const selectedClub = (clubs || []).find(c => c.id === formData.selectedClubId) || clubs?.[0] || {}
 
   const nextStep = () => {
     setError(null)

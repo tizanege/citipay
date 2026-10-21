@@ -9,6 +9,7 @@ import {
   TrendingUp, DollarSign, UserPlus, KeyRound
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
+import Pagination from '../components/Pagination'
 import './ClubDashboard.css'
 
 export default function ClubDashboard() {
@@ -32,6 +33,8 @@ export default function ClubDashboard() {
 
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
 
   // Search and filter members
   const filteredMembers = members.filter(m => {
@@ -44,6 +47,11 @@ export default function ClubDashboard() {
     const matchesStatus = statusFilter === 'all' || m.status === statusFilter
     return matchesSearch && matchesStatus
   })
+
+  const paginatedMembers = filteredMembers.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  )
 
   // Admin action: Suspend/Activate toggle
   const toggleSuspendMember = (member) => {
@@ -309,7 +317,10 @@ export default function ClubDashboard() {
                 type="text"
                 placeholder="Search name, ID (e.g. SL-8K4P2)..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value)
+                  setCurrentPage(1)
+                }}
                 className="text-xs"
               />
             </div>
@@ -318,7 +329,10 @@ export default function ClubDashboard() {
               <Filter size={14} className="text-slate-400" />
               <select
                 value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
+                onChange={(e) => {
+                  setStatusFilter(e.target.value)
+                  setCurrentPage(1)
+                }}
                 className="text-xs font-semibold"
               >
                 <option value="all">All Statuses ({members.length})</option>
@@ -344,7 +358,7 @@ export default function ClubDashboard() {
               </tr>
             </thead>
             <tbody>
-              {filteredMembers.map((member) => (
+              {paginatedMembers.map((member) => (
                 <tr key={member.id} className="hover:bg-slate-50 transition-colors">
                   <td>
                     <div className="squad-player-cell">
@@ -464,6 +478,19 @@ export default function ClubDashboard() {
             </tbody>
           </table>
         </div>
+
+        <Pagination
+          totalItems={filteredMembers.length}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          onPageChange={setCurrentPage}
+          onPageSizeChange={(newSize) => {
+            setPageSize(newSize)
+            setCurrentPage(1)
+          }}
+          pageSizeOptions={[10, 20, 50]}
+          itemName="members"
+        />
       </div>
 
       {/* 6. LIVE AUDIT LOGS (Item 6 & 19 Requirement) */}

@@ -4,6 +4,7 @@ import {
   CheckCircle2, DollarSign, ArrowUpRight, FileText, Printer, Plus
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
+import Pagination from '../components/Pagination'
 import './ClubDashboard.css'
 
 export default function ClubPaymentsPage() {
@@ -19,6 +20,8 @@ export default function ClubPaymentsPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [typeFilter, setTypeFilter] = useState('all')
   const [channelFilter, setChannelFilter] = useState('all')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
 
   // Filter transactions for this club
   const clubTransactions = transactions.filter(tx => {
@@ -35,6 +38,9 @@ export default function ClubPaymentsPage() {
 
     return matchesClub && matchesSearch && matchesType && matchesChannel
   })
+
+  const totalItems = clubTransactions.length
+  const paginatedTransactions = clubTransactions.slice((currentPage - 1) * pageSize, currentPage * pageSize)
 
   // Calculation of revenue streams
   const membershipTotal = clubTransactions
@@ -222,7 +228,7 @@ export default function ClubPaymentsPage() {
                   </td>
                 </tr>
               ) : (
-                clubTransactions.map((tx) => (
+                paginatedTransactions.map((tx) => (
                   <tr key={tx.id} className="hover:bg-slate-50 transition-colors">
                     <td>
                       <span className="font-mono text-xs font-bold text-slate-800">{tx.reference}</span>
@@ -276,6 +282,17 @@ export default function ClubPaymentsPage() {
             </tbody>
           </table>
         </div>
+        <Pagination
+          totalItems={totalItems}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          onPageChange={setCurrentPage}
+          onPageSizeChange={(newSize) => {
+            setPageSize(newSize)
+            setCurrentPage(1)
+          }}
+          itemName="payments"
+        />
       </div>
     </div>
   )

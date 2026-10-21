@@ -4,7 +4,7 @@ import {
   CreditCard, ShieldCheck, AlertCircle, CheckCircle2, Clock,
   ArrowRight, Sparkles, Download, Check, HelpCircle, PhoneCall,
   Calendar, MapPin, Zap, Star, Shield, Trophy, ChevronRight,
-  TrendingUp, User, Users, RefreshCw
+  TrendingUp, User, Users, RefreshCw, UserPlus, Plus, Minus
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
 import './PlayerDashboard.css'
@@ -40,11 +40,25 @@ export default function PlayerDashboard() {
     tx => tx?.member_id === member.member_id || tx?.member_name === member.full_name
   ).slice(0, 4)
 
+  // Unregistered Guests (Extra people @ ₦10,000 each)
+  const [guestCount, setGuestCount] = useState(0)
+  const guestFeePerPerson = 10000
+  const totalGuestAmount = guestCount * guestFeePerPerson
+
   const handleOpenPayment = (type = 'membership_installment', defaultAmount = nextPaymentAmount || installmentAmount) => {
     setPaymentModalState({
       isOpen: true,
       type,
       defaultAmount: defaultAmount || membershipOutstanding || installmentAmount
+    })
+  }
+
+  const handlePayForGuests = () => {
+    if (guestCount <= 0) return
+    setPaymentModalState({
+      isOpen: true,
+      type: 'guest_pass',
+      defaultAmount: totalGuestAmount
     })
   }
 
@@ -476,6 +490,60 @@ export default function PlayerDashboard() {
                   <span className="vote-emoji">🔴</span>
                   <span className="vote-label">NO</span>
                   {availability.user_vote === 'no' && <Check size={14} className="ml-auto text-rose-700" />}
+                </button>
+              </div>
+            </div>
+
+            {/* Extra Unregistered Guests Option (₦10,000 per person) */}
+            <div className="guest-pass-container mb-4">
+              <div className="flex justify-between items-center mb-2">
+                <div className="flex items-center gap-1.5">
+                  <UserPlus size={15} className="text-emerald-600" />
+                  <span className="text-xs font-bold text-slate-900">Coming with Extra Guests?</span>
+                </div>
+                <span className="text-3xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                  ₦10,000 / guest
+                </span>
+              </div>
+              <p className="text-3xs text-slate-500 mb-3">
+                Bring unregistered friends or guest players for this fixture. Unregistered players require a matchday guest clearance pass.
+              </p>
+
+              <div className="guest-selector-row">
+                <div className="guest-counter-pill">
+                  <button
+                    type="button"
+                    className="guest-count-btn"
+                    onClick={() => setGuestCount(prev => Math.max(0, prev - 1))}
+                    disabled={guestCount === 0}
+                    title="Decrease guest count"
+                  >
+                    <Minus size={13} />
+                  </button>
+                  <div className="guest-count-display font-mono">
+                    <span className="guest-num">{guestCount}</span>
+                    <span className="guest-lbl">{guestCount === 1 ? 'Guest' : 'Guests'}</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="guest-count-btn"
+                    onClick={() => setGuestCount(prev => Math.min(10, prev + 1))}
+                    title="Add another guest"
+                  >
+                    <Plus size={13} />
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  className={`btn guest-pay-btn ${guestCount > 0 ? 'btn-primary' : 'btn-disabled'}`}
+                  disabled={guestCount === 0}
+                  onClick={handlePayForGuests}
+                >
+                  <CreditCard size={13} />
+                  <span>
+                    {guestCount > 0 ? `Pay ₦${totalGuestAmount.toLocaleString()} via Paystack` : 'Select Guest Count'}
+                  </span>
                 </button>
               </div>
             </div>

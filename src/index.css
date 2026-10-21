@@ -145,6 +145,26 @@ a:hover {
   opacity: 0.8;
 }
 
+/* ── Form & Button Baseline Reset ── */
+button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input, select, textarea {
+  font: inherit;
+  color: inherit;
+  outline: none;
+}
+
 /* ── Minimalist Cards ── */
 .card {
   background: var(--bg-card);

@@ -3,18 +3,35 @@ import {
   Trophy, Medal, Target, Award, Users, ChevronRight,
   TrendingUp, Star, Filter, Shield, Sparkles
 } from 'lucide-react'
-import { mockRankings } from '../lib/mockData'
 import { useCitiPay } from '../contexts/CitiPayContext'
+import Pagination from '../components/Pagination'
 import './RankingsPage.css'
 
 export default function RankingsPage() {
-  const { currentMember, currentClub, clubs } = useCitiPay()
+  const { currentMember, currentClub, clubs, members } = useCitiPay()
   const [activeTab, setActiveTab] = useState('players') // 'players' | 'clubs'
   const [positionFilter, setPositionFilter] = useState('all')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
 
-  const filteredPlayers = mockRankings.filter(p => {
-    return positionFilter === 'all' || p.position === positionFilter
-  })
+  const filteredPlayers = (members || [])
+    .filter(p => positionFilter === 'all' || p.position === positionFilter)
+    .map((p, idx) => ({
+      rank: idx + 1,
+      name: p.full_name || 'Member',
+      club: (clubs || []).find(c => c.id === p.club_id)?.name || currentClub?.name || 'Sunday League FC',
+      position: p.position || 'CAM',
+      rating: (8.2 + (idx === 0 ? 1.0 : - (idx * 0.1))).toFixed(1),
+      goals: Math.max(0, 15 - idx),
+      assists: Math.max(0, 8 - Math.floor(idx / 2)),
+      matches: 14,
+      mvp: Math.max(0, 4 - Math.floor(idx / 3))
+    }))
+
+  const paginatedPlayers = filteredPlayers.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  )
 
   return (
     <div className="rankings-page-wrapper">
@@ -59,7 +76,10 @@ export default function RankingsPage() {
               <Filter size={15} className="text-slate-400" />
               <select
                 value={positionFilter}
-                onChange={(e) => setPositionFilter(e.target.value)}
+                onChange={(e) => {
+                  setPositionFilter(e.target.value)
+                  setCurrentPage(1)
+                }}
                 className="filter-select text-xs font-semibold"
               >
                 <option value="all">All Positions</option>
@@ -88,7 +108,7 @@ export default function RankingsPage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredPlayers.map((player) => {
+                {paginatedPlayers.map((player) => {
                   const isCurrent = player.name === currentMember.full_name || player.name === 'Michael Esu'
                   return (
                     <tr key={player.rank} className={isCurrent ? 'highlight-user-row' : ''}>
@@ -129,6 +149,19 @@ export default function RankingsPage() {
               </tbody>
             </table>
           </div>
+
+          <Pagination
+            totalItems={filteredPlayers.length}
+            currentPage={currentPage}
+            pageSize={pageSize}
+            onPageChange={setCurrentPage}
+            onPageSizeChange={(newSize) => {
+              setPageSize(newSize)
+              setCurrentPage(1)
+            }}
+            pageSizeOptions={[10, 20, 50]}
+            itemName="players"
+          />
         </div>
       )}
 

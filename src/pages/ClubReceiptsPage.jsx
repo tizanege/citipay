@@ -4,12 +4,15 @@ import {
   CheckCircle2, ArrowUpRight, History, Calendar, Check
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
+import Pagination from '../components/Pagination'
 import './ClubDashboard.css'
 
 export default function ClubReceiptsPage() {
   const { currentClub, transactions, setReceiptModalState } = useCitiPay()
   const [searchTerm, setSearchTerm] = useState('')
   const [filterType, setFilterType] = useState('all')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
 
   // Filter transactions for this club
   const clubReceipts = transactions.filter(tx => {
@@ -26,6 +29,8 @@ export default function ClubReceiptsPage() {
   })
 
   const totalReceiptsAmount = clubReceipts.reduce((sum, tx) => sum + (Number(tx.amount) || 0), 0)
+  const totalItems = clubReceipts.length
+  const paginatedReceipts = clubReceipts.slice((currentPage - 1) * pageSize, currentPage * pageSize)
 
   return (
     <div className="club-dashboard-wrapper">
@@ -142,59 +147,78 @@ export default function ClubReceiptsPage() {
               </tr>
             </thead>
             <tbody>
-              {clubReceipts.map((tx) => (
-                <tr key={tx.id} className="hover:bg-slate-50 transition-colors">
-                  <td>
-                    <span className="font-mono text-xs font-bold text-slate-900">
-                      {tx.receipt_no || `SL-2026-${tx.reference}`}
-                    </span>
-                    <span className="text-3xs text-slate-400 block font-mono">Ref: {tx.reference}</span>
-                  </td>
-
-                  <td>
-                    <span className="text-xs text-slate-700 font-medium">{tx.date_display}</span>
-                  </td>
-
-                  <td>
-                    <div className="font-bold text-slate-900 text-xs">{tx.member_name}</div>
-                    <div className="text-3xs text-slate-500 font-mono">{tx.member_id}</div>
-                  </td>
-
-                  <td>
-                    <span className="text-xs text-slate-800 font-semibold">{tx.description}</span>
-                  </td>
-
-                  <td style={{ textAlign: 'right' }}>
-                    <span className="font-mono text-xs font-extrabold text-emerald-700">
-                      ₦{Number(tx.amount).toLocaleString()}
-                    </span>
-                  </td>
-
-                  <td>
-                    <span className="badge badge-secondary text-3xs font-semibold">
-                      {tx.method || 'Paystack Direct'}
-                    </span>
-                  </td>
-
-                  <td style={{ textAlign: 'center' }}>
-                    <span className="badge badge-success text-3xs font-bold">
-                      ✓ VERIFIED
-                    </span>
-                  </td>
-
-                  <td style={{ textAlign: 'right' }}>
-                    <button
-                      className="btn btn-primary text-3xs py-1 px-3 font-bold"
-                      onClick={() => setReceiptModalState({ isOpen: true, transaction: tx })}
-                    >
-                      View Receipt
-                    </button>
+              {clubReceipts.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="text-center py-8 text-slate-400 text-xs">
+                    No receipts found matching your search and filter criteria.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                paginatedReceipts.map((tx) => (
+                  <tr key={tx.id} className="hover:bg-slate-50 transition-colors">
+                    <td>
+                      <span className="font-mono text-xs font-bold text-slate-900">
+                        {tx.receipt_no || `SL-2026-${tx.reference}`}
+                      </span>
+                      <span className="text-3xs text-slate-400 block font-mono">Ref: {tx.reference}</span>
+                    </td>
+
+                    <td>
+                      <span className="text-xs text-slate-700 font-medium">{tx.date_display}</span>
+                    </td>
+
+                    <td>
+                      <div className="font-bold text-slate-900 text-xs">{tx.member_name}</div>
+                      <div className="text-3xs text-slate-500 font-mono">{tx.member_id}</div>
+                    </td>
+
+                    <td>
+                      <span className="text-xs text-slate-800 font-semibold">{tx.description}</span>
+                    </td>
+
+                    <td style={{ textAlign: 'right' }}>
+                      <span className="font-mono text-xs font-extrabold text-emerald-700">
+                        ₦{Number(tx.amount).toLocaleString()}
+                      </span>
+                    </td>
+
+                    <td>
+                      <span className="badge badge-secondary text-3xs font-semibold">
+                        {tx.method || 'Paystack Direct'}
+                      </span>
+                    </td>
+
+                    <td style={{ textAlign: 'center' }}>
+                      <span className="badge badge-success text-3xs font-bold">
+                        ✓ VERIFIED
+                      </span>
+                    </td>
+
+                    <td style={{ textAlign: 'right' }}>
+                      <button
+                        className="btn btn-primary text-3xs py-1 px-3 font-bold"
+                        onClick={() => setReceiptModalState({ isOpen: true, transaction: tx })}
+                      >
+                        View Receipt
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
+        <Pagination
+          totalItems={totalItems}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          onPageChange={setCurrentPage}
+          onPageSizeChange={(newSize) => {
+            setPageSize(newSize)
+            setCurrentPage(1)
+          }}
+          itemName="receipts"
+        />
       </div>
     </div>
   )

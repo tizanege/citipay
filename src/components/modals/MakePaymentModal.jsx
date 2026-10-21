@@ -39,6 +39,8 @@ export default function MakePaymentModal() {
         setAmount(leagueSettings?.jersey_price || 18000)
       } else if (type === 'merchandise_bib') {
         setAmount(leagueSettings?.bib_price || 6500)
+      } else if (type === 'guest_pass') {
+        setAmount(paymentModalState.defaultAmount || 10000)
       } else if (type === 'membership_installment') {
         setAmount(defaultInstAmount)
       }
@@ -53,6 +55,7 @@ export default function MakePaymentModal() {
     if (type === 'membership') setAmount(currentMember.membership_outstanding || currentMember.membership_fee || 100000)
     else if (type === 'membership_installment') setAmount(defaultInstAmount)
     else if (type === 'social_dues') setAmount(currentClub?.monthly_social_dues || 5000)
+    else if (type === 'guest_pass') setAmount(10000)
     else if (type === 'merchandise' || type === 'merchandise_jersey') setAmount(leagueSettings?.jersey_price || 18000)
     else if (type === 'merchandise_bib') setAmount(leagueSettings?.bib_price || 6500)
     else if (type === 'other_approved') setAmount(10000)
@@ -221,6 +224,20 @@ export default function MakePaymentModal() {
                       <div className="text-left">
                         <div className="font-bold text-xs text-slate-900">Official Training Bib</div>
                         <div className="text-2xs text-slate-500">₦{(leagueSettings?.bib_price || 6500).toLocaleString()} (Scrimmage Pack)</div>
+                      </div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`payment-type-option ${paymentType === 'guest_pass' ? 'active' : ''}`}
+                    onClick={() => handleTypeChange('guest_pass')}
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="type-dot" />
+                      <div className="text-left">
+                        <div className="font-bold text-xs text-slate-900">Unregistered Guest Matchday Pass</div>
+                        <div className="text-2xs text-slate-500">₦10,000 / guest player entry</div>
                       </div>
                     </div>
                   </button>

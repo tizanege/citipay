@@ -4,6 +4,7 @@ import {
   CheckCircle2, AlertTriangle, Shield, Check, Eye, UserPlus, KeyRound
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
+import Pagination from '../components/Pagination'
 import './AdminDashboard.css'
 
 export default function AdminPlayersPage() {
@@ -12,6 +13,8 @@ export default function AdminPlayersPage() {
   const [clubFilter, setClubFilter] = useState('all')
   const [statusFilter, setStatusFilter] = useState('all')
   const [viewMode, setViewMode] = useState('grid') // 'grid' | 'table'
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
 
   const filteredPlayers = members.filter(player => {
     const matchesSearch =
@@ -25,6 +28,9 @@ export default function AdminPlayersPage() {
 
     return matchesSearch && matchesClub && matchesStatus
   })
+
+  const totalItems = filteredPlayers.length
+  const paginatedPlayers = filteredPlayers.slice((currentPage - 1) * pageSize, currentPage * pageSize)
 
   const greenCount = members.filter(m => m.status === 'green').length
   const yellowCount = members.filter(m => m.status === 'yellow').length
@@ -174,116 +180,138 @@ export default function AdminPlayersPage() {
 
       {/* Players View: Grid View vs Table View */}
       {viewMode === 'grid' ? (
-        <div className="admin-players-grid">
-          {filteredPlayers.map((player) => {
-            const playerClub = clubs.find(c => c.id === player.club_id) || clubs[0]
-            const isGreen = player.status === 'green'
-            const isYellow = player.status === 'yellow'
-            const isRed = player.status === 'red'
+        <div className="flex flex-col gap-4">
+          <div className="admin-players-grid">
+            {filteredPlayers.length === 0 ? (
+              <div className="col-span-full text-center py-12 text-slate-400 text-xs bg-white rounded-2xl border border-slate-200">
+                No players match your search or filter criteria.
+              </div>
+            ) : (
+              paginatedPlayers.map((player) => {
+                const playerClub = clubs.find(c => c.id === player.club_id) || clubs[0]
+                const isGreen = player.status === 'green'
+                const isYellow = player.status === 'yellow'
+                const isRed = player.status === 'red'
 
-            return (
-              <div key={player.id} className="player-grid-card">
-                {/* Card Top: Avatar, Name & Clearance Pill */}
-                <div className="player-grid-header">
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={player.avatar_url}
-                      alt={player.full_name}
-                      className="player-grid-avatar"
-                      onError={(e) => {
-                        e.currentTarget.onerror = null
-                        e.currentTarget.src = '/avatar-fallback.svg'
-                      }}
-                    />
-                    <div>
-                      <h4 className="player-grid-name">{player.full_name}</h4>
-                      <p className="player-grid-sub">
-                        {player.nickname ? `"${player.nickname}" · ` : ''}Jersey #{player.jersey_number || '10'}
-                      </p>
+                return (
+                  <div key={player.id} className="player-grid-card">
+                    {/* Card Top: Avatar, Name & Clearance Pill */}
+                    <div className="player-grid-header">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={player.avatar_url}
+                          alt={player.full_name}
+                          className="player-grid-avatar"
+                          onError={(e) => {
+                            e.currentTarget.onerror = null
+                            e.currentTarget.src = '/avatar-fallback.svg'
+                          }}
+                        />
+                        <div>
+                          <h4 className="player-grid-name">{player.full_name}</h4>
+                          <p className="player-grid-sub">
+                            {player.nickname ? `"${player.nickname}" · ` : ''}Jersey #{player.jersey_number || '10'}
+                          </p>
+                        </div>
+                      </div>
+
+                      <span className={`status-badge-mini ${player.status}`}>
+                        {isGreen && '🟢 Cleared'}
+                        {isYellow && '🟡 Due Soon'}
+                        {isRed && '🔴 Ineligible'}
+                      </span>
+                    </div>
+
+                    {/* Card Middle: Identity & Metrics */}
+                    <div className="player-grid-meta-row">
+                      <div className="player-grid-meta-item">
+                        <span className="player-meta-lbl">Member ID</span>
+                        <span className="player-meta-val font-mono">{player.display_id || player.member_id}</span>
+                      </div>
+                      <div className="player-grid-meta-item">
+                        <span className="player-meta-lbl">Club</span>
+                        <span className="player-club-pill" style={{ background: playerClub.primary_color || '#2563EB' }}>
+                          {playerClub.code}
+                        </span>
+                      </div>
+                      <div className="player-grid-meta-item">
+                        <span className="player-meta-lbl">Position</span>
+                        <span className="player-meta-val font-semibold">{player.position || 'CAM'}</span>
+                      </div>
+                    </div>
+
+                    {/* Financial Biomarkers Box (Settled vs Outstanding) */}
+                    <div className="player-grid-finance-box">
+                      <div className="finance-col">
+                        <span className="finance-lbl">Total Settled</span>
+                        <span className="finance-val text-emerald-700 font-mono">
+                          ₦{(player.membership_paid || 100000).toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="finance-col text-right">
+                        <span className="finance-lbl">Outstanding</span>
+                        <span className={`finance-val font-mono ${player.membership_outstanding > 0 ? 'text-rose-600' : 'text-slate-400'}`}>
+                          ₦{(player.membership_outstanding || 0).toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Actions Bottom Bar */}
+                    <div className="player-grid-actions">
+                      <button
+                        className="btn btn-secondary text-3xs py-1.5 px-2.5 font-bold text-emerald-800 bg-emerald-50 border-emerald-200 rounded-full"
+                        title="Dispatch Login Credentials via Email"
+                        onClick={() => setSendCredentialsModalState({ isOpen: true, member: player })}
+                      >
+                        <KeyRound size={11} className="inline mr-1" />
+                        Login
+                      </button>
+                      <button
+                        className="btn btn-secondary text-3xs py-1.5 px-2.5 font-bold rounded-full"
+                        title="Override Player Eligibility Clearance"
+                        onClick={() => setStatusOverrideModalState({ isOpen: true, member: player })}
+                      >
+                        Override
+                      </button>
+                      <button
+                        className="btn btn-primary text-3xs py-1.5 px-3 font-bold rounded-full ml-auto"
+                        title="View Verified Receipt"
+                        onClick={() => setReceiptModalState({
+                          isOpen: true,
+                          transaction: {
+                            receipt_no: `SL-2026-REC-${player.display_id || '001'}`,
+                            reference: player.display_id || player.member_id || 'SL-8K4P2',
+                            member_name: player.full_name,
+                            member_id: player.member_id,
+                            description: 'Championship Season Clearance',
+                            amount: player.membership_paid || 100000,
+                            date_display: player.last_payment_date || 'September 28, 2026',
+                            status: 'PAID',
+                            club: playerClub.name
+                          }
+                        })}
+                      >
+                        Receipt
+                      </button>
                     </div>
                   </div>
-                  <span className={`status-badge-mini ${player.status}`}>
-                    {isGreen && '🟢 Cleared'}
-                    {isYellow && '🟡 Due Soon'}
-                    {isRed && '🔴 Ineligible'}
-                  </span>
-                </div>
-
-                {/* Card Middle: Identity & Metrics */}
-                <div className="player-grid-meta-row">
-                  <div className="player-grid-meta-item">
-                    <span className="player-meta-lbl">Member ID</span>
-                    <span className="player-meta-val font-mono">{player.display_id || player.member_id}</span>
-                  </div>
-                  <div className="player-grid-meta-item">
-                    <span className="player-meta-lbl">Club</span>
-                    <span className="player-club-pill" style={{ background: playerClub.primary_color || '#2563EB' }}>
-                      {playerClub.code}
-                    </span>
-                  </div>
-                  <div className="player-grid-meta-item">
-                    <span className="player-meta-lbl">Position</span>
-                    <span className="player-meta-val font-semibold">{player.position || 'CAM'}</span>
-                  </div>
-                </div>
-
-                {/* Financial Biomarkers Box (Settled vs Outstanding) */}
-                <div className="player-grid-finance-box">
-                  <div className="finance-col">
-                    <span className="finance-lbl">Total Settled</span>
-                    <span className="finance-val text-emerald-700 font-mono">
-                      ₦{(player.membership_paid || 100000).toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="finance-col text-right">
-                    <span className="finance-lbl">Outstanding</span>
-                    <span className={`finance-val font-mono ${player.membership_outstanding > 0 ? 'text-rose-600' : 'text-slate-400'}`}>
-                      ₦{(player.membership_outstanding || 0).toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Actions Bottom Bar */}
-                <div className="player-grid-actions">
-                  <button
-                    className="btn btn-secondary text-3xs py-1.5 px-2.5 font-bold text-emerald-800 bg-emerald-50 border-emerald-200 rounded-full"
-                    title="Dispatch Login Credentials via Email"
-                    onClick={() => setSendCredentialsModalState({ isOpen: true, member: player })}
-                  >
-                    <KeyRound size={11} className="inline mr-1" />
-                    Login
-                  </button>
-                  <button
-                    className="btn btn-secondary text-3xs py-1.5 px-2.5 font-bold rounded-full"
-                    title="Override Player Eligibility Clearance"
-                    onClick={() => setStatusOverrideModalState({ isOpen: true, member: player })}
-                  >
-                    Override
-                  </button>
-                  <button
-                    className="btn btn-primary text-3xs py-1.5 px-3 font-bold rounded-full ml-auto"
-                    title="View Verified Receipt"
-                    onClick={() => setReceiptModalState({
-                      isOpen: true,
-                      transaction: {
-                        receipt_no: `SL-2026-REC-${player.display_id || '001'}`,
-                        reference: player.display_id || player.member_id || 'SL-8K4P2',
-                        member_name: player.full_name,
-                        member_id: player.member_id,
-                        description: 'Championship Season Clearance',
-                        amount: player.membership_paid || 100000,
-                        date_display: player.last_payment_date || 'September 28, 2026',
-                        status: 'PAID',
-                        club: playerClub.name
-                      }
-                    })}
-                  >
-                    Receipt
-                  </button>
-                </div>
-              </div>
-            )
-          })}
+                )
+              })
+            )}
+          </div>
+          <div className="card p-0 overflow-hidden">
+            <Pagination
+              totalItems={totalItems}
+              currentPage={currentPage}
+              pageSize={pageSize}
+              onPageChange={setCurrentPage}
+              onPageSizeChange={(newSize) => {
+                setPageSize(newSize)
+                setCurrentPage(1)
+              }}
+              itemName="players"
+            />
+          </div>
         </div>
       ) : (
         <div className="card-table-wrap">
@@ -302,114 +330,133 @@ export default function AdminPlayersPage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredPlayers.map((player) => {
-                  const playerClub = clubs.find(c => c.id === player.club_id) || clubs[0]
-                  return (
-                    <tr key={player.id} className="hover:bg-slate-50 transition-colors">
-                      <td>
-                        <div className="flex items-center gap-2.5">
-                          <img
-                            src={player.avatar_url}
-                            alt={player.full_name}
-                            className="table-avatar w-9 h-9 rounded-full object-cover border border-slate-200"
-                            onError={(e) => {
-                              e.currentTarget.onerror = null
-                              e.currentTarget.src = '/avatar-fallback.svg'
-                            }}
-                          />
-                          <div>
-                            <div className="font-extrabold text-slate-900 text-xs">{player.full_name}</div>
-                            <div className="text-3xs text-slate-500 font-medium">
-                              {player.nickname ? `"${player.nickname}" · ` : ''}Jersey #{player.jersey_number || '10'}
+                {filteredPlayers.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="text-center py-8 text-slate-400 text-xs">
+                      No players match your search or filter criteria.
+                    </td>
+                  </tr>
+                ) : (
+                  paginatedPlayers.map((player) => {
+                    const playerClub = clubs.find(c => c.id === player.club_id) || clubs[0]
+                    return (
+                      <tr key={player.id} className="hover:bg-slate-50 transition-colors">
+                        <td>
+                          <div className="flex items-center gap-2.5">
+                            <img
+                              src={player.avatar_url}
+                              alt={player.full_name}
+                              className="table-avatar w-9 h-9 rounded-full object-cover border border-slate-200"
+                              onError={(e) => {
+                                e.currentTarget.onerror = null
+                                e.currentTarget.src = '/avatar-fallback.svg'
+                              }}
+                            />
+                            <div>
+                              <div className="font-extrabold text-slate-900 text-xs">{player.full_name}</div>
+                              <div className="text-3xs text-slate-500 font-medium">
+                                {player.nickname ? `"${player.nickname}" · ` : ''}Jersey #{player.jersey_number || '10'}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </td>
+                        </td>
 
-                      <td style={{ whiteSpace: 'nowrap' }}>
-                        <span className="font-mono text-xs font-bold text-slate-800">
-                          {player.display_id || player.member_id}
-                        </span>
-                      </td>
+                        <td style={{ whiteSpace: 'nowrap' }}>
+                          <span className="font-mono text-xs font-bold text-slate-800">
+                            {player.display_id || player.member_id}
+                          </span>
+                        </td>
 
-                      <td>
-                        <div className="flex items-center gap-1.5">
-                          <span className="badge badge-accent font-bold text-3xs">{playerClub.code}</span>
-                          <span className="text-xs text-slate-700 font-medium truncate max-w-[120px]">{playerClub.name}</span>
-                        </div>
-                      </td>
+                        <td>
+                          <div className="flex items-center gap-1.5">
+                            <span className="badge badge-accent font-bold text-3xs">{playerClub.code}</span>
+                            <span className="text-xs text-slate-700 font-medium truncate max-w-[120px]">{playerClub.name}</span>
+                          </div>
+                        </td>
 
-                      <td>
-                        <span className="badge badge-secondary font-mono text-3xs font-semibold">
-                          {player.position || 'CAM'}
-                        </span>
-                      </td>
+                        <td>
+                          <span className="badge badge-secondary font-mono text-3xs font-semibold">
+                            {player.position || 'CAM'}
+                          </span>
+                        </td>
 
-                      <td style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>
-                        <span className={`status-badge-mini ${player.status}`}>
-                          {player.status === 'green' && '🟢 Cleared'}
-                          {player.status === 'yellow' && '🟡 Due Soon'}
-                          {player.status === 'red' && '🔴 Ineligible'}
-                        </span>
-                      </td>
+                        <td style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>
+                          <span className={`status-badge-mini ${player.status}`}>
+                            {player.status === 'green' && '🟢 Cleared'}
+                            {player.status === 'yellow' && '🟡 Due Soon'}
+                            {player.status === 'red' && '🔴 Ineligible'}
+                          </span>
+                        </td>
 
-                      <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                        <span className="font-mono text-xs font-bold text-emerald-700">
-                          ₦{(player.membership_paid || 100000).toLocaleString()}
-                        </span>
-                      </td>
+                        <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                          <span className="font-mono text-xs font-bold text-emerald-700">
+                            ₦{(player.membership_paid || 100000).toLocaleString()}
+                          </span>
+                        </td>
 
-                      <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                        <span className={`font-mono text-xs font-bold ${player.membership_outstanding > 0 ? 'text-rose-600' : 'text-slate-400'}`}>
-                          ₦{(player.membership_outstanding || 0).toLocaleString()}
-                        </span>
-                      </td>
+                        <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                          <span className={`font-mono text-xs font-bold ${player.membership_outstanding > 0 ? 'text-rose-600' : 'text-slate-400'}`}>
+                            ₦{(player.membership_outstanding || 0).toLocaleString()}
+                          </span>
+                        </td>
 
-                      <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                        <div className="flex items-center justify-end gap-1">
-                          <button
-                            className="btn btn-secondary text-3xs py-1 px-2 font-bold text-emerald-800 bg-emerald-50 border-emerald-200"
-                            title="Dispatch Login Credentials via Email"
-                            onClick={() => setSendCredentialsModalState({ isOpen: true, member: player })}
-                          >
-                            <KeyRound size={10} className="inline mr-0.5" />
-                            Login
-                          </button>
-                          <button
-                            className="btn btn-secondary text-3xs py-1 px-2 font-bold"
-                            title="Override Player Eligibility Clearance"
-                            onClick={() => setStatusOverrideModalState({ isOpen: true, member: player })}
-                          >
-                            Override
-                          </button>
-                          <button
-                            className="btn btn-primary text-3xs py-1 px-2 font-bold"
-                            title="View Verified Receipt"
-                            onClick={() => setReceiptModalState({
-                              isOpen: true,
-                              transaction: {
-                                receipt_no: `SL-2026-REC-${player.display_id || '001'}`,
-                                reference: player.display_id || player.member_id || 'SL-8K4P2',
-                                member_name: player.full_name,
-                                member_id: player.member_id,
-                                description: 'Championship Season Clearance',
-                                amount: player.membership_paid || 100000,
-                                date_display: player.last_payment_date || 'September 28, 2026',
-                                status: 'PAID',
-                                club: playerClub.name
-                              }
-                            })}
-                          >
-                            Receipt
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  )
-                })}
+                        <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                          <div className="flex items-center justify-end gap-1">
+                            <button
+                              className="btn btn-secondary text-3xs py-1 px-2 font-bold text-emerald-800 bg-emerald-50 border-emerald-200"
+                              title="Dispatch Login Credentials via Email"
+                              onClick={() => setSendCredentialsModalState({ isOpen: true, member: player })}
+                            >
+                              <KeyRound size={10} className="inline mr-0.5" />
+                              Login
+                            </button>
+                            <button
+                              className="btn btn-secondary text-3xs py-1 px-2 font-bold"
+                              title="Override Player Eligibility Clearance"
+                              onClick={() => setStatusOverrideModalState({ isOpen: true, member: player })}
+                            >
+                              Override
+                            </button>
+                            <button
+                              className="btn btn-primary text-3xs py-1 px-2 font-bold"
+                              title="View Verified Receipt"
+                              onClick={() => setReceiptModalState({
+                                isOpen: true,
+                                transaction: {
+                                  receipt_no: `SL-2026-REC-${player.display_id || '001'}`,
+                                  reference: player.display_id || player.member_id || 'SL-8K4P2',
+                                  member_name: player.full_name,
+                                  member_id: player.member_id,
+                                  description: 'Championship Season Clearance',
+                                  amount: player.membership_paid || 100000,
+                                  date_display: player.last_payment_date || 'September 28, 2026',
+                                  status: 'PAID',
+                                  club: playerClub.name
+                                }
+                              })}
+                            >
+                              Receipt
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  })
+                )}
               </tbody>
             </table>
           </div>
+          <Pagination
+            totalItems={totalItems}
+            currentPage={currentPage}
+            pageSize={pageSize}
+            onPageChange={setCurrentPage}
+            onPageSizeChange={(newSize) => {
+              setPageSize(newSize)
+              setCurrentPage(1)
+            }}
+            itemName="players"
+          />
         </div>
       )}
     </div>

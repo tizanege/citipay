@@ -6,6 +6,7 @@ import {
   LayoutGrid, List, Copy, Sparkles
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
+import Pagination from '../components/Pagination'
 import './ClubDashboard.css'
 
 export default function ClubSquadPage() {
@@ -28,6 +29,8 @@ export default function ClubSquadPage() {
   const [positionFilter, setPositionFilter] = useState('all')
   const [viewMode, setViewMode] = useState('table') // 'table' | 'cards'
   const [copiedId, setCopiedId] = useState(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
 
   const handleCopyId = (id) => {
     navigator.clipboard.writeText(id).then(() => {
@@ -55,6 +58,10 @@ export default function ClubSquadPage() {
 
     return matchesSearch && matchesStatus && matchesPosition
   })
+
+  // Pagination slice
+  const totalItems = filteredMembers.length
+  const paginatedMembers = filteredMembers.slice((currentPage - 1) * pageSize, currentPage * pageSize)
 
   return (
     <div className="club-dashboard-wrapper">
@@ -262,7 +269,7 @@ export default function ClubSquadPage() {
                     </td>
                   </tr>
                 ) : (
-                  filteredMembers.map((member) => {
+                  paginatedMembers.map((member) => {
                     const percentPaid = Math.round((member.membership_paid / (member.membership_fee || 100000)) * 100)
                     const memberIdStr = member.display_id || member.member_id
 
@@ -446,167 +453,193 @@ export default function ClubSquadPage() {
               </tbody>
             </table>
           </div>
+          <Pagination
+            totalItems={totalItems}
+            currentPage={currentPage}
+            pageSize={pageSize}
+            onPageChange={setCurrentPage}
+            onPageSizeChange={(newSize) => {
+              setPageSize(newSize)
+              setCurrentPage(1)
+            }}
+            itemName="players"
+          />
         </div>
       ) : (
         /* ── Card Grid View (Mobile / Ergonomic Mode) ────────── */
-        <div className="squad-cards-grid">
-          {filteredMembers.length === 0 ? (
-            <div className="col-span-full text-center py-12 text-slate-400 text-xs bg-white rounded-2xl border border-slate-200">
-              No squad members match the selected filter or search criteria.
-            </div>
-          ) : (
-            filteredMembers.map((member) => {
-              const percentPaid = Math.round((member.membership_paid / (member.membership_fee || 100000)) * 100)
-              const memberIdStr = member.display_id || member.member_id
+        <div className="flex flex-col gap-4">
+          <div className="squad-cards-grid">
+            {paginatedMembers.length === 0 ? (
+              <div className="col-span-full text-center py-12 text-slate-400 text-xs bg-white rounded-2xl border border-slate-200">
+                No squad members match the selected filter or search criteria.
+              </div>
+            ) : (
+              paginatedMembers.map((member) => {
+                const percentPaid = Math.round((member.membership_paid / (member.membership_fee || 100000)) * 100)
+                const memberIdStr = member.display_id || member.member_id
 
-              return (
-                <div key={member.id} className="squad-player-card">
-                  {/* Top: Avatar, Name, Kit & Clearance */}
-                  <div className="squad-card-top">
-                    <div className="squad-card-player-info">
-                      <div className="squad-avatar-box">
-                        <img
-                          src={member.avatar_url}
-                          alt={member.full_name}
-                          className="squad-avatar-img"
-                          onError={(e) => {
-                            e.currentTarget.onerror = null
-                            e.currentTarget.src = '/avatar-fallback.svg'
-                          }}
-                        />
-                        <span className={`squad-avatar-pip ${member.status}`} />
-                      </div>
-                      <div>
-                        <div className="squad-player-name">{member.full_name}</div>
-                        <div className="squad-meta-line">
-                          <span className="squad-jersey-pill">#{member.jersey_number || '10'}</span>
-                          <span className="squad-pos-pill">{member.position || 'CAM'}</span>
-                          {member.nickname && (
-                            <span className="text-3xs text-slate-400 font-medium truncate max-w-[100px]">
-                              "{member.nickname}"
-                            </span>
-                          )}
+                return (
+                  <div key={member.id} className="squad-player-card">
+                    {/* Top: Avatar, Name, Kit & Clearance */}
+                    <div className="squad-card-top">
+                      <div className="squad-card-player-info">
+                        <div className="squad-avatar-box">
+                          <img
+                            src={member.avatar_url}
+                            alt={member.full_name}
+                            className="squad-avatar-img"
+                            onError={(e) => {
+                              e.currentTarget.onerror = null
+                              e.currentTarget.src = '/avatar-fallback.svg'
+                            }}
+                          />
+                          <span className={`squad-avatar-pip ${member.status}`} />
+                        </div>
+                        <div>
+                          <div className="squad-player-name">{member.full_name}</div>
+                          <div className="squad-meta-line">
+                            <span className="squad-jersey-pill">#{member.jersey_number || '10'}</span>
+                            <span className="squad-pos-pill">{member.position || 'CAM'}</span>
+                            {member.nickname && (
+                              <span className="text-3xs text-slate-400 font-medium truncate max-w-[100px]">
+                                "{member.nickname}"
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
+
+                      <span className={`squad-clearance-pill ${member.status} text-3xs`}>
+                        {member.status === 'green' && '🟢 Cleared'}
+                        {member.status === 'yellow' && '🟡 Due Soon'}
+                        {member.status === 'red' && '🔴 Ineligible'}
+                      </span>
                     </div>
 
-                    <span className={`squad-clearance-pill ${member.status} text-3xs`}>
-                      {member.status === 'green' && '🟢 Cleared'}
-                      {member.status === 'yellow' && '🟡 Due Soon'}
-                      {member.status === 'red' && '🔴 Ineligible'}
-                    </span>
-                  </div>
+                    {/* ID & Contact Details */}
+                    <div className="flex items-center justify-between">
+                      <button
+                        type="button"
+                        onClick={() => handleCopyId(memberIdStr)}
+                        className="squad-card-id-badge hover:bg-slate-200 transition cursor-pointer"
+                        title="Click to copy Member ID"
+                      >
+                        <span>{memberIdStr}</span>
+                        {copiedId === memberIdStr ? (
+                          <Check size={11} className="text-emerald-600" />
+                        ) : (
+                          <Copy size={11} className="text-slate-400" />
+                        )}
+                      </button>
+                      <span className="text-3xs text-slate-500 font-mono">
+                        {member.email ? member.email : 'No email registered'}
+                      </span>
+                    </div>
 
-                  {/* ID & Contact Details */}
-                  <div className="flex items-center justify-between">
-                    <button
-                      type="button"
-                      onClick={() => handleCopyId(memberIdStr)}
-                      className="squad-card-id-badge hover:bg-slate-200 transition cursor-pointer"
-                      title="Click to copy Member ID"
-                    >
-                      <span>{memberIdStr}</span>
-                      {copiedId === memberIdStr ? (
-                        <Check size={11} className="text-emerald-600" />
+                    {/* Dues & Progress Box */}
+                    <div className="squad-card-dues-box">
+                      <div className="squad-card-dues-row">
+                        <span className="text-3xs text-slate-500 font-bold uppercase">Outstanding Dues</span>
+                        <span className={`font-mono text-xs font-extrabold ${member.membership_outstanding > 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
+                          {member.membership_outstanding > 0 ? `₦${member.membership_outstanding.toLocaleString()}` : '₦0 (Cleared)'}
+                        </span>
+                      </div>
+
+                      <div className="squad-card-dues-row">
+                        <span className="text-3xs text-slate-500 font-bold uppercase">Paid to Date</span>
+                        <span className="font-mono text-xs font-bold text-slate-800">
+                          ₦{(member.membership_paid || 100000).toLocaleString()} ({percentPaid}%)
+                        </span>
+                      </div>
+
+                      <div className="w-full bg-slate-200 rounded-full h-1.5 mt-1 overflow-hidden">
+                        <div
+                          className={`h-full rounded-full ${percentPaid === 100 ? 'bg-emerald-500' : percentPaid > 50 ? 'bg-amber-500' : 'bg-rose-500'}`}
+                          style={{ width: `${percentPaid}%` }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Actions Grid */}
+                    <div className="squad-card-actions">
+                      <button
+                        type="button"
+                        className="squad-action-btn btn-login"
+                        onClick={() => setSendCredentialsModalState({ isOpen: true, member })}
+                      >
+                        <KeyRound size={12} />
+                        <span>Email Login</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        className="squad-action-btn btn-pay"
+                        onClick={() => setManualPaymentModalState({ isOpen: true, member })}
+                      >
+                        <Landmark size={12} />
+                        <span>+ Record Pay</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        className="squad-action-btn btn-override"
+                        onClick={() => setStatusOverrideModalState({ isOpen: true, member })}
+                      >
+                        <Sliders size={12} />
+                        <span>Override</span>
+                      </button>
+
+                      {member.status !== 'green' ? (
+                        <button
+                          type="button"
+                          className="squad-action-btn btn-remind"
+                          onClick={() => setReminderModalState({ isOpen: true, member, channel: 'whatsapp' })}
+                        >
+                          <Send size={11} />
+                          <span>Remind</span>
+                        </button>
                       ) : (
-                        <Copy size={11} className="text-slate-400" />
+                        <button
+                          type="button"
+                          className="squad-action-btn"
+                          onClick={() => setReceiptModalState({
+                            isOpen: true,
+                            transaction: {
+                              receipt_no: `SL-2026-REC-${member.display_id || '001'}`,
+                              reference: member.display_id || member.member_id || 'SL-8K4P2',
+                              member_name: member.full_name,
+                              member_id: member.member_id,
+                              description: 'Championship Season Membership',
+                              amount: member.membership_paid,
+                              date_display: member.last_payment_date || 'September 28, 2026',
+                              status: 'PAID',
+                              club: currentClub.name
+                            }
+                          })}
+                        >
+                          <FileText size={11} />
+                          <span>Receipt</span>
+                        </button>
                       )}
-                    </button>
-                    <span className="text-3xs text-slate-500 font-mono">
-                      {member.email ? member.email : 'No email registered'}
-                    </span>
-                  </div>
-
-                  {/* Dues & Progress Box */}
-                  <div className="squad-card-dues-box">
-                    <div className="squad-card-dues-row">
-                      <span className="text-3xs text-slate-500 font-bold uppercase">Outstanding Dues</span>
-                      <span className={`font-mono text-xs font-extrabold ${member.membership_outstanding > 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
-                        {member.membership_outstanding > 0 ? `₦${member.membership_outstanding.toLocaleString()}` : '₦0 (Cleared)'}
-                      </span>
-                    </div>
-
-                    <div className="squad-card-dues-row">
-                      <span className="text-3xs text-slate-500 font-bold uppercase">Paid to Date</span>
-                      <span className="font-mono text-xs font-bold text-slate-800">
-                        ₦{(member.membership_paid || 100000).toLocaleString()} ({percentPaid}%)
-                      </span>
-                    </div>
-
-                    <div className="w-full bg-slate-200 rounded-full h-1.5 mt-1 overflow-hidden">
-                      <div
-                        className={`h-full rounded-full ${percentPaid === 100 ? 'bg-emerald-500' : percentPaid > 50 ? 'bg-amber-500' : 'bg-rose-500'}`}
-                        style={{ width: `${percentPaid}%` }}
-                      />
                     </div>
                   </div>
-
-                  {/* Actions Grid */}
-                  <div className="squad-card-actions">
-                    <button
-                      type="button"
-                      className="squad-action-btn btn-login"
-                      onClick={() => setSendCredentialsModalState({ isOpen: true, member })}
-                    >
-                      <KeyRound size={12} />
-                      <span>Email Login</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      className="squad-action-btn btn-pay"
-                      onClick={() => setManualPaymentModalState({ isOpen: true, member })}
-                    >
-                      <Landmark size={12} />
-                      <span>+ Record Pay</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      className="squad-action-btn btn-override"
-                      onClick={() => setStatusOverrideModalState({ isOpen: true, member })}
-                    >
-                      <Sliders size={12} />
-                      <span>Override</span>
-                    </button>
-
-                    {member.status !== 'green' ? (
-                      <button
-                        type="button"
-                        className="squad-action-btn btn-remind"
-                        onClick={() => setReminderModalState({ isOpen: true, member, channel: 'whatsapp' })}
-                      >
-                        <Send size={11} />
-                        <span>Remind</span>
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        className="squad-action-btn"
-                        onClick={() => setReceiptModalState({
-                          isOpen: true,
-                          transaction: {
-                            receipt_no: `SL-2026-REC-${member.display_id || '001'}`,
-                            reference: member.display_id || member.member_id || 'SL-8K4P2',
-                            member_name: member.full_name,
-                            member_id: member.member_id,
-                            description: 'Championship Season Membership',
-                            amount: member.membership_paid,
-                            date_display: member.last_payment_date || 'September 28, 2026',
-                            status: 'PAID',
-                            club: currentClub.name
-                          }
-                        })}
-                      >
-                        <FileText size={11} />
-                        <span>Receipt</span>
-                      </button>
-                    )}
-                  </div>
-                </div>
-              )
-            })
-          )}
+                )
+              })
+            )}
+          </div>
+          <div className="card p-0 overflow-hidden">
+            <Pagination
+              totalItems={totalItems}
+              currentPage={currentPage}
+              pageSize={pageSize}
+              onPageChange={setCurrentPage}
+              onPageSizeChange={(newSize) => {
+                setPageSize(newSize)
+                setCurrentPage(1)
+              }}
+              itemName="players"
+            />
+          </div>
         </div>
       )}
     </div>

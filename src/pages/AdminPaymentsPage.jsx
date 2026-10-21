@@ -4,6 +4,7 @@ import {
   CheckCircle2, ArrowUpRight, FileText, Printer, Building2, Activity
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
+import Pagination from '../components/Pagination'
 import './AdminDashboard.css'
 
 export default function AdminPaymentsPage() {
@@ -11,6 +12,8 @@ export default function AdminPaymentsPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [clubFilter, setClubFilter] = useState('all')
   const [typeFilter, setTypeFilter] = useState('all')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
 
   const filteredTransactions = transactions.filter(tx => {
     const matchesSearch =
@@ -25,6 +28,9 @@ export default function AdminPaymentsPage() {
 
     return matchesSearch && matchesClub && matchesType
   })
+
+  const totalItems = filteredTransactions.length
+  const paginatedTransactions = filteredTransactions.slice((currentPage - 1) * pageSize, currentPage * pageSize)
 
   const totalPaystackVolume = transactions.reduce((sum, tx) => sum + (Number(tx.amount) || 0), 0)
 
@@ -153,63 +159,82 @@ export default function AdminPaymentsPage() {
               </tr>
             </thead>
             <tbody>
-              {filteredTransactions.map((tx) => (
-                <tr key={tx.id} className="hover:bg-slate-50 transition-colors">
-                  <td>
-                    <span className="font-mono text-xs font-bold text-slate-800">{tx.reference}</span>
-                    <span className="text-3xs text-slate-400 block font-mono">{tx.receipt_no || 'REC-VERIFIED'}</span>
-                  </td>
-
-                  <td>
-                    <span className="text-xs text-slate-700 font-medium">{tx.date_display}</span>
-                  </td>
-
-                  <td>
-                    <div className="font-bold text-slate-900 text-xs">{tx.member_name}</div>
-                    <div className="text-3xs text-slate-500 font-mono">{tx.member_id}</div>
-                  </td>
-
-                  <td>
-                    <span className="badge badge-accent font-semibold text-3xs">
-                      {tx.club || 'Sunday League FC'}
-                    </span>
-                  </td>
-
-                  <td>
-                    <span className="text-xs text-slate-800 font-medium">{tx.description}</span>
-                  </td>
-
-                  <td style={{ textAlign: 'right' }}>
-                    <span className="font-mono text-xs font-extrabold text-emerald-700">
-                      ₦{Number(tx.amount).toLocaleString()}
-                    </span>
-                  </td>
-
-                  <td>
-                    <span className="badge badge-secondary text-3xs font-semibold">
-                      {tx.method || 'Paystack'}
-                    </span>
-                  </td>
-
-                  <td style={{ textAlign: 'center' }}>
-                    <span className="badge badge-success text-3xs font-bold">
-                      ✓ SETTLED
-                    </span>
-                  </td>
-
-                  <td style={{ textAlign: 'right' }}>
-                    <button
-                      className="btn btn-secondary text-3xs py-1 px-2.5 font-bold"
-                      onClick={() => setReceiptModalState({ isOpen: true, transaction: tx })}
-                    >
-                      Receipt
-                    </button>
+              {filteredTransactions.length === 0 ? (
+                <tr>
+                  <td colSpan={9} className="text-center py-8 text-slate-400 text-xs">
+                    No transactions match your search or filter criteria.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                paginatedTransactions.map((tx) => (
+                  <tr key={tx.id} className="hover:bg-slate-50 transition-colors">
+                    <td>
+                      <span className="font-mono text-xs font-bold text-slate-800">{tx.reference}</span>
+                      <span className="text-3xs text-slate-400 block font-mono">{tx.receipt_no || 'REC-VERIFIED'}</span>
+                    </td>
+
+                    <td>
+                      <span className="text-xs text-slate-700 font-medium">{tx.date_display}</span>
+                    </td>
+
+                    <td>
+                      <div className="font-bold text-slate-900 text-xs">{tx.member_name}</div>
+                      <div className="text-3xs text-slate-500 font-mono">{tx.member_id}</div>
+                    </td>
+
+                    <td>
+                      <span className="badge badge-accent font-semibold text-3xs">
+                        {tx.club || 'Sunday League FC'}
+                      </span>
+                    </td>
+
+                    <td>
+                      <span className="text-xs text-slate-800 font-medium">{tx.description}</span>
+                    </td>
+
+                    <td style={{ textAlign: 'right' }}>
+                      <span className="font-mono text-xs font-extrabold text-emerald-700">
+                        ₦{Number(tx.amount).toLocaleString()}
+                      </span>
+                    </td>
+
+                    <td>
+                      <span className="badge badge-secondary text-3xs font-semibold">
+                        {tx.method || 'Paystack'}
+                      </span>
+                    </td>
+
+                    <td style={{ textAlign: 'center' }}>
+                      <span className="badge badge-success text-3xs font-bold">
+                        ✓ SETTLED
+                      </span>
+                    </td>
+
+                    <td style={{ textAlign: 'right' }}>
+                      <button
+                        className="btn btn-secondary text-3xs py-1 px-2.5 font-bold"
+                        onClick={() => setReceiptModalState({ isOpen: true, transaction: tx })}
+                      >
+                        Receipt
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
+        <Pagination
+          totalItems={totalItems}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          onPageChange={setCurrentPage}
+          onPageSizeChange={(newSize) => {
+            setPageSize(newSize)
+            setCurrentPage(1)
+          }}
+          itemName="payments"
+        />
       </div>
     </div>
   )

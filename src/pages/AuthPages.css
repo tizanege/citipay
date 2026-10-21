@@ -192,6 +192,39 @@
   font-weight: 500;
 }
 
+/* ── Identifier Toggle Tabs ── */
+.auth-identifier-tabs {
+  display: inline-flex;
+  align-items: center;
+  background: #F4F4F6;
+  padding: 3px;
+  border-radius: 9999px;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.auth-tab-btn {
+  padding: 3px 10px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  color: #71717A;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  line-height: 1.2;
+}
+
+.auth-tab-btn:hover {
+  color: #18181B;
+}
+
+.auth-tab-btn.active {
+  background: #FFFFFF;
+  color: #09090B;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
 .input-with-icon {
   position: relative;
   display: flex;

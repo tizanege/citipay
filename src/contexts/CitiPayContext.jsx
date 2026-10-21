@@ -90,12 +90,29 @@ export function CitiPayProvider({ children }) {
 
   // Active Club Object
   const currentClub = useMemo(() => {
-    return clubs.find(c => c.id === selectedClubId || c.slug === selectedClubId || c.code === selectedClubId) || clubs[0] || initialClubs[0]
+    return clubs.find(c => c.id === selectedClubId || c.slug === selectedClubId || c.code === selectedClubId) || clubs[0] || initialClubs[0] || {
+      id: '11111111-1111-1111-1111-111111111111',
+      name: 'Sunday League FC',
+      code: 'SLFC',
+      slug: 'sunday-league-fc',
+      membership_fee: 100000,
+      monthly_social_dues: 5000,
+      max_installments: 2
+    }
   }, [clubs, selectedClubId])
 
   // Active Logged In Member Object
   const currentMember = useMemo(() => {
-    return members.find(m => m.id === currentMemberId || isMemberIdMatch(m.member_id, currentMemberId)) || members[0] || initialMembers[0]
+    return members.find(m => m.id === currentMemberId || isMemberIdMatch(m.member_id, currentMemberId)) || members[0] || {
+      id: '',
+      full_name: 'Guest Player',
+      member_id: 'GUEST',
+      role: 'member',
+      status: 'green',
+      membership_paid: 0,
+      membership_outstanding: 0,
+      social_dues_paid: true
+    }
   }, [members, currentMemberId])
 
   // ── Database Hydration & Sync ─────────────────────────────────────────────
@@ -238,8 +255,8 @@ export function CitiPayProvider({ children }) {
 
   // Overview Metrics for Club Admin Dashboard
   const adminMetrics = useMemo(() => {
-    const clubMembers = members.filter(m => m.club_id === selectedClubId || !m.club_id || m.club_id === 'club-sunday-league')
-    const totalCount = clubMembers.length || members.length
+    const clubMembers = members.filter(m => m.club_id === selectedClubId || !m.club_id || m.club_id === 'club-sunday-league' || m.club_id === '11111111-1111-1111-1111-111111111111')
+    const totalCount = clubMembers.length
     
     const greenCount = clubMembers.filter(m => m.status === 'green').length
     const yellowCount = clubMembers.filter(m => m.status === 'yellow').length
@@ -247,16 +264,16 @@ export function CitiPayProvider({ children }) {
 
     const expected = clubMembers.reduce((acc, m) => acc + (m.membership_fee || 100000), 0)
     const collected = clubMembers.reduce((acc, m) => acc + (m.membership_paid || 0), 0)
-    const outstanding = expected - collected
+    const outstanding = Math.max(0, expected - collected)
 
     return {
-      totalMembers: totalCount || 30,
+      totalMembers: totalCount,
       eligibleGreen: greenCount,
       dueSoonYellow: yellowCount,
       notEligibleRed: redCount,
-      expectedRevenue: expected || 3000000,
-      collectedRevenue: collected || 2450000,
-      outstandingBalance: outstanding || 550000
+      expectedRevenue: expected,
+      collectedRevenue: collected,
+      outstandingBalance: outstanding
     }
   }, [members, selectedClubId])
 

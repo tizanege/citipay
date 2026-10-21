@@ -679,6 +679,97 @@
   padding: 0.65rem 1rem !important;
 }
 
+/* ── Unregistered Guests Matchday Option ────────────────── */
+.guest-pass-container {
+  background: #F4F4F6;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 22px;
+  padding: 1rem 1.15rem;
+  margin-top: 0.75rem;
+}
+
+.guest-selector-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.guest-counter-pill {
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 9999px;
+  padding: 0.25rem 0.45rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+}
+
+.guest-count-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: #F4F4F6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #18181B;
+  transition: all 0.2s ease;
+}
+
+.guest-count-btn:hover:not(:disabled) {
+  background: #18181B;
+  color: #FFFFFF;
+}
+
+.guest-count-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.guest-count-display {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  padding: 0 0.85rem;
+  min-width: 80px;
+  justify-content: center;
+}
+
+.guest-num {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #18181B;
+}
+
+.guest-lbl {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #71717A;
+}
+
+.guest-pay-btn {
+  flex: 1;
+  min-width: 170px;
+  border-radius: 9999px !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  padding: 0.55rem 1rem !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+}
+
+.guest-pay-btn.btn-disabled {
+  background: #E4E4E7;
+  color: #A1A1AA;
+  cursor: not-allowed;
+  border: none;
+}
+
 .club-badge-micro {
   display: inline-flex;
   align-items: center;
