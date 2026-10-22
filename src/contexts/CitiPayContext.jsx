@@ -105,7 +105,7 @@ export function CitiPayProvider({ children }) {
         id: 'isl-team-1',
         teamName: 'Sunday League All-Stars',
         coachName: 'Coach Seyi Lawal',
-        captainName: 'Michael Esu',
+        captainName: 'Ukpongote Esu',
         vipSpectator1: 'Barrister Femi Adeleke',
         vipSpectator2: 'Alhaji Bashir Dangote',
         logoUrl: '/crests/sunday-league-fc.svg',

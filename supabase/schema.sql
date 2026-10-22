@@ -438,15 +438,15 @@ insert into public.club_eligibility_rules (
   true
 ) on conflict (club_id) do nothing;
 
--- 3. Core Profiles (Member 1: Michael Esu, Member 2: David Adeleke, Member 3: Chidi Okafor)
+-- 3. Core Profiles (Real Sunday League FC Players: Ukpongote Esu, Babatunde Yusuff, Okikiola Afolaranmi, Lateef Afolabi, Wahab Babatunde)
 insert into public.profiles (
   id, member_id, email, full_name, nickname, role, club_id, eligibility_status, account_status
 ) values
-  ('aaaaaaaa-0001-0001-0001-000000000001', 'SL-8K4P2', 'michael.esu@sundayleaguefc.ng', 'Michael Esu', 'M-Esu', 'member', '11111111-1111-1111-1111-111111111111', 'green', 'active'),
-  ('aaaaaaaa-0001-0001-0001-000000000002', 'SL-3M7R9', 'david.adeleke@sundayleaguefc.ng', 'Player B (David Adeleke)', 'Davido', 'member', '11111111-1111-1111-1111-111111111111', 'yellow', 'active'),
-  ('aaaaaaaa-0001-0001-0001-000000000003', 'SL-9X2W4', 'chidi.okafor@sundayleaguefc.ng', 'Player C (Chidi Okafor)', 'Chi-Chi', 'member', '11111111-1111-1111-1111-111111111111', 'red', 'active'),
-  ('aaaaaaaa-0001-0001-0001-000000000004', 'SL-7D2N8', 'emeka.nwosu@sundayleaguefc.ng', 'Emeka Nwosu', 'Emzy', 'member', '11111111-1111-1111-1111-111111111111', 'green', 'active'),
-  ('aaaaaaaa-0001-0001-0001-000000000005', 'SL-4H6J7', 'tunde.balogun@sundayleaguefc.ng', 'Tunde Balogun', 'T-Bal', 'member', '11111111-1111-1111-1111-111111111111', 'green', 'active')
+  ('aaaaaaaa-0001-0001-0001-000000000001', 'SL-8K4P2', 'esu@sundayleaguefc.ng', 'Ukpongote Esu', 'Wndrr', 'member', '11111111-1111-1111-1111-111111111111', 'green', 'active'),
+  ('aaaaaaaa-0001-0001-0001-000000000002', 'SL-YY2A3', 'eko@sundayleaguefc.ng', 'Babatunde Yusuff', 'Eko', 'member', '11111111-1111-1111-1111-111111111111', 'yellow', 'active'),
+  ('aaaaaaaa-0001-0001-0001-000000000003', 'SL-5TM3D', 'lion@sundayleaguefc.ng', 'Okikiola Olayinka Afolaranmi', 'Lion', 'member', '11111111-1111-1111-1111-111111111111', 'red', 'active'),
+  ('aaaaaaaa-0001-0001-0001-000000000004', 'SL-DMK2K', 'afoo@sundayleaguefc.ng', 'Lateef Afolabi', 'Afo''o', 'member', '11111111-1111-1111-1111-111111111111', 'green', 'active'),
+  ('aaaaaaaa-0001-0001-0001-000000000005', 'SL-WC4PA', 'badmus@sundayleaguefc.ng', 'Wahab Nurudeen Babatunde', 'Badmus', 'member', '11111111-1111-1111-1111-111111111111', 'green', 'active')
 on conflict (member_id) do nothing;
 
 -- 4. Players Dossier
@@ -462,26 +462,26 @@ on conflict (user_id) do nothing;
 -- 5. Payment Plans
 insert into public.payment_plans (user_id, club_id, title, total_amount, amount_paid, status)
 values
-  ('aaaaaaaa-0001-0001-0001-000000000001', '11111111-1111-1111-1111-111111111111', 'Season 2026/27 Dues', 100000.00, 100000.00, 'fully_paid'),
-  ('aaaaaaaa-0001-0001-0001-000000000002', '11111111-1111-1111-1111-111111111111', 'Season 2026/27 Dues', 100000.00, 90000.00, 'partially_paid'),
-  ('aaaaaaaa-0001-0001-0001-000000000003', '11111111-1111-1111-1111-111111111111', 'Season 2026/27 Dues', 100000.00, 60000.00, 'partially_paid'),
-  ('aaaaaaaa-0001-0001-0001-000000000004', '11111111-1111-1111-1111-111111111111', 'Season 2026/27 Dues', 100000.00, 100000.00, 'fully_paid'),
-  ('aaaaaaaa-0001-0001-0001-000000000005', '11111111-1111-1111-1111-111111111111', 'Season 2026/27 Dues', 100000.00, 100000.00, 'fully_paid');
+  ('aaaaaaaa-0001-0001-0001-000000000001', '11111111-1111-1111-1111-111111111111', 'Season 2026/27 Dues', 160000.00, 160000.00, 'fully_paid'),
+  ('aaaaaaaa-0001-0001-0001-000000000002', '11111111-1111-1111-1111-111111111111', 'Season 2026/27 Dues', 80000.00, 70000.00, 'partially_paid'),
+  ('aaaaaaaa-0001-0001-0001-000000000003', '11111111-1111-1111-1111-111111111111', 'Season 2026/27 Dues', 80000.00, 0.00, 'pending'),
+  ('aaaaaaaa-0001-0001-0001-000000000004', '11111111-1111-1111-1111-111111111111', 'Season 2026/27 Dues', 80000.00, 80000.00, 'fully_paid'),
+  ('aaaaaaaa-0001-0001-0001-000000000005', '11111111-1111-1111-1111-111111111111', 'Season 2026/27 Dues', 80000.00, 80000.00, 'fully_paid');
 
 -- 6. Initial Seed Payments
 insert into public.payments (
   user_id, club_id, payment_type, amount, payment_method, payment_channel, reference, description
 ) values
-  ('aaaaaaaa-0001-0001-0001-000000000001', '11111111-1111-1111-1111-111111111111', 'membership', 100000.00, 'paystack_card', 'online', 'SL-2026-000101', 'Full Season 2026/27 Membership Fee Clearance'),
+  ('aaaaaaaa-0001-0001-0001-000000000001', '11111111-1111-1111-1111-111111111111', 'membership', 160000.00, 'paystack_card', 'online', 'SL-2026-000101', 'Full Season 2026/27 Membership Fee Clearance'),
   ('aaaaaaaa-0001-0001-0001-000000000002', '11111111-1111-1111-1111-111111111111', 'membership_installment', 50000.00, 'bank_transfer', 'admin_manual', 'BANK-99211', 'Membership Installment 1 of 2'),
-  ('aaaaaaaa-0001-0001-0001-000000000002', '11111111-1111-1111-1111-111111111111', 'membership_installment', 40000.00, 'paystack_card', 'online', 'SL-2026-000103', 'Membership Installment 2 (Part)'),
-  ('aaaaaaaa-0001-0001-0001-000000000004', '11111111-1111-1111-1111-111111111111', 'membership', 100000.00, 'paystack_card', 'online', 'SL-2026-000104', 'Full Season Membership Dues'),
-  ('aaaaaaaa-0001-0001-0001-000000000005', '11111111-1111-1111-1111-111111111111', 'membership', 100000.00, 'paystack_card', 'online', 'SL-2026-000105', 'Full Season Membership Dues');
+  ('aaaaaaaa-0001-0001-0001-000000000002', '11111111-1111-1111-1111-111111111111', 'membership_installment', 20000.00, 'paystack_card', 'online', 'SL-2026-000103', 'Membership Installment 2 (Part)'),
+  ('aaaaaaaa-0001-0001-0001-000000000004', '11111111-1111-1111-1111-111111111111', 'membership', 80000.00, 'paystack_card', 'online', 'SL-2026-000104', 'Full Season Membership Dues'),
+  ('aaaaaaaa-0001-0001-0001-000000000005', '11111111-1111-1111-1111-111111111111', 'membership', 80000.00, 'paystack_card', 'online', 'SL-2026-000105', 'Full Season Membership Dues');
 
 -- 7. Initial Audit Trail
 insert into public.audit_logs (
   actor_name, actor_role, action, target_member_id, target_name, old_value, new_value, reason
 ) values
-  ('President / Admin', 'Club Administrator', 'MANUAL_PAYMENT', 'SL-3M7R9', 'Player B (David Adeleke)', '₦50,000 Outstanding', '₦10,000 Outstanding', 'Verified direct bank transfer to Sunday League FC Access Bank account. Reference: BANK-99211.'),
-  ('President', 'Club President', 'STATUS_OVERRIDE', 'SL-3M7R9', 'Player B (David Adeleke)', 'RED', 'YELLOW', 'Granted 14-day grace extension for balance reconciliation before Gameweek 14.'),
+  ('President / Admin', 'Club Administrator', 'MANUAL_PAYMENT', 'SL-YY2A3', 'Babatunde Yusuff (Eko)', '₦50,000 Outstanding', '₦10,000 Outstanding', 'Verified direct bank transfer to Sunday League FC Access Bank account. Reference: BANK-99211.'),
+  ('President', 'Club President', 'STATUS_OVERRIDE', 'SL-YY2A3', 'Babatunde Yusuff (Eko)', 'RED', 'YELLOW', 'Granted 14-day grace extension for balance reconciliation before Gameweek 14.'),
   ('Citi Football Federation', 'League HQ', 'CONFIG_RULES_UPDATED', 'ALL_CLUBS', 'Sunday League FC Rules', 'Default Rules', 'Custom Thresholds', 'Configured 2026/27 Championship financial clearance thresholds.');

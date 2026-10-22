@@ -115,7 +115,7 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Highlight Card: Michael Esu Spotlight */}
+        {/* Highlight Card: Ukpongote Esu Spotlight */}
         <div className="auth-spotlight-box">
           <div className="flex items-center gap-3">
             <img
@@ -127,7 +127,7 @@ export default function LoginPage() {
               <div className="text-xs font-medium text-emerald-400 flex items-center gap-1">
                 <Sparkles size={11} /> Featured Player
               </div>
-              <div className="font-semibold text-white text-sm">Michael Esu (CAM #10)</div>
+              <div className="font-semibold text-white text-sm">Ukpongote Esu (CAM #10)</div>
               <div className="text-xs text-slate-400 font-mono">ID: {defaultMember?.member_id || 'SL-8K4P2'} · Cleared</div>
             </div>
           </div>

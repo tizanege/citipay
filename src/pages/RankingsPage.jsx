@@ -109,7 +109,7 @@ export default function RankingsPage() {
               </thead>
               <tbody>
                 {paginatedPlayers.map((player) => {
-                  const isCurrent = player.name === currentMember.full_name || player.name === 'Michael Esu'
+                  const isCurrent = player.name === currentMember.full_name || player.name === 'Ukpongote Esu'
                   return (
                     <tr key={player.rank} className={isCurrent ? 'highlight-user-row' : ''}>
                       <td style={{ textAlign: 'center' }}>
