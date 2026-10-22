@@ -6,6 +6,7 @@ import {
   HelpCircle, RefreshCw
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
+import IslCupModal from '../components/modals/IslCupModal'
 import './AuthPages.css'
 
 export default function LoginPage() {
@@ -18,7 +19,8 @@ export default function LoginPage() {
     members,
     setCurrentRole,
     setOtpModalState,
-    setResetPassModalState
+    setResetPassModalState,
+    setIslCupModalState
   } = useCitiPay()
 
   const navigate = useNavigate()
@@ -238,102 +240,59 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Quick Demo Personas Selector */}
-          <div className="demo-accounts-box">
-            <div className="demo-section-label">
-              <span>⚡</span>
-              <span>1-CLICK QUICK ACCESS PERSONAS</span>
+          {/* ISL Cup Finals 2026 Advert Card (Replaces quick access personas) */}
+          <div
+            className="isl-login-advert-card"
+            onClick={() => setIslCupModalState({ isOpen: true })}
+            role="button"
+            tabIndex={0}
+            title="Click to view full ISL Cup details & register team"
+          >
+            <div className="isl-login-advert-header">
+              <div className="isl-login-advert-tag">OFFICIAL CUP FINALS</div>
+              <span className="isl-login-advert-pool">₦2.8M PRIZE POOL</span>
             </div>
 
-            {/* Group 1: Players & Eligibility */}
-            <div className="demo-group-label">
-              <span>MEMBER ELIGIBILITY TIERS</span>
-            </div>
-            <div className="demo-players-grid">
-              <button
-                type="button"
-                className="demo-pill-btn"
-                onClick={() => quickDemoLogin('mem-001', 'member', '/dashboard')}
-                title="Michael Esu - Cleared for matchday"
-              >
-                <div className="demo-pill-icon green">
-                  <span className="status-dot-sm green" />
+            <div className="isl-login-advert-body">
+              <div className="isl-login-trophy-box">
+                <Trophy size={24} />
+              </div>
+              <div className="isl-login-advert-info">
+                <h3 className="isl-login-advert-title">THE ISL CUP FINALS 2026</h3>
+                <p className="isl-login-advert-subtitle">
+                  16 Teams · 2 Winners · Lagos Preparatory School, Ikoyi
+                </p>
+                <div className="isl-login-advert-meta">
+                  <span>📅 Nov 22 & 29 (7:20 AM)</span>
+                  <span>·</span>
+                  <span>Reg: ₦300,000 (2 VIPs Incl.)</span>
                 </div>
-                <div className="demo-pill-content">
-                  <div className="demo-pill-title">Michael Esu</div>
-                  <span className="demo-pill-badge green">🟢 ELIGIBLE</span>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                className="demo-pill-btn"
-                onClick={() => quickDemoLogin('mem-002', 'member', '/dashboard')}
-                title="Player B - ₦10k payment due soon"
-              >
-                <div className="demo-pill-icon yellow">
-                  <span className="status-dot-sm yellow" />
-                </div>
-                <div className="demo-pill-content">
-                  <div className="demo-pill-title">Player B</div>
-                  <span className="demo-pill-badge yellow">🟡 DUE SOON</span>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                className="demo-pill-btn"
-                onClick={() => quickDemoLogin('mem-003', 'member', '/dashboard')}
-                title="Player C - Suspended / Overdue balance"
-              >
-                <div className="demo-pill-icon red">
-                  <span className="status-dot-sm red" />
-                </div>
-                <div className="demo-pill-content">
-                  <div className="demo-pill-title">Player C</div>
-                  <span className="demo-pill-badge red">🔴 OVERDUE</span>
-                </div>
-              </button>
+              </div>
             </div>
 
-            {/* Group 2: Executive & Federation Portals */}
-            <div className="demo-group-label">
-              <span>ADMINISTRATIVE PORTALS</span>
-            </div>
-            <div className="demo-admin-grid">
+            <div className="isl-login-advert-footer">
+              <div className="isl-login-prize">
+                <span className="isl-login-prize-lbl">GRAND PRIZE</span>
+                <span className="isl-login-prize-amt">₦2,000,000</span>
+              </div>
               <button
                 type="button"
-                className="demo-pill-btn admin-demo"
-                onClick={() => quickDemoLogin('mem-001', 'president', '/club/dashboard')}
-                title="Club Executive Hub - Roster, Overrides & Collections"
+                className="isl-login-advert-btn"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setIslCupModalState({ isOpen: true })
+                }}
               >
-                <div className="demo-pill-icon club">
-                  <ShieldCheck size={15} />
-                </div>
-                <div className="demo-pill-content">
-                  <div className="demo-pill-title">Club President</div>
-                  <span className="demo-pill-badge club">Club Executive Hub</span>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                className="demo-pill-btn admin-demo"
-                onClick={() => quickDemoLogin('mem-001', 'super_admin', '/admin/dashboard')}
-                title="Federation Super Admin - Governance, Paystack & All Clubs"
-              >
-                <div className="demo-pill-icon admin">
-                  <Shield size={15} />
-                </div>
-                <div className="demo-pill-content">
-                  <div className="demo-pill-title">Super Admin</div>
-                  <span className="demo-pill-badge admin">Federation Command</span>
-                </div>
+                <span>View & Register</span>
+                <ArrowRight size={13} />
               </button>
             </div>
           </div>
         </div>
       </div>
+
+      {/* ISL Cup Full Interactive Modal with 10 Team Picture Columns */}
+      <IslCupModal />
     </div>
   )
 }
