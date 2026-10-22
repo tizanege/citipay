@@ -63,22 +63,88 @@ export default function MakePaymentModal() {
 
   const handleConfirmPay = () => {
     setIsProcessing(true)
+
+    // Paystack channels mapping based on user selection or full suite
+    let selectedChannels = ['card', 'bank', 'ussd', 'qr', 'mobile_money', 'bank_transfer']
+    if (paymentMethod === 'paystack_card') {
+      selectedChannels = ['card']
+    } else if (paymentMethod === 'bank_transfer') {
+      selectedChannels = ['bank_transfer', 'bank']
+    } else if (paymentMethod === 'ussd') {
+      selectedChannels = ['ussd']
+    }
+
+    const paystackKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY
+    const isLiveKey = paystackKey && paystackKey.startsWith('pk_') && paystackKey !== 'pk_test_your-key'
+
+    // If Paystack inline script is available and we have a valid key (or in test environment)
+    if (typeof window !== 'undefined' && window.PaystackPop && isLiveKey) {
+      const generatedRef = `SL-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`
+      const playerEmail = currentMember.email || `${currentMember.member_id.toLowerCase().replace(/[^a-z0-9]/g, '')}@citileague.ng`
+
+      const handler = window.PaystackPop.setup({
+        key: paystackKey,
+        email: playerEmail,
+        amount: Math.round(Number(amount) * 100), // In Kobo
+        currency: 'NGN',
+        ref: generatedRef,
+        channels: selectedChannels,
+        metadata: {
+          custom_fields: [
+            { display_name: 'Member Name', variable_name: 'member_name', value: currentMember.full_name },
+            { display_name: 'Member ID', variable_name: 'member_id', value: currentMember.member_id },
+            { display_name: 'Club Destination', variable_name: 'club_name', value: currentClub.name },
+            { display_name: 'Payment Category', variable_name: 'payment_type', value: paymentType },
+            { display_name: 'Player Notes', variable_name: 'notes', value: notes || 'N/A' }
+          ]
+        },
+        callback: function (response) {
+          // Paystack callback on verified settlement
+          const confirmedRef = response.reference || generatedRef
+          let methodLabel = 'Paystack (Card)'
+          if (paymentMethod === 'bank_transfer') methodLabel = 'Paystack (Instant Bank Transfer)'
+          else if (paymentMethod === 'ussd') methodLabel = 'Paystack (USSD)'
+          else if (paymentMethod === 'all_channels') methodLabel = 'Paystack Direct Gateway'
+
+          const tx = processOnlinePayment({
+            paymentType,
+            amount,
+            method: methodLabel,
+            reference: confirmedRef,
+            paymentMethod,
+            notes
+          })
+
+          setIsProcessing(false)
+          setSuccessTx(tx)
+        },
+        onClose: function () {
+          setIsProcessing(false)
+        }
+      })
+
+      handler.openIframe()
+      return
+    }
+
+    // Graceful Instant Simulation (for test keys / offline dev)
     setTimeout(() => {
       let methodLabel = 'Paystack (Debit Card)'
       if (paymentMethod === 'bank_transfer') methodLabel = 'Paystack (Instant Bank Transfer)'
       else if (paymentMethod === 'ussd') methodLabel = 'Paystack (USSD *737#)'
-      else if (paymentMethod === 'apple_pay') methodLabel = 'Apple Pay / Paystack'
+      else if (paymentMethod === 'all_channels') methodLabel = 'Paystack Multi-Channel'
 
       const tx = processOnlinePayment({
         paymentType,
         amount,
         method: methodLabel,
+        paymentMethod,
         notes
       })
 
       setIsProcessing(false)
       setSuccessTx(tx)
-    }, 1200)
+    }, 1100)
   }
 
   const handleClose = () => {
@@ -275,33 +341,50 @@ export default function MakePaymentModal() {
 
               {/* Payment Method Selector */}
               <div>
-                <label className="form-label-portal">PAYMENT METHOD</label>
-                <div className="method-pill-grid">
+                <div className="flex justify-between items-center mb-1">
+                  <label className="form-label-portal mb-0">PAYMENT METHOD</label>
+                  <span className="text-3xs text-emerald-700 font-semibold flex items-center gap-1">
+                    <ShieldCheck size={11} /> Paystack Multi-Channel Active
+                  </span>
+                </div>
+                <div className="method-pill-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+                  <button
+                    type="button"
+                    className={`method-pill-btn ${paymentMethod === 'all_channels' ? 'active' : ''}`}
+                    onClick={() => setPaymentMethod('all_channels')}
+                    title="Paystack gives you all checkout options: Card, Transfer, USSD, QR, Bank"
+                  >
+                    <Sparkles size={14} className="text-amber-500" />
+                    <span>All Options</span>
+                  </button>
                   <button
                     type="button"
                     className={`method-pill-btn ${paymentMethod === 'paystack_card' ? 'active' : ''}`}
                     onClick={() => setPaymentMethod('paystack_card')}
                   >
-                    <CreditCard size={15} />
-                    <span>Debit Card</span>
+                    <CreditCard size={14} />
+                    <span>Card</span>
                   </button>
                   <button
                     type="button"
                     className={`method-pill-btn ${paymentMethod === 'bank_transfer' ? 'active' : ''}`}
                     onClick={() => setPaymentMethod('bank_transfer')}
                   >
-                    <Landmark size={15} />
-                    <span>Bank Transfer</span>
+                    <Landmark size={14} />
+                    <span>Transfer</span>
                   </button>
                   <button
                     type="button"
                     className={`method-pill-btn ${paymentMethod === 'ussd' ? 'active' : ''}`}
                     onClick={() => setPaymentMethod('ussd')}
                   >
-                    <Smartphone size={15} />
+                    <Smartphone size={14} />
                     <span>USSD</span>
                   </button>
                 </div>
+                <p className="text-3xs text-slate-500 mt-1.5 flex items-center gap-1">
+                  💡 Select <strong>All Options</strong> to access Card, Instant Dedicated Bank Account, USSD (*737#), and Visa QR in the Paystack modal.
+                </p>
               </div>
 
               {/* Summary Checkout Box */}

@@ -358,9 +358,9 @@ export function CitiPayProvider({ children }) {
   }, [members, selectedClubId])
 
   // Action: Process Online Payment (Player Make Payment)
-  const processOnlinePayment = useCallback(async ({ paymentType, amount, method = 'Paystack (Card)', notes = '' }) => {
+  const processOnlinePayment = useCallback(async ({ paymentType, amount, method = 'Paystack (Card)', reference = null, paymentMethod = 'paystack_card', notes = '' }) => {
     const refNum = Math.floor(100000 + Math.random() * 900000)
-    const refCode = `SL${refNum}`
+    const refCode = reference || `SL${refNum}`
     const receiptRef = `SL-2026-000${refNum.toString().slice(-3)}`
 
     let typeDesc = 'Payment'
@@ -369,6 +369,7 @@ export function CitiPayProvider({ children }) {
     else if (paymentType === 'social_dues') typeDesc = 'Monthly Social Dues (September 2026)'
     else if (paymentType === 'merchandise' || paymentType === 'merchandise_jersey') typeDesc = 'Official Matchday Jersey (Home & Away)'
     else if (paymentType === 'merchandise_bib') typeDesc = 'Official Training Bib Pack'
+    else if (paymentType === 'guest_pass') typeDesc = 'Guest Player Matchday Pass'
     else typeDesc = 'Other Club-Approved Payment'
 
     const newTx = {
@@ -440,7 +441,7 @@ export function CitiPayProvider({ children }) {
         reference: refCode,
         description: typeDesc,
         notes: notes || 'Online Paystack payment',
-        paymentMethod: 'paystack_card',
+        paymentMethod: paymentMethod || 'paystack_card',
         paymentChannel: 'online'
       })
     } catch (e) {
