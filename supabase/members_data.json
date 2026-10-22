@@ -7,25 +7,28 @@
     "debt": 0,
     "eligibility_status": "yellow",
     "renewal_date": "June 10th",
-    "cycle_status": "\u2705",
+    "cycle_status": "✅",
     "next_renewal_date": "September 10th",
     "payment_status_note": "80000 message",
     "next_cycle_status": "",
     "historical_milestones": {
       "january": {
         "date": "",
-        "status": "Paid \u2705"
+        "status": "Paid ✅"
       },
       "march": {
         "date": "March 29th",
-        "status": "Paid\u2705"
+        "status": "Paid✅"
       },
       "june_july": {
         "date": "June 29th",
         "status": "",
         "extra": ""
       }
-    }
+    },
+    "full_name": "Babatunde Yusuff",
+    "nickname": "Eko",
+    "date_joined": "2024"
   },
   {
     "row": 3,
@@ -35,10 +38,10 @@
     "debt": 0,
     "eligibility_status": "green",
     "renewal_date": "June 10th",
-    "cycle_status": "\u2705",
+    "cycle_status": "✅",
     "next_renewal_date": "September 10th",
     "payment_status_note": "80000 sent out a message",
-    "next_cycle_status": "Paid \u2705",
+    "next_cycle_status": "Paid ✅",
     "historical_milestones": {
       "january": {
         "date": "",
@@ -46,14 +49,17 @@
       },
       "march": {
         "date": "",
-        "status": "Paid \u2705)"
+        "status": "Paid ✅)"
       },
       "june_july": {
         "date": "46202.0",
-        "status": "Paid \u2705",
+        "status": "Paid ✅",
         "extra": ""
       }
-    }
+    },
+    "full_name": "Lateef Afolabi",
+    "nickname": "Afo'o",
+    "date_joined": "2024"
   },
   {
     "row": 4,
@@ -63,25 +69,28 @@
     "debt": 0,
     "eligibility_status": "green",
     "renewal_date": "June 10th",
-    "cycle_status": "\u2705",
+    "cycle_status": "✅",
     "next_renewal_date": "September 10th",
     "payment_status_note": "80000 messaged",
-    "next_cycle_status": "Paid \u2705",
+    "next_cycle_status": "Paid ✅",
     "historical_milestones": {
       "january": {
         "date": "",
-        "status": "Paid \u2705"
+        "status": "Paid ✅"
       },
       "march": {
         "date": "March 29th",
-        "status": "Paid\u2705"
+        "status": "Paid✅"
       },
       "june_july": {
         "date": "June 29th",
         "status": "",
         "extra": ""
       }
-    }
+    },
+    "full_name": "Wahab Nurudeen Babatunde",
+    "nickname": "Badmus",
+    "date_joined": "2024"
   },
   {
     "row": 5,
@@ -91,25 +100,28 @@
     "debt": 0,
     "eligibility_status": "green",
     "renewal_date": "June 13th",
-    "cycle_status": "\u2705",
+    "cycle_status": "✅",
     "next_renewal_date": "September 10th",
     "payment_status_note": "80000 message",
-    "next_cycle_status": "Paid \u2705",
+    "next_cycle_status": "Paid ✅",
     "historical_milestones": {
       "january": {
         "date": "January 11th",
-        "status": "Paid \u2705"
+        "status": "Paid ✅"
       },
       "march": {
         "date": "June 22nd, 2026",
-        "status": "Paid\u2705"
+        "status": "Paid✅"
       },
       "june_july": {
         "date": "June 29th",
-        "status": "Paid \u2705",
+        "status": "Paid ✅",
         "extra": ""
       }
-    }
+    },
+    "full_name": "Olanrewaju Fesomade",
+    "nickname": "Paige",
+    "date_joined": "2025"
   },
   {
     "row": 6,
@@ -119,14 +131,14 @@
     "debt": 0,
     "eligibility_status": "green",
     "renewal_date": "June 10th",
-    "cycle_status": "\u2705",
+    "cycle_status": "✅",
     "next_renewal_date": "September 10th",
     "payment_status_note": "80000 message",
-    "next_cycle_status": "Paid \u2705",
+    "next_cycle_status": "Paid ✅",
     "historical_milestones": {
       "january": {
         "date": "January 11th",
-        "status": "Paid \u2705"
+        "status": "Paid ✅"
       },
       "march": {
         "date": "March 29th",
@@ -147,25 +159,28 @@
     "debt": 0,
     "eligibility_status": "green",
     "renewal_date": "July 30th",
-    "cycle_status": "\u2705",
+    "cycle_status": "✅",
     "next_renewal_date": "October 30th",
     "payment_status_note": "80000.0",
-    "next_cycle_status": "Paid \u2705",
+    "next_cycle_status": "Paid ✅",
     "historical_milestones": {
       "january": {
         "date": "January 11th",
-        "status": "Paid\u2705"
+        "status": "Paid✅"
       },
       "march": {
         "date": "46195.0",
-        "status": "Paid\u2705"
+        "status": "Paid✅"
       },
       "june_july": {
         "date": "June 29th",
-        "status": "Paid\u2705",
+        "status": "Paid✅",
         "extra": ""
       }
-    }
+    },
+    "full_name": "Tope Olabode",
+    "nickname": "Tope",
+    "date_joined": "2025"
   },
   {
     "row": 8,
@@ -175,10 +190,10 @@
     "debt": 0,
     "eligibility_status": "green",
     "renewal_date": "June 10th",
-    "cycle_status": "\u2705",
+    "cycle_status": "✅",
     "next_renewal_date": "September 10th",
     "payment_status_note": "80000 message",
-    "next_cycle_status": "Paid \u2705",
+    "next_cycle_status": "Paid ✅",
     "historical_milestones": {
       "january": {
         "date": "",
@@ -190,10 +205,13 @@
       },
       "june_july": {
         "date": "June 29th",
-        "status": "Paid \u2705",
+        "status": "Paid ✅",
         "extra": ""
       }
-    }
+    },
+    "full_name": "Kunle Kolawole",
+    "nickname": "Unbroken",
+    "date_joined": "2025"
   },
   {
     "row": 9,
@@ -203,25 +221,28 @@
     "debt": 0,
     "eligibility_status": "green",
     "renewal_date": "June 10th",
-    "cycle_status": "\u2705",
+    "cycle_status": "✅",
     "next_renewal_date": "September 10th",
     "payment_status_note": "80000 message",
-    "next_cycle_status": "Paid \u2705",
+    "next_cycle_status": "Paid ✅",
     "historical_milestones": {
       "january": {
         "date": "",
-        "status": "Paid \u2705"
+        "status": "Paid ✅"
       },
       "march": {
         "date": "March 29th",
-        "status": "Paid\u2705"
+        "status": "Paid✅"
       },
       "june_july": {
         "date": "June 29th",
-        "status": "Paid \u2705",
+        "status": "Paid ✅",
         "extra": ""
       }
-    }
+    },
+    "full_name": "Adegoriola Samsondeen Animawun",
+    "nickname": "Ade",
+    "date_joined": "2025"
   },
   {
     "row": 10,
@@ -231,7 +252,7 @@
     "debt": 0,
     "eligibility_status": "yellow",
     "renewal_date": "June 10th",
-    "cycle_status": "\u2705",
+    "cycle_status": "✅",
     "next_renewal_date": "September 10th",
     "payment_status_note": "80000.0",
     "next_cycle_status": "",
@@ -249,7 +270,10 @@
         "status": "",
         "extra": ""
       }
-    }
+    },
+    "full_name": "Okwara Emmanuel Junior",
+    "nickname": "Jayballings",
+    "date_joined": "2024"
   },
   {
     "row": 11,
@@ -259,7 +283,7 @@
     "debt": 0,
     "eligibility_status": "yellow",
     "renewal_date": "August 10th",
-    "cycle_status": "\u2705",
+    "cycle_status": "✅",
     "next_renewal_date": "November 10th",
     "payment_status_note": "80000.0",
     "next_cycle_status": "",
@@ -287,14 +311,14 @@
     "debt": 0,
     "eligibility_status": "yellow",
     "renewal_date": "August 10th",
-    "cycle_status": "\u2705",
+    "cycle_status": "✅",
     "next_renewal_date": "November 10th",
     "payment_status_note": "80000.0",
     "next_cycle_status": "",
     "historical_milestones": {
       "january": {
         "date": "",
-        "status": "Paid\u2705"
+        "status": "Paid✅"
       },
       "march": {
         "date": "March 29th",
@@ -305,7 +329,10 @@
         "status": "",
         "extra": ""
       }
-    }
+    },
+    "full_name": "Salaudeen Babatunde",
+    "nickname": "Rado",
+    "date_joined": "2025"
   },
   {
     "row": 13,
@@ -315,7 +342,7 @@
     "debt": 0,
     "eligibility_status": "yellow",
     "renewal_date": "June 10th",
-    "cycle_status": "\u2705",
+    "cycle_status": "✅",
     "next_renewal_date": "September 10th",
     "payment_status_note": "80000 message",
     "next_cycle_status": "",
@@ -343,14 +370,14 @@
     "debt": 0,
     "eligibility_status": "green",
     "renewal_date": "June 10th",
-    "cycle_status": "\u2705",
+    "cycle_status": "✅",
     "next_renewal_date": "September 10th",
     "payment_status_note": "80000 message",
-    "next_cycle_status": "Paid \u2705",
+    "next_cycle_status": "Paid ✅",
     "historical_milestones": {
       "january": {
         "date": "",
-        "status": "Paid\u2705"
+        "status": "Paid✅"
       },
       "march": {
         "date": "March 29th",
@@ -361,7 +388,10 @@
         "status": "",
         "extra": ""
       }
-    }
+    },
+    "full_name": "Atooki Oluwadamilare",
+    "nickname": "Mila",
+    "date_joined": "2025"
   },
   {
     "row": 15,
@@ -371,7 +401,7 @@
     "debt": 0,
     "eligibility_status": "yellow",
     "renewal_date": "June 10th",
-    "cycle_status": "\u2705",
+    "cycle_status": "✅",
     "next_renewal_date": "September 10th",
     "payment_status_note": "80000 message",
     "next_cycle_status": "",
@@ -399,10 +429,10 @@
     "debt": 0,
     "eligibility_status": "green",
     "renewal_date": "June 10th",
-    "cycle_status": "\u2705",
+    "cycle_status": "✅",
     "next_renewal_date": "September 10th",
     "payment_status_note": "80000.0",
-    "next_cycle_status": "Paid \u2705",
+    "next_cycle_status": "Paid ✅",
     "historical_milestones": {
       "january": {
         "date": "",
@@ -410,7 +440,7 @@
       },
       "march": {
         "date": "",
-        "status": "Paid\u2705"
+        "status": "Paid✅"
       },
       "june_july": {
         "date": "",
@@ -438,14 +468,17 @@
       },
       "march": {
         "date": "",
-        "status": "Paid\u2705"
+        "status": "Paid✅"
       },
       "june_july": {
         "date": "",
         "status": "",
         "extra": ""
       }
-    }
+    },
+    "full_name": "Okikiola Olayinka Afolaranmi",
+    "nickname": "Lion",
+    "date_joined": "2024"
   },
   {
     "row": 18,
@@ -455,10 +488,10 @@
     "debt": 0,
     "eligibility_status": "green",
     "renewal_date": "June 10th",
-    "cycle_status": "\u2705",
+    "cycle_status": "✅",
     "next_renewal_date": "September 10th",
     "payment_status_note": "80000 message",
-    "next_cycle_status": "Paid \u2705",
+    "next_cycle_status": "Paid ✅",
     "historical_milestones": {
       "january": {
         "date": "",
@@ -466,14 +499,17 @@
       },
       "march": {
         "date": "",
-        "status": "Paid \u2705"
+        "status": "Paid ✅"
       },
       "june_july": {
         "date": "",
         "status": "",
         "extra": ""
       }
-    }
+    },
+    "full_name": "Okeleye Olanrewaju Kabiru",
+    "nickname": "Calm",
+    "date_joined": "2025"
   },
   {
     "row": 19,
@@ -483,25 +519,28 @@
     "debt": 0,
     "eligibility_status": "green",
     "renewal_date": "June 10th",
-    "cycle_status": "\u2705",
+    "cycle_status": "✅",
     "next_renewal_date": "September 10th",
     "payment_status_note": "80000 message",
-    "next_cycle_status": "Paid \u2705",
+    "next_cycle_status": "Paid ✅",
     "historical_milestones": {
       "january": {
         "date": "January 11th",
-        "status": "Paid \u2705"
+        "status": "Paid ✅"
       },
       "march": {
         "date": "March 29th",
-        "status": "Paid \u2705"
+        "status": "Paid ✅"
       },
       "june_july": {
         "date": "June 29th",
-        "status": "Paid for 6 months\u2705",
+        "status": "Paid for 6 months✅",
         "extra": ""
       }
-    }
+    },
+    "full_name": "Ukpongote Esu",
+    "nickname": "Wndrr",
+    "date_joined": "2025"
   },
   {
     "row": 20,
@@ -511,25 +550,28 @@
     "debt": 0,
     "eligibility_status": "green",
     "renewal_date": "July 16th",
-    "cycle_status": "\u2705",
+    "cycle_status": "✅",
     "next_renewal_date": "October 16th",
     "payment_status_note": "80000.0",
-    "next_cycle_status": "Paid \u2705",
+    "next_cycle_status": "Paid ✅",
     "historical_milestones": {
       "january": {
         "date": "",
-        "status": "Paid \u2705"
+        "status": "Paid ✅"
       },
       "march": {
         "date": "March 29th",
-        "status": "Paid\u2705"
+        "status": "Paid✅"
       },
       "june_july": {
         "date": "",
-        "status": "Paid \u2705",
+        "status": "Paid ✅",
         "extra": ""
       }
-    }
+    },
+    "full_name": "Mmaduabuchukwu Obinna Victor",
+    "nickname": "Bluee",
+    "date_joined": "2025"
   },
   {
     "row": 21,
@@ -539,10 +581,10 @@
     "debt": 0,
     "eligibility_status": "green",
     "renewal_date": "August 10th",
-    "cycle_status": "\u2705",
+    "cycle_status": "✅",
     "next_renewal_date": "November 10th",
     "payment_status_note": "80000.0",
-    "next_cycle_status": "Paid\u2705",
+    "next_cycle_status": "Paid✅",
     "historical_milestones": {
       "january": {
         "date": "",
@@ -550,14 +592,17 @@
       },
       "march": {
         "date": "",
-        "status": "Paid \u2705"
+        "status": "Paid ✅"
       },
       "june_july": {
         "date": "",
         "status": "",
         "extra": ""
       }
-    }
+    },
+    "full_name": "Abiona Temitope Oluwadamilare",
+    "nickname": "Topboss",
+    "date_joined": "2025"
   },
   {
     "row": 22,
@@ -567,18 +612,18 @@
     "debt": 20000,
     "eligibility_status": "yellow",
     "renewal_date": "July 24th",
-    "cycle_status": "\u2705",
+    "cycle_status": "✅",
     "next_renewal_date": "October 4th",
     "payment_status_note": "80000.0",
-    "next_cycle_status": "Paid \u2705",
+    "next_cycle_status": "Paid ✅",
     "historical_milestones": {
       "january": {
         "date": "January 11th",
-        "status": "Paid\u2705"
+        "status": "Paid✅"
       },
       "march": {
         "date": "March 29th",
-        "status": "Paid\u2705 balance 30k"
+        "status": "Paid✅ balance 30k"
       },
       "june_july": {
         "date": "",
@@ -595,7 +640,7 @@
     "debt": 0,
     "eligibility_status": "yellow",
     "renewal_date": "July 2nd",
-    "cycle_status": "\u2705",
+    "cycle_status": "✅",
     "next_renewal_date": "October 2nd",
     "payment_status_note": "80000.0",
     "next_cycle_status": "",
@@ -613,7 +658,10 @@
         "status": "",
         "extra": ""
       }
-    }
+    },
+    "full_name": "Atilola Ismail",
+    "nickname": "Thunder",
+    "date_joined": "2024"
   },
   {
     "row": 24,
@@ -623,14 +671,14 @@
     "debt": 30000,
     "eligibility_status": "red",
     "renewal_date": "June 10th",
-    "cycle_status": "\u2705",
+    "cycle_status": "✅",
     "next_renewal_date": "September 10th",
     "payment_status_note": "80000 message",
     "next_cycle_status": "",
     "historical_milestones": {
       "january": {
         "date": "",
-        "status": "Paid\u2705remains 30k"
+        "status": "Paid✅remains 30k"
       },
       "march": {
         "date": "March 29th",
@@ -651,25 +699,28 @@
     "debt": 0,
     "eligibility_status": "yellow",
     "renewal_date": "August 17th",
-    "cycle_status": "\u2705",
+    "cycle_status": "✅",
     "next_renewal_date": "November 17th",
     "payment_status_note": "80000.0",
     "next_cycle_status": "",
     "historical_milestones": {
       "january": {
         "date": "January 11th",
-        "status": "Paid \u2705"
+        "status": "Paid ✅"
       },
       "march": {
         "date": "March 29th",
-        "status": "Paid \u2705"
+        "status": "Paid ✅"
       },
       "june_july": {
         "date": "June 29th",
         "status": "",
         "extra": ""
       }
-    }
+    },
+    "full_name": "Agbaje Muhammed Ayoade",
+    "nickname": "AY",
+    "date_joined": "2025"
   },
   {
     "row": 26,
@@ -679,7 +730,7 @@
     "debt": 0,
     "eligibility_status": "yellow",
     "renewal_date": "July 12th",
-    "cycle_status": "\u2705",
+    "cycle_status": "✅",
     "next_renewal_date": "October 12th",
     "payment_status_note": "80000.0",
     "next_cycle_status": "",
@@ -707,25 +758,28 @@
     "debt": 30000,
     "eligibility_status": "red",
     "renewal_date": "June 10th",
-    "cycle_status": "\u2705",
+    "cycle_status": "✅",
     "next_renewal_date": "September 10th",
     "payment_status_note": "80000 message",
     "next_cycle_status": "",
     "historical_milestones": {
       "january": {
         "date": "January 11th",
-        "status": "Paid\u2705"
+        "status": "Paid✅"
       },
       "march": {
         "date": "March 29th",
-        "status": "Paid\u2705, balance 30k"
+        "status": "Paid✅, balance 30k"
       },
       "june_july": {
         "date": "June 29th",
-        "status": "Paid \u2705 balance 30k",
+        "status": "Paid ✅ balance 30k",
         "extra": ""
       }
-    }
+    },
+    "full_name": "Seromo Friday",
+    "nickname": "Sero",
+    "date_joined": "2025"
   },
   {
     "row": 28,
@@ -735,10 +789,10 @@
     "debt": 0,
     "eligibility_status": "green",
     "renewal_date": "July 20th",
-    "cycle_status": "\u2705",
+    "cycle_status": "✅",
     "next_renewal_date": "October 20th",
     "payment_status_note": "80000.0",
-    "next_cycle_status": "Paid \u2705",
+    "next_cycle_status": "Paid ✅",
     "historical_milestones": {
       "january": {
         "date": "",
@@ -750,10 +804,13 @@
       },
       "june_july": {
         "date": "June 21 / July 12th",
-        "status": "Paid \u2705",
-        "extra": "Paid \u2705"
+        "status": "Paid ✅",
+        "extra": "Paid ✅"
       }
-    }
+    },
+    "full_name": "Muhammad Kabir Muhammad",
+    "nickname": "Star boy",
+    "date_joined": "2025"
   },
   {
     "row": 29,
@@ -763,7 +820,7 @@
     "debt": 0,
     "eligibility_status": "yellow",
     "renewal_date": "June 10th",
-    "cycle_status": "\u2705",
+    "cycle_status": "✅",
     "next_renewal_date": "September 10th",
     "payment_status_note": "80000 message",
     "next_cycle_status": "null",
@@ -819,7 +876,7 @@
     "debt": 0,
     "eligibility_status": "yellow",
     "renewal_date": "June 12th",
-    "cycle_status": "\u2705",
+    "cycle_status": "✅",
     "next_renewal_date": "September 10th",
     "payment_status_note": "80000.0",
     "next_cycle_status": "null",
@@ -865,7 +922,10 @@
         "status": "",
         "extra": ""
       }
-    }
+    },
+    "full_name": "Olanihun Muideen",
+    "nickname": "Wazo",
+    "date_joined": "2024"
   },
   {
     "row": 33,
@@ -882,18 +942,21 @@
     "historical_milestones": {
       "january": {
         "date": "January 11th",
-        "status": "Paid \u2705"
+        "status": "Paid ✅"
       },
       "march": {
         "date": "March 29th",
-        "status": "Paid\u2705"
+        "status": "Paid✅"
       },
       "june_july": {
         "date": "",
         "status": "Paid )",
         "extra": ""
       }
-    }
+    },
+    "full_name": "Bamidele Samuel",
+    "nickname": "Semenyo",
+    "date_joined": "2025"
   },
   {
     "row": 34,
@@ -910,7 +973,7 @@
     "historical_milestones": {
       "january": {
         "date": "January 22nd",
-        "status": "Paid \u2705"
+        "status": "Paid ✅"
       },
       "march": {
         "date": "March 29th",
@@ -921,7 +984,10 @@
         "status": "",
         "extra": ""
       }
-    }
+    },
+    "full_name": "Ponmile Anthony Kayode",
+    "nickname": "Baba-K",
+    "date_joined": "2026"
   },
   {
     "row": 35,
@@ -938,11 +1004,11 @@
     "historical_milestones": {
       "january": {
         "date": "",
-        "status": "Paid \u2705"
+        "status": "Paid ✅"
       },
       "march": {
         "date": "March 29th",
-        "status": "Paid\u2705"
+        "status": "Paid✅"
       },
       "june_july": {
         "date": "July 12th",
@@ -966,7 +1032,7 @@
     "historical_milestones": {
       "january": {
         "date": "",
-        "status": "Paid \u2705"
+        "status": "Paid ✅"
       },
       "march": {
         "date": "March 29th",
@@ -998,7 +1064,7 @@
       },
       "march": {
         "date": "",
-        "status": "Paid \u2705"
+        "status": "Paid ✅"
       },
       "june_july": {
         "date": "July 12th",
@@ -1089,7 +1155,10 @@
         "status": "",
         "extra": ""
       }
-    }
+    },
+    "full_name": "Onaniyi Tolulope",
+    "nickname": "White",
+    "date_joined": "2026"
   },
   {
     "row": 41,
@@ -1117,7 +1186,10 @@
         "status": "",
         "extra": ""
       }
-    }
+    },
+    "full_name": "Uthman Kamil",
+    "nickname": "Kamil",
+    "date_joined": "2026"
   },
   {
     "row": 42,
@@ -1145,7 +1217,10 @@
         "status": "Paid",
         "extra": ""
       }
-    }
+    },
+    "full_name": "Okorie Ivan Obinna",
+    "nickname": "SK",
+    "date_joined": "2026"
   },
   {
     "row": 43,
@@ -1173,7 +1248,10 @@
         "status": "",
         "extra": ""
       }
-    }
+    },
+    "full_name": "Omambala Divine",
+    "nickname": "Bruno",
+    "date_joined": "2026"
   },
   {
     "row": 44,

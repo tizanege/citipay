@@ -98,6 +98,22 @@ export const dbService = {
     return data
   },
 
+  async deleteClub(clubId) {
+    try {
+      const { error } = await supabase
+        .from('clubs')
+        .delete()
+        .eq('id', clubId)
+      if (error) {
+        console.warn('Supabase deleteClub warning:', error.message)
+      }
+      return { success: true }
+    } catch (err) {
+      console.warn('Supabase deleteClub error:', err.message)
+      return { success: false, error: err.message }
+    }
+  },
+
   // ── 2. PROFILES & SQUAD MEMBERS ──────────────────────────────────────────
   /**
    * Fetches full squad members with player dossier and payment obligations

@@ -12,6 +12,7 @@ import PasswordResetModal from '../components/modals/PasswordResetModal'
 import AddPlayerModal from '../components/modals/AddPlayerModal'
 import SendCredentialsModal from '../components/modals/SendCredentialsModal'
 import EditLeagueSettingsModal from '../components/modals/EditLeagueSettingsModal'
+import IslCupModal from '../components/modals/IslCupModal'
 import './DashboardLayout.css'
 
 export default function DashboardLayout() {
@@ -37,6 +38,7 @@ export default function DashboardLayout() {
       <AddPlayerModal />
       <SendCredentialsModal />
       <EditLeagueSettingsModal />
+      <IslCupModal />
     </div>
   )
 }

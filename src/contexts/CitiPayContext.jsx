@@ -88,6 +88,86 @@ export function CitiPayProvider({ children }) {
   const [sendCredentialsModalState, setSendCredentialsModalState] = useState({ isOpen: false, member: null })
   const [leagueSettingsModalState, setLeagueSettingsModalState] = useState({ isOpen: false })
 
+  // ISL Cup Finals 2026 Announcement & 10-Team Registration Matrix State
+  const [islCupModalState, setIslCupModalState] = useState({
+    isOpen: typeof window !== 'undefined' ? !sessionStorage.getItem('isl_cup_dismissed') : true
+  })
+
+  const [islCupTeams, setIslCupTeams] = useState(() => {
+    try {
+      const saved = localStorage.getItem('isl_cup_teams_2026')
+      if (saved) return JSON.parse(saved)
+    } catch (e) {}
+    // Seed initial demo teams so matrix is partially populated
+    return [
+      {
+        id: 'isl-team-1',
+        teamName: 'Sunday League All-Stars',
+        coachName: 'Coach Seyi Lawal',
+        captainName: 'Michael Esu',
+        vipSpectator1: 'Barrister Femi Adeleke',
+        vipSpectator2: 'Alhaji Bashir Dangote',
+        logoUrl: '/crests/sunday-league-fc.svg',
+        registeredAt: new Date().toISOString()
+      },
+      {
+        id: 'isl-team-2',
+        teamName: 'Ikoyi Strikers Elite',
+        coachName: 'Coach Frank Obinna',
+        captainName: 'David Alaba',
+        vipSpectator1: 'Chief Emeka Ihedioha',
+        vipSpectator2: 'Mrs. Folake Solanke',
+        logoUrl: '/crests/sunday-league-fc.svg',
+        registeredAt: new Date().toISOString()
+      },
+      {
+        id: 'isl-team-3',
+        teamName: 'Victoria Island Dynamo',
+        coachName: 'Coach Tunde Ednut',
+        captainName: 'Victor Moses',
+        vipSpectator1: 'Engr. Dapo Abiodun',
+        vipSpectator2: 'Dr. Kunle Bakare',
+        logoUrl: '/crests/sunday-league-fc.svg',
+        registeredAt: new Date().toISOString()
+      }
+    ]
+  })
+
+  const registerIslCupTeam = useCallback((teamPayload) => {
+    if (islCupTeams.length >= 10) {
+      throw new Error('All 10 tournament registration slots are filled.')
+    }
+    const newTeam = {
+      id: `isl-team-${Date.now()}`,
+      ...teamPayload,
+      registeredAt: new Date().toISOString()
+    }
+    setIslCupTeams(prev => {
+      const next = [...prev, newTeam]
+      try {
+        localStorage.setItem('isl_cup_teams_2026', JSON.stringify(next))
+      } catch (e) {}
+      return next
+    })
+
+    // Log to Audit trail
+    const newLog = {
+      id: `log-isl-${Date.now()}`,
+      timestamp: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + ' · ISL Cup Entry',
+      actor_name: teamPayload.captainName || 'Team Representative',
+      actor_role: 'ISL Cup Participant',
+      action: 'ISL_CUP_REGISTERED',
+      target_member_id: teamPayload.teamName,
+      target_name: `ISL Cup 2026: ${teamPayload.teamName}`,
+      old_value: 'N/A',
+      new_value: '₦300,000 Entry Paid',
+      reason: `Registered "${teamPayload.teamName}" for ISL Cup Finals 2026 with 2 VIP Spectator badges.`,
+      details: `Coach: ${teamPayload.coachName} · Captain: ${teamPayload.captainName} · VIP 1: ${teamPayload.vipSpectator1 || 'N/A'} · VIP 2: ${teamPayload.vipSpectator2 || 'N/A'}`
+    }
+    setAuditLogs(prev => [newLog, ...prev])
+    return newTeam
+  }, [islCupTeams])
+
   // Active Club Object
   const currentClub = useMemo(() => {
     return clubs.find(c => c.id === selectedClubId || c.slug === selectedClubId || c.code === selectedClubId) || clubs[0] || initialClubs[0] || {
@@ -664,6 +744,52 @@ export function CitiPayProvider({ children }) {
     return true
   }, [currentClub])
 
+  // Action: Super Admin Delete / Disband Club
+  const deleteClub = useCallback(async (clubId, adminName = 'Super Admin') => {
+    // 1. Guard against deleting primary club
+    if (clubId === 'club-sunday-league' || clubId === 'club-001') {
+      throw new Error('Primary club (Sunday League FC) cannot be deleted as it is the default federation anchor.')
+    }
+
+    const clubToDelete = clubs.find(c => c.id === clubId)
+    if (!clubToDelete) {
+      throw new Error('Club not found.')
+    }
+
+    // 2. Remove club from state
+    setClubs(prev => prev.filter(c => c.id !== clubId))
+
+    // 3. If currently selected club is this club, fallback to primary
+    if (selectedClubId === clubId) {
+      setSelectedClubId('club-sunday-league')
+    }
+
+    // 4. Update audit logs
+    const newLog = {
+      id: `log-club-del-${Date.now()}`,
+      timestamp: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + ' · Club Disbandment',
+      actor_name: adminName,
+      actor_role: 'Super Administrator',
+      action: 'CLUB_DISBANDED',
+      target_member_id: clubToDelete.code,
+      target_name: clubToDelete.name,
+      old_value: 'Active Chartered Club',
+      new_value: 'Disbanded / Removed',
+      reason: `Super Admin permanently deleted club "${clubToDelete.name}" (${clubToDelete.code}) from the federation.`,
+      details: `Charter revoked. Club removed from active registry.`
+    }
+    setAuditLogs(prev => [newLog, ...prev])
+
+    // 5. Background Supabase deletion
+    try {
+      await dbService.deleteClub(clubId)
+    } catch (e) {
+      console.warn('Supabase deleteClub background sync:', e)
+    }
+
+    return true
+  }, [clubs, selectedClubId])
+
   // Action: Super Admin update League Parameters (Matchday, Jersey price, Bib price)
   const updateLeagueSettings = useCallback(({ current_matchday, jersey_price, bib_price, season_title, competition_name, adminName = 'Chief Segun Adeleke (Super Admin)' }) => {
     setLeagueSettings(prev => {
@@ -954,6 +1080,7 @@ export function CitiPayProvider({ children }) {
     overrideMemberStatus,
     updateClubRules,
     updateClubFees,
+    deleteClub,
     updateLeagueSettings,
     setMemberAvailability,
     sendReminder,
@@ -982,7 +1109,13 @@ export function CitiPayProvider({ children }) {
     sendCredentialsModalState,
     setSendCredentialsModalState,
     leagueSettingsModalState,
-    setLeagueSettingsModalState
+    setLeagueSettingsModalState,
+    
+    // ISL Cup Finals 2026
+    islCupModalState,
+    setIslCupModalState,
+    islCupTeams,
+    registerIslCupTeam
   }
 
   return (

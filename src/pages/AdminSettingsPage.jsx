@@ -107,11 +107,11 @@ export default function AdminSettingsPage() {
           </div>
 
           <div className="flex flex-col gap-4 text-xs">
-            <div className="p-3.5 rounded-xl bg-blue-50/70 border border-blue-100 flex items-center justify-between">
+            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
               <div>
-                <span className="text-2xs font-bold uppercase tracking-wider text-blue-800 block">Active League Gameweek</span>
-                <div className="text-xl font-extrabold font-mono text-blue-950 mt-0.5">
-                  Gameweek {matchday} <span className="text-xs font-normal text-blue-700">of 38</span>
+                <span className="text-3xs font-bold uppercase tracking-wider text-slate-500 block">Active League Gameweek</span>
+                <div className="text-xl font-extrabold font-mono text-slate-900 mt-0.5">
+                  Gameweek {matchday} <span className="text-xs font-normal text-slate-400">of 38</span>
                 </div>
               </div>
               <span className="badge badge-primary font-mono font-bold text-xs py-1 px-2.5">
@@ -121,45 +121,46 @@ export default function AdminSettingsPage() {
 
             {/* Stepper Controls */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
+              <label className="block text-2xs font-bold uppercase tracking-wider text-slate-500 mb-2">
                 SET CURRENT MATCHDAY (1 – 38)
               </label>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  className="w-10 h-10 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 flex items-center justify-center text-slate-700 font-bold transition-colors cursor-pointer"
+                  className="w-10 h-10 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-700 font-bold transition-all shadow-sm active:scale-95 disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
                   onClick={() => stepMatchday(-1)}
                   disabled={matchday <= 1}
                   title="Previous Gameweek"
                 >
-                  <Minus size={16} />
+                  <Minus size={15} />
                 </button>
 
-                <div className="input-affix">
-                  <span className="input-affix-label">GW</span>
+                <div className="flex-1 flex items-center bg-white border border-slate-200 rounded-xl px-3 py-1.5 shadow-sm focus-within:border-slate-900 focus-within:ring-2 focus-within:ring-slate-900/5 transition-all">
+                  <span className="text-xs font-bold text-slate-400 mr-2 select-none">GW</span>
                   <input
                     type="number"
                     min="1"
                     max="38"
                     value={matchday}
                     onChange={(e) => setMatchday(Math.max(1, Math.min(38, Number(e.target.value) || 1)))}
-                    className="form-input-portal text-center font-mono font-extrabold text-base py-2 pl-9 pr-3 w-full"
+                    className="w-full bg-transparent font-mono font-extrabold text-base text-slate-900 focus:outline-none text-center"
                   />
+                  <span className="text-3xs text-slate-400 font-semibold uppercase ml-2 select-none whitespace-nowrap">/ 38</span>
                 </div>
 
                 <button
                   type="button"
-                  className="w-10 h-10 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 flex items-center justify-center text-slate-700 font-bold transition-colors cursor-pointer"
+                  className="w-10 h-10 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-700 font-bold transition-all shadow-sm active:scale-95 disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
                   onClick={() => stepMatchday(1)}
                   disabled={matchday >= 38}
                   title="Next Gameweek"
                 >
-                  <Plus size={16} />
+                  <Plus size={15} />
                 </button>
 
                 <button
                   type="button"
-                  className="btn btn-secondary text-xs font-bold py-2.5 px-3 whitespace-nowrap"
+                  className="btn btn-secondary text-xs font-bold py-2.5 px-3.5 rounded-xl whitespace-nowrap shadow-sm hover:border-slate-300"
                   onClick={() => stepMatchday(1)}
                   disabled={matchday >= 38}
                 >
@@ -168,16 +169,16 @@ export default function AdminSettingsPage() {
               </div>
 
               {/* Quick Gameweek Selector */}
-              <div className="flex items-center gap-1.5 mt-2.5 flex-wrap">
-                <span className="text-3xs text-slate-400 font-bold uppercase">Quick Jumps:</span>
+              <div className="flex items-center gap-1.5 mt-3 flex-wrap">
+                <span className="text-3xs text-slate-400 font-bold uppercase tracking-wider">Quick Jumps:</span>
                 {[1, 10, 14, 15, 19, 38].map(gw => (
                   <button
                     key={gw}
                     type="button"
-                    className={`text-2xs font-bold px-2 py-0.5 rounded border transition-colors cursor-pointer ${
+                    className={`text-2xs font-semibold px-2.5 py-1 rounded-lg border transition-all cursor-pointer ${
                       Number(matchday) === gw
-                        ? 'bg-blue-600 text-white border-blue-600'
-                        : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
+                        ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
+                        : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
                     }`}
                     onClick={() => setMatchday(gw)}
                   >
@@ -213,44 +214,45 @@ export default function AdminSettingsPage() {
             <span className="badge badge-success font-bold text-xs">Super Admin Authority</span>
           </div>
 
-          <div className="flex flex-col gap-4 text-xs">
+          <div className="flex flex-col gap-3.5 text-xs">
             {/* Jersey Price */}
-            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
+            <div className="p-3.5 rounded-xl bg-slate-50/70 border border-slate-200/80">
               <div className="flex justify-between items-center mb-1">
-                <label className="text-xs font-bold text-slate-800 flex items-center gap-1">
-                  <Shirt size={13} className="text-emerald-600" /> Official Matchday Jersey Price (₦)
+                <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                  <Shirt size={14} className="text-emerald-600" /> Official Matchday Jersey Price
                 </label>
-                <span className="font-mono font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 text-xs">
+                <span className="font-mono font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200 text-xs">
                   ₦{Number(jerseyPrice).toLocaleString()}
                 </span>
               </div>
-              <p className="text-3xs text-slate-500 mb-2">Customized Home & Away team jersey with player name & squad number.</p>
+              <p className="text-3xs text-slate-500 mb-2.5">Customized Home & Away team jersey with player name & squad number.</p>
 
-              <div className="flex items-center gap-2 mb-2">
-                <div className="relative flex-1">
-                  <span className="currency-prefix">₦</span>
+              <div className="flex items-center gap-2 mb-2.5">
+                <div className="flex-1 flex items-center bg-white border border-slate-200 rounded-xl px-3 py-2 shadow-sm focus-within:border-slate-900 focus-within:ring-2 focus-within:ring-slate-900/5 transition-all">
+                  <span className="font-mono font-bold text-slate-400 text-sm mr-2 select-none">₦</span>
                   <input
                     type="number"
                     step="500"
                     min="0"
-                    className="form-input-portal with-prefix font-mono font-bold text-xs py-1.5 w-full"
+                    className="w-full bg-transparent font-mono font-bold text-sm text-slate-900 focus:outline-none"
                     value={jerseyPrice}
                     onChange={(e) => setJerseyPrice(Math.max(0, Number(e.target.value)))}
-                    placeholder="18,000"
+                    placeholder="18000"
                   />
+                  <span className="text-3xs font-semibold text-slate-400 uppercase select-none">NGN</span>
                 </div>
               </div>
 
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="text-3xs text-slate-400 font-bold uppercase">Presets:</span>
+                <span className="text-3xs text-slate-400 font-bold uppercase tracking-wider">Presets:</span>
                 {[15000, 18000, 20000, 25000].map(amt => (
                   <button
                     key={amt}
                     type="button"
-                    className={`text-2xs font-mono font-bold px-2 py-0.5 rounded border transition-colors cursor-pointer ${
+                    className={`text-2xs font-mono font-semibold px-2.5 py-1 rounded-lg border transition-all cursor-pointer ${
                       Number(jerseyPrice) === amt
-                        ? 'bg-emerald-600 text-white border-emerald-600'
-                        : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
+                        ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
+                        : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
                     }`}
                     onClick={() => setJerseyPrice(amt)}
                   >
@@ -261,42 +263,43 @@ export default function AdminSettingsPage() {
             </div>
 
             {/* Bib Price */}
-            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
+            <div className="p-3.5 rounded-xl bg-slate-50/70 border border-slate-200/80">
               <div className="flex justify-between items-center mb-1">
-                <label className="text-xs font-bold text-slate-800 flex items-center gap-1">
-                  <Tag size={13} className="text-amber-600" /> Official Training Bib Price (₦)
+                <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                  <Tag size={14} className="text-amber-600" /> Official Training Bib Price
                 </label>
-                <span className="font-mono font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 text-xs">
+                <span className="font-mono font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200 text-xs">
                   ₦{Number(bibPrice).toLocaleString()}
                 </span>
               </div>
-              <p className="text-3xs text-slate-500 mb-2">Numbered scrimmage bib pack for training and practice matches.</p>
+              <p className="text-3xs text-slate-500 mb-2.5">Numbered scrimmage bib pack for training and practice matches.</p>
 
-              <div className="flex items-center gap-2 mb-2">
-                <div className="relative flex-1">
-                  <span className="currency-prefix">₦</span>
+              <div className="flex items-center gap-2 mb-2.5">
+                <div className="flex-1 flex items-center bg-white border border-slate-200 rounded-xl px-3 py-2 shadow-sm focus-within:border-slate-900 focus-within:ring-2 focus-within:ring-slate-900/5 transition-all">
+                  <span className="font-mono font-bold text-slate-400 text-sm mr-2 select-none">₦</span>
                   <input
                     type="number"
                     step="500"
                     min="0"
-                    className="form-input-portal with-prefix font-mono font-bold text-xs py-1.5 w-full"
+                    className="w-full bg-transparent font-mono font-bold text-sm text-slate-900 focus:outline-none"
                     value={bibPrice}
                     onChange={(e) => setBibPrice(Math.max(0, Number(e.target.value)))}
-                    placeholder="6,500"
+                    placeholder="6500"
                   />
+                  <span className="text-3xs font-semibold text-slate-400 uppercase select-none">NGN</span>
                 </div>
               </div>
 
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="text-3xs text-slate-400 font-bold uppercase">Presets:</span>
+                <span className="text-3xs text-slate-400 font-bold uppercase tracking-wider">Presets:</span>
                 {[4500, 6500, 8000, 10000].map(amt => (
                   <button
                     key={amt}
                     type="button"
-                    className={`text-2xs font-mono font-bold px-2 py-0.5 rounded border transition-colors cursor-pointer ${
+                    className={`text-2xs font-mono font-semibold px-2.5 py-1 rounded-lg border transition-all cursor-pointer ${
                       Number(bibPrice) === amt
-                        ? 'bg-amber-600 text-white border-amber-600'
-                        : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
+                        ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
+                        : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
                     }`}
                     onClick={() => setBibPrice(amt)}
                   >
@@ -307,7 +310,7 @@ export default function AdminSettingsPage() {
             </div>
 
             {/* Live Impact Pill */}
-            <div className="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center gap-2 text-2xs text-emerald-900">
+            <div className="p-2.5 rounded-xl bg-emerald-50/80 border border-emerald-200/80 flex items-center gap-2 text-2xs text-emerald-900 font-medium">
               <Sparkles size={14} className="text-emerald-600 shrink-0" />
               <span>Instantly reflects in all Player Portals, Kit Store & Paystack Checkout.</span>
             </div>

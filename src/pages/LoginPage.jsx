@@ -156,59 +156,15 @@ export default function LoginPage() {
           )}
 
           <form onSubmit={handleLogin} className="flex flex-col gap-3.5">
-            {/* 2. CLUB SELECTION (Item 2 Requirement) */}
-            <div>
-              <label className="form-label-portal">
-                Club Organization
-              </label>
-              <select
-                className="form-input-portal font-medium text-slate-900 bg-white"
-                value={selectedClubId}
-                onChange={(e) => setSelectedClubId(e.target.value)}
-              >
-                {clubs.map(c => (
-                  <option key={c.id} value={c.id}>
-                    {c.name} {c.id === 'club-sunday-league' ? '(Primary)' : ''}
-                  </option>
-                ))}
-              </select>
-            </div>
-
             {/* 1. MEMBER LOGIN CREDENTIALS (Item 1 Requirement) */}
             <div>
-              <div className="flex justify-between items-center mb-1.5">
-                <label className="form-label-portal mb-0">Identifier</label>
-                <div className="auth-identifier-tabs">
-                  <button
-                    type="button"
-                    className={`auth-tab-btn ${authMode === 'member_id' ? 'active' : ''}`}
-                    onClick={() => setAuthMode('member_id')}
-                  >
-                    Member ID
-                  </button>
-                  <button
-                    type="button"
-                    className={`auth-tab-btn ${authMode === 'phone' ? 'active' : ''}`}
-                    onClick={() => setAuthMode('phone')}
-                  >
-                    Phone
-                  </button>
-                  <button
-                    type="button"
-                    className={`auth-tab-btn ${authMode === 'email' ? 'active' : ''}`}
-                    onClick={() => setAuthMode('email')}
-                  >
-                    Email
-                  </button>
-                </div>
-              </div>
-
+              <label className="form-label-portal">Member ID, Email or Phone</label>
               <div className="relative">
                 <User size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type="text"
                   className="form-input-portal pl-9 font-mono"
-                  placeholder={authMode === 'member_id' ? `e.g. ${defaultMember?.member_id || 'SL-8K4P2'}` : authMode === 'phone' ? '+234 802 345 6789' : 'michael.esu@sundayleague.ng'}
+                  placeholder={`e.g. ${defaultMember?.member_id || 'SL-8K4P2'} or email`}
                   value={memberId}
                   onChange={(e) => setMemberId(e.target.value)}
                   required

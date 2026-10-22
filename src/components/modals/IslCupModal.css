@@ -1,0 +1,875 @@
+/* ==========================================================================
+   ISL Cup Finals 2026 Announcement & 10-Team Column Matrix Styles
+   ========================================================================== */
+
+.isl-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(9, 9, 11, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  overflow-y: auto;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.isl-modal-card {
+  background: #FFFFFF;
+  border-radius: var(--radius-2xl, 24px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 1100px;
+  max-height: calc(100vh - 2.5rem);
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUpModal 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.isl-modal-topbar {
+  padding: 0.85rem 1.25rem;
+  background: #09090B;
+  color: #FFFFFF;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.isl-cup-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #FDE047;
+  text-transform: uppercase;
+}
+
+.isl-cup-subbadge {
+  font-size: 0.625rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.15);
+  color: #FFFFFF;
+  letter-spacing: 0.04em;
+}
+
+.isl-close-btn {
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
+  color: #E4E4E7;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.isl-close-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  color: #FFFFFF;
+}
+
+/* Nav Tabs */
+.isl-nav-tabs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  background: #F4F4F6;
+  border-bottom: 1px solid #E4E4E7;
+  overflow-x: auto;
+}
+
+.isl-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.95rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #71717A;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.isl-tab-btn:hover {
+  color: #18181B;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.isl-tab-btn.active {
+  background: #09090B;
+  color: #FFFFFF;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Tab 1: Overview Split Layout */
+.isl-content-split {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  overflow-y: auto;
+  max-height: calc(100vh - 12rem);
+}
+
+.isl-poster-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.isl-poster-wrap {
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #E4E4E7;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  background: #000000;
+}
+
+.isl-poster-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+.isl-details-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.isl-hero-pre {
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #2563EB;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+}
+
+.isl-hero-title {
+  font-size: 1.65rem;
+  font-extrabold: 900;
+  letter-spacing: -0.025em;
+  color: #09090B;
+  margin: 0 0 0.4rem 0;
+  line-height: 1.15;
+}
+
+.isl-hero-sub {
+  font-size: 0.875rem;
+  color: #52525B;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Prizes Grid */
+.isl-prizes-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+}
+
+.isl-prize-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: 14px;
+  border: 1px solid #E4E4E7;
+  background: #FAFAFA;
+}
+
+.isl-prize-card.gold {
+  background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+  border-color: #FDE68A;
+}
+
+.isl-prize-card.silver {
+  background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+  border-color: #CBD5E1;
+}
+
+.isl-prize-medal {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.isl-prize-lbl {
+  font-size: 0.625rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: #71717A;
+  text-transform: uppercase;
+}
+
+.isl-prize-amount {
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: #09090B;
+  letter-spacing: -0.02em;
+}
+
+/* Key Info Card */
+.isl-info-card {
+  background: #FFFFFF;
+  border: 1px solid #E4E4E7;
+  border-radius: 14px;
+  padding: 0.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.isl-info-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid #F4F4F6;
+}
+
+.isl-info-row:last-child {
+  border-bottom: none;
+}
+
+.isl-info-row.highlight {
+  background: #F0FDF4;
+  margin: 0.35rem -0.75rem -0.25rem -0.75rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+}
+
+.isl-info-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: #F4F4F6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #52525B;
+  flex-shrink: 0;
+}
+
+.isl-info-lbl {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #71717A;
+  display: block;
+}
+
+.isl-info-val {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #09090B;
+}
+
+/* Specs pills */
+.isl-spec-badge-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.isl-spec-pill {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+  background: #EFF6FF;
+  border: 1px solid #BFDBFE;
+  color: #1D4ED8;
+}
+
+/* Action Buttons */
+.isl-action-bar {
+  display: flex;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+}
+
+.isl-btn-primary {
+  flex: 1;
+  background: #09090B;
+  color: #FFFFFF;
+  border: 1px solid #09090B;
+  padding: 0.75rem 1.25rem;
+  border-radius: 12px;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.isl-btn-primary:hover {
+  background: #27272A;
+  transform: translateY(-1px);
+}
+
+.isl-btn-secondary {
+  background: #FFFFFF;
+  color: #09090B;
+  border: 1px solid #E4E4E7;
+  padding: 0.75rem 1.15rem;
+  border-radius: 12px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.isl-btn-secondary:hover {
+  background: #F4F4F6;
+  border-color: #D4D4D8;
+}
+
+/* TAB 2: Registration Form */
+.isl-register-wrap {
+  padding: 1.5rem;
+  overflow-y: auto;
+  max-height: calc(100vh - 12rem);
+}
+
+.isl-register-header {
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #E4E4E7;
+}
+
+.isl-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.isl-form-section {
+  background: #FAFAFA;
+  border: 1px solid #E4E4E7;
+  border-radius: 16px;
+  padding: 1.25rem;
+}
+
+.isl-section-title {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: #09090B;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid #E4E4E7;
+}
+
+.isl-crest-upload-box {
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
+  border: 2px dashed #CBD5E1;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.isl-crest-upload-box:hover {
+  border-color: #2563EB;
+  background: #EFF6FF;
+}
+
+.isl-crest-uploaded-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.isl-crest-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.isl-input-lbl {
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #3F3F46;
+  margin-bottom: 0.35rem;
+}
+
+.isl-input {
+  width: 100%;
+  background: #FFFFFF;
+  border: 1px solid #E4E4E7;
+  border-radius: 10px;
+  padding: 0.55rem 0.85rem;
+  font-size: 0.8125rem;
+  color: #09090B;
+  font-weight: 600;
+  transition: all 0.15s ease;
+  outline: none;
+}
+
+.isl-input:focus {
+  border-color: #09090B;
+  box-shadow: 0 0 0 3px rgba(9, 9, 11, 0.06);
+}
+
+.isl-reg-summary-box {
+  background: #F4F4F6;
+  border: 1px solid #E4E4E7;
+  border-radius: 12px;
+  padding: 0.85rem;
+}
+
+.isl-success-alert {
+  padding: 0.75rem 1rem;
+  background: #ECFDF5;
+  border: 1px solid #A7F3D0;
+  color: #065F46;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.isl-error-alert {
+  padding: 0.75rem 1rem;
+  background: #FFF1F2;
+  border: 1px solid #FECDD3;
+  color: #9F1239;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* TAB 3: 10 COLUMNS MATRIX */
+.isl-teams-wrap {
+  padding: 1.5rem;
+  overflow-y: auto;
+  max-height: calc(100vh - 12rem);
+}
+
+.isl-teams-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #E4E4E7;
+  flex-wrap: gap-3;
+}
+
+.isl-ten-columns-matrix {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.85rem;
+}
+
+@media (max-width: 1024px) {
+  .isl-ten-columns-matrix {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .isl-content-split {
+    grid-template-columns: 1fr;
+  }
+  .isl-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .isl-ten-columns-matrix {
+    grid-template-columns: 1fr;
+  }
+}
+
+.isl-slot-card {
+  background: #FFFFFF;
+  border: 1px solid #E4E4E7;
+  border-radius: 16px;
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.isl-slot-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.08);
+}
+
+.isl-slot-card.empty {
+  border-style: dashed;
+  background: #FAFAFA;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 230px;
+  cursor: pointer;
+}
+
+.isl-slot-card.empty:hover {
+  border-color: #2563EB;
+  background: #EFF6FF;
+}
+
+.isl-slot-empty-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #E4E4E7;
+  color: #71717A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.isl-slot-badge {
+  font-size: 0.625rem;
+  font-weight: 800;
+  padding: 0.15rem 0.45rem;
+  border-radius: 6px;
+  background: #F4F4F6;
+  color: #71717A;
+  letter-spacing: 0.04em;
+}
+
+.isl-slot-badge.filled {
+  background: #09090B;
+  color: #FFFFFF;
+}
+
+.isl-status-pip {
+  font-size: 0.5625rem;
+  font-weight: 800;
+  color: #059669;
+  background: #ECFDF5;
+  border: 1px solid #A7F3D0;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+}
+
+.isl-team-crest-box {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  margin: 0.65rem auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  overflow: hidden;
+}
+
+.isl-team-crest-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.isl-team-name-title {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: #09090B;
+  text-align: center;
+  margin: 0 0 0.5rem 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.isl-team-meta-list {
+  background: #FAFAFA;
+  border: 1px solid #F4F4F6;
+  border-radius: 10px;
+  padding: 0.5rem 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.6875rem;
+}
+
+.isl-meta-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.isl-meta-k {
+  color: #71717A;
+  font-size: 0.625rem;
+  font-weight: 600;
+}
+
+.isl-meta-v {
+  color: #09090B;
+  font-weight: 700;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.isl-vip-divider {
+  margin-top: 0.3rem;
+  padding-top: 0.3rem;
+  border-top: 1px dashed #E4E4E7;
+  text-align: center;
+}
+
+.isl-vip-tag {
+  font-size: 0.5625rem;
+  font-weight: 800;
+  color: #2563EB;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.isl-vip-names {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.isl-vip-name {
+  font-size: 0.625rem;
+  color: #52525B;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.isl-slot-claim-btn {
+  background: #09090B;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.isl-slot-claim-btn:hover {
+  background: #2563EB;
+}
+
+/* ==========================================================================
+   ISL Cup Dashboard Embedded Banner Styles (Explicit Contrast & High Fidelity)
+   ========================================================================== */
+.isl-dashboard-banner {
+  background: #09090B !important;
+  background-image: linear-gradient(135deg, #09090B 0%, #0F172A 50%, #172554 100%) !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 20px !important;
+  padding: 1.25rem 1.5rem !important;
+  margin-bottom: 1.5rem !important;
+  box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 1.25rem !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+.isl-dashboard-banner:hover {
+  border-color: #FBBF24 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(251, 191, 36, 0.3) !important;
+}
+
+.isl-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 1.15rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.isl-banner-trophy-box {
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #F59E0B 0%, #FBBF24 50%, #FDE68A 100%);
+  color: #09090B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.isl-dashboard-banner:hover .isl-banner-trophy-box {
+  transform: scale(1.08) rotate(3deg);
+}
+
+.isl-banner-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.isl-banner-tag {
+  background: #F59E0B;
+  color: #09090B;
+  font-size: 0.625rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  padding: 0.2rem 0.55rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+
+.isl-banner-stats-pill {
+  color: #93C5FD;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.isl-banner-heading {
+  font-size: 1.25rem !important;
+  font-weight: 900 !important;
+  color: #FFFFFF !important;
+  letter-spacing: -0.02em !important;
+  margin: 0 0 0.3rem 0 !important;
+  line-height: 1.2 !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.isl-banner-details {
+  font-size: 0.8125rem !important;
+  color: #CBD5E1 !important;
+  margin: 0 !important;
+  font-weight: 500 !important;
+  line-height: 1.4 !important;
+}
+
+.isl-banner-details strong {
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
+}
+
+.isl-banner-right {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-shrink: 0;
+}
+
+.isl-banner-prize-highlight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+}
+
+.isl-banner-prize-lbl {
+  font-size: 0.5625rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #FBBF24;
+  text-transform: uppercase;
+}
+
+.isl-banner-prize-val {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #FFFFFF;
+  letter-spacing: -0.02em;
+}
+
+.isl-banner-cta-btn {
+  background: linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%) !important;
+  color: #09090B !important;
+  border: none !important;
+  font-size: 0.8125rem !important;
+  font-weight: 800 !important;
+  padding: 0.7rem 1.25rem !important;
+  border-radius: 12px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.45rem !important;
+  cursor: pointer !important;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35) !important;
+  transition: all 0.15s ease !important;
+  white-space: nowrap !important;
+}
+
+.isl-banner-cta-btn:hover {
+  background: linear-gradient(135deg, #D97706 0%, #F59E0B 100%) !important;
+  color: #FFFFFF !important;
+}
+
+@media (max-width: 768px) {
+  .isl-dashboard-banner {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 1.15rem;
+  }
+  .isl-banner-right {
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+  .isl-banner-prize-highlight {
+    align-items: flex-start;
+    text-align: left;
+  }
+}
+

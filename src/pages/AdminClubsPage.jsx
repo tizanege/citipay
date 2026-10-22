@@ -1,14 +1,17 @@
 import { useState } from 'react'
 import {
   Building2, ShieldCheck, Plus, Search, Filter, MapPin,
-  Users, DollarSign, Award, ArrowUpRight, CheckCircle2, Sliders, ExternalLink
+  Users, DollarSign, Award, ArrowUpRight, CheckCircle2, Sliders, ExternalLink,
+  Trash2
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
+import DeleteClubModal from '../components/modals/DeleteClubModal'
 import './AdminDashboard.css'
 
 export default function AdminClubsPage() {
-  const { clubs, members, transactions, setRulesConfigModalState, setSelectedClubId, leagueSettings } = useCitiPay()
+  const { clubs, members, transactions, setRulesConfigModalState, setSelectedClubId, leagueSettings, deleteClub } = useCitiPay()
   const [searchTerm, setSearchTerm] = useState('')
+  const [deleteModalState, setDeleteModalState] = useState({ isOpen: false, club: null })
 
   const filteredClubs = clubs.filter(c =>
     c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -25,6 +28,10 @@ export default function AdminClubsPage() {
   const handleOpenClubRules = (clubId) => {
     setSelectedClubId(clubId)
     setRulesConfigModalState({ isOpen: true })
+  }
+
+  const handleDeleteClub = async (clubId) => {
+    await deleteClub(clubId)
   }
 
   return (
@@ -198,11 +205,28 @@ export default function AdminClubsPage() {
                   <ExternalLink size={13} />
                   <span>Select Club</span>
                 </button>
+                {club.id !== 'club-sunday-league' && club.id !== 'club-001' && (
+                  <button
+                    className="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-rose-50 hover:border-rose-300 hover:text-rose-600 flex items-center justify-center text-slate-400 transition-colors cursor-pointer shrink-0"
+                    onClick={() => setDeleteModalState({ isOpen: true, club })}
+                    title={`Disband & delete ${club.name}`}
+                  >
+                    <Trash2 size={13} />
+                  </button>
+                )}
               </div>
             </div>
           )
         })}
       </div>
+
+      {/* Delete / Disband Club Modal */}
+      <DeleteClubModal
+        isOpen={deleteModalState.isOpen}
+        club={deleteModalState.club}
+        onClose={() => setDeleteModalState({ isOpen: false, club: null })}
+        onConfirm={handleDeleteClub}
+      />
     </div>
   )
 }

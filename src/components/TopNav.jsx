@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import {
   Search, Bell, CreditCard, ChevronDown, Trophy,
-  ShieldCheck, Database
+  ShieldCheck, Database, Sparkles
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
 import './TopNav.css'
@@ -14,7 +14,8 @@ export default function TopNav() {
     currentMember,
     dbStatus,
     recheckDatabase,
-    leagueSettings
+    leagueSettings,
+    setIslCupModalState
   } = useCitiPay()
 
   const [showNotifications, setShowNotifications] = useState(false)
@@ -44,6 +45,17 @@ export default function TopNav() {
 
       {/* Right: Actions, Badges & Switchers */}
       <div className="topnav-actions-wrap">
+        {/* ISL Cup Finals 2026 Announcement Pill Trigger */}
+        <button
+          type="button"
+          onClick={() => setIslCupModalState({ isOpen: true })}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-black bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-400 text-slate-950 shadow-sm hover:opacity-95 transition-all cursor-pointer active:scale-95 border border-amber-300"
+          title="Open ISL Cup Finals 2026 Tournament & Registration Portal"
+        >
+          <Trophy size={13} className="text-slate-950 shrink-0" />
+          <span className="tracking-tight uppercase font-extrabold text-3xs">ISL Cup Finals 2026</span>
+          <span className="bg-slate-950 text-amber-300 text-4xs font-black px-1.5 py-0.2 rounded-full">₦2.8M</span>
+        </button>
         {/* Database Status Indicator */}
         <div
           className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-3xs font-bold border transition-all cursor-pointer"
