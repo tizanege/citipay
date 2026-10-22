@@ -213,14 +213,6 @@ export default function LoginPage() {
                 <input type="checkbox" className="rounded" defaultChecked />
                 <span>Remember me</span>
               </label>
-              <button
-                type="button"
-                className="text-2xs text-slate-500 font-medium flex items-center gap-1 hover:text-slate-900"
-                onClick={() => setOtpModalState({ isOpen: true, memberId })}
-              >
-                <Smartphone size={12} />
-                <span>OTP Login</span>
-              </button>
             </div>
 
             {/* Sign In Button */}
