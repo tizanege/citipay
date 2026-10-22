@@ -1306,6 +1306,59 @@ export function CitiPayProvider({ children }) {
     }
   }, [members, currentClub])
 
+  // Action: Reset Member Password / PIN
+  const resetMemberPassword = useCallback(async ({ identifier, newPassword, newPin }) => {
+    const clean = (identifier || '').trim()
+    const cleanNoDash = clean.toUpperCase().replace(/[^A-Z0-9]/g, '')
+
+    const target = members.find(m => {
+      const mNorm = (m.member_id || '').toUpperCase().replace(/[^A-Z0-9]/g, '')
+      const dNorm = (m.display_id || '').toUpperCase().replace(/[^A-Z0-9]/g, '')
+      return (
+        mNorm === cleanNoDash ||
+        dNorm === cleanNoDash ||
+        (m.email && m.email.toLowerCase() === clean.toLowerCase()) ||
+        (m.phone && m.phone.replace(/[^0-9]/g, '') === clean.replace(/[^0-9]/g, ''))
+      )
+    })
+
+    if (!target) {
+      throw new Error(`No account found matching "${identifier}". Please verify your Member ID, email, or registered phone.`)
+    }
+
+    const updatedPassword = newPassword || '••••••••'
+    const updatedPin = newPin || '1234'
+
+    setMembers(prev => prev.map(m => {
+      if (m.id === target.id) {
+        return {
+          ...m,
+          temp_password: updatedPassword,
+          pin: updatedPin,
+          password_updated_at: new Date().toISOString()
+        }
+      }
+      return m
+    }))
+
+    const newLog = {
+      id: `log-reset-${Date.now()}`,
+      timestamp: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' · Password Reset',
+      actor_name: target.full_name,
+      actor_role: 'Self-Service Security',
+      action: 'PASSWORD_RESET_COMPLETED',
+      target_member_id: target.member_id,
+      target_name: target.full_name,
+      old_value: 'Previous Credentials',
+      new_value: 'Credentials Updated',
+      reason: `Member completed self-service password/PIN reset via verified recovery OTP.`,
+      details: `Member ID: ${target.member_id} · Contact: ${target.email || target.phone}`
+    }
+    setAuditLogs(prev => [newLog, ...prev])
+
+    return target
+  }, [members])
+
   const value = {
     // Database Status
     dbStatus,
@@ -1348,6 +1401,7 @@ export function CitiPayProvider({ children }) {
     sendReminder,
     registerMember,
     sendMemberCredentials,
+    resetMemberPassword,
     
     // Modals
     paymentModalState,

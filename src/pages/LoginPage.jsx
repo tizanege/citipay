@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
 import IslCupModal from '../components/modals/IslCupModal'
+import PasswordResetModal from '../components/modals/PasswordResetModal'
 import './AuthPages.css'
 
 export default function LoginPage() {
@@ -283,8 +284,9 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* ISL Cup Full Interactive Modal with 10 Team Picture Columns */}
+      {/* Modals available on Login Screen */}
       <IslCupModal />
+      <PasswordResetModal />
     </div>
   )
 }
