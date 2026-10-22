@@ -77,6 +77,7 @@ export function CitiPayProvider({ children }) {
 
   // 4. Modal UI States
   const [paymentModalState, setPaymentModalState] = useState({ isOpen: false, type: 'membership_installment', defaultAmount: 25000 })
+  const [walletModalState, setWalletModalState] = useState({ isOpen: false, mode: 'fund' }) // 'fund' | 'manage'
   const [receiptModalState, setReceiptModalState] = useState({ isOpen: false, transaction: null })
   const [manualPaymentModalState, setManualPaymentModalState] = useState({ isOpen: false, member: null })
   const [statusOverrideModalState, setStatusOverrideModalState] = useState({ isOpen: false, member: null })
@@ -446,6 +447,189 @@ export function CitiPayProvider({ children }) {
       })
     } catch (e) {
       console.warn('Supabase online payment sync:', e.message)
+    }
+
+    return newTx
+  }, [currentMember, currentClub, clubRules])
+
+  // Action: Fund Player Wallet (via Paystack or Direct Top-up)
+  const fundWallet = useCallback(async ({ amount, reference = null, method = 'Paystack Direct' }) => {
+    const numAmount = Number(amount)
+    if (isNaN(numAmount) || numAmount <= 0) {
+      throw new Error('Please enter a valid top-up amount')
+    }
+
+    const refNum = reference || `WLT-TOP-${Date.now().toString().slice(-6)}`
+    const receiptRef = `WLT-REC-${Date.now().toString().slice(-6)}`
+
+    // Update member's wallet balance
+    setMembers(prev => prev.map(m => {
+      if (m.id === currentMember.id || m.member_id === currentMember.member_id) {
+        const currentBal = Number(m.wallet_balance || 0)
+        const updatedBal = currentBal + numAmount
+
+        // Persist to localStorage
+        try {
+          const stored = JSON.parse(localStorage.getItem('citipay_player_wallets') || '{}')
+          stored[m.id] = updatedBal
+          stored[m.member_id] = updatedBal
+          localStorage.setItem('citipay_player_wallets', JSON.stringify(stored))
+        } catch (e) {}
+
+        return {
+          ...m,
+          wallet_balance: updatedBal
+        }
+      }
+      return m
+    }))
+
+    const newTx = {
+      id: `tx-wallet-${Date.now()}`,
+      date: new Date().toISOString(),
+      date_display: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
+      description: 'Wallet Balance Top-Up (Paystack)',
+      member_name: currentMember.full_name,
+      member_id: currentMember.member_id,
+      club: currentClub.name,
+      amount: numAmount,
+      currency: 'NGN',
+      payment_type: 'wallet_topup',
+      method,
+      channel: 'online',
+      status: 'Paid',
+      reference: refNum,
+      receipt_no: receiptRef,
+      notes: 'Funds deposited to CitiPay Virtual Wallet'
+    }
+
+    setTransactions(prev => [newTx, ...prev])
+
+    // Background record in Supabase payments table
+    try {
+      await dbService.recordPayment({
+        userId: currentMember.id,
+        clubId: currentClub.id,
+        paymentType: 'other_approved',
+        amount: numAmount,
+        reference: refNum,
+        description: 'CitiPay Wallet Funding',
+        notes: `Wallet credit for ${currentMember.full_name}`,
+        paymentMethod: 'paystack_card',
+        paymentChannel: 'online'
+      })
+    } catch (e) {
+      console.warn('Wallet topup sync warning:', e.message)
+    }
+
+    return newTx
+  }, [currentMember, currentClub])
+
+  // Action: Pay for Services directly from CitiPay Wallet Balance
+  const payWithWallet = useCallback(async ({ paymentType, amount, notes = '' }) => {
+    const numAmount = Number(amount)
+    const currentBal = Number(currentMember.wallet_balance || 0)
+
+    if (currentBal < numAmount) {
+      throw new Error(`Insufficient wallet balance. You have ₦${currentBal.toLocaleString()} in your wallet, but this service requires ₦${numAmount.toLocaleString()}.`)
+    }
+
+    const refNum = `WLT-PAY-${Date.now().toString().slice(-6)}`
+    const receiptRef = `SL-2026-WLT-${Date.now().toString().slice(-4)}`
+
+    let typeDesc = 'Club Service Payment'
+    if (paymentType === 'membership') typeDesc = 'Full Season Membership'
+    else if (paymentType === 'membership_installment') typeDesc = 'Membership installment'
+    else if (paymentType === 'social_dues') typeDesc = 'Monthly Social Dues (September 2026)'
+    else if (paymentType === 'merchandise' || paymentType === 'merchandise_jersey') typeDesc = 'Official Matchday Jersey'
+    else if (paymentType === 'merchandise_bib') typeDesc = 'Official Training Bib Pack'
+    else if (paymentType === 'guest_pass') typeDesc = 'Guest Player Matchday Pass'
+
+    // Deduct from wallet balance and update dues obligations
+    setMembers(prev => prev.map(m => {
+      if (m.id === currentMember.id || m.member_id === currentMember.member_id) {
+        const updatedBal = Math.max(0, currentBal - numAmount)
+
+        // Persist to localStorage
+        try {
+          const stored = JSON.parse(localStorage.getItem('citipay_player_wallets') || '{}')
+          stored[m.id] = updatedBal
+          stored[m.member_id] = updatedBal
+          localStorage.setItem('citipay_player_wallets', JSON.stringify(stored))
+        } catch (e) {}
+
+        let newPaid = m.membership_paid
+        let newSocialPaid = m.social_dues_paid
+
+        if (paymentType === 'membership' || paymentType === 'membership_installment') {
+          newPaid = Math.min(m.membership_fee, m.membership_paid + numAmount)
+        } else if (paymentType === 'social_dues') {
+          newSocialPaid = Number(currentClub.monthly_social_dues || 5000)
+        }
+
+        const newOut = Math.max(0, m.membership_fee - newPaid)
+        const newStatus = newOut === 0 ? 'green' : newOut <= clubRules.yellow_max_balance ? 'yellow' : 'red'
+
+        const updatedInstallments = m.installments?.map(inst => {
+          if (inst.status === 'pending') {
+            return { ...inst, status: 'paid', paid_at: new Date().toISOString().split('T')[0], ref: refNum }
+          }
+          return inst
+        })
+
+        return {
+          ...m,
+          wallet_balance: updatedBal,
+          membership_paid: newPaid,
+          membership_outstanding: newOut,
+          membership_status: newOut === 0 ? 'paid' : 'partial',
+          social_dues_paid: newSocialPaid,
+          social_dues_status: newSocialPaid >= Number(currentClub.monthly_social_dues || 5000) ? 'paid' : 'due',
+          status: newStatus,
+          last_payment_date: 'Today',
+          next_payment_label: newOut === 0 ? 'No payment currently due.' : `₦${newOut.toLocaleString()} remaining`,
+          installments: updatedInstallments || m.installments
+        }
+      }
+      return m
+    }))
+
+    const newTx = {
+      id: `tx-wltpay-${Date.now()}`,
+      date: new Date().toISOString(),
+      date_display: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
+      description: typeDesc,
+      member_name: currentMember.full_name,
+      member_id: currentMember.member_id,
+      club: currentClub.name,
+      amount: numAmount,
+      currency: 'NGN',
+      payment_type: paymentType,
+      method: 'CitiPay Virtual Wallet',
+      channel: 'online',
+      status: 'Paid',
+      reference: refNum,
+      receipt_no: receiptRef,
+      notes: notes || 'Paid from CitiPay Wallet balance'
+    }
+
+    setTransactions(prev => [newTx, ...prev])
+
+    // Background sync to Supabase
+    try {
+      await dbService.recordPayment({
+        userId: currentMember.id,
+        clubId: currentClub.id,
+        paymentType,
+        amount: numAmount,
+        reference: refNum,
+        description: typeDesc,
+        notes: notes || 'Paid using CitiPay Wallet balance',
+        paymentMethod: 'wallet',
+        paymentChannel: 'online'
+      })
+    } catch (e) {
+      console.warn('Wallet payment sync warning:', e.message)
     }
 
     return newTx
@@ -1077,6 +1261,8 @@ export function CitiPayProvider({ children }) {
     
     // Actions
     processOnlinePayment,
+    fundWallet,
+    payWithWallet,
     recordManualPayment,
     overrideMemberStatus,
     updateClubRules,
@@ -1091,6 +1277,8 @@ export function CitiPayProvider({ children }) {
     // Modals
     paymentModalState,
     setPaymentModalState,
+    walletModalState,
+    setWalletModalState,
     receiptModalState,
     setReceiptModalState,
     manualPaymentModalState,

@@ -12,20 +12,24 @@ export default function MakePaymentModal() {
     paymentModalState,
     setPaymentModalState,
     processOnlinePayment,
+    payWithWallet,
+    setWalletModalState,
     setReceiptModalState,
     currentMember,
     currentClub,
     leagueSettings
   } = useCitiPay()
 
+  const memberWalletBal = Number(currentMember?.wallet_balance || 0)
   const halfMembership = Math.round((currentMember.membership_fee || currentClub?.membership_fee || 100000) / 2)
   const defaultInstAmount = currentMember.membership_outstanding > 0 ? Math.min(halfMembership, currentMember.membership_outstanding) : halfMembership
 
   const [paymentType, setPaymentType] = useState(paymentModalState.type || 'membership_installment')
   const [amount, setAmount] = useState(paymentModalState.defaultAmount || defaultInstAmount)
-  const [paymentMethod, setPaymentMethod] = useState('paystack_card') // 'paystack_card' | 'bank_transfer' | 'ussd' | 'apple_pay'
+  const [paymentMethod, setPaymentMethod] = useState('paystack_card') // 'wallet' | 'paystack_card' | 'bank_transfer' | 'ussd' | 'all_channels'
   const [notes, setNotes] = useState('')
   const [isProcessing, setIsProcessing] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
   const [successTx, setSuccessTx] = useState(null)
 
   // Sync state whenever modal opens or defaults change
@@ -45,6 +49,7 @@ export default function MakePaymentModal() {
         setAmount(defaultInstAmount)
       }
       setSuccessTx(null)
+      setErrorMessage('')
     }
   }, [paymentModalState.isOpen, paymentModalState.type, paymentModalState.defaultAmount, leagueSettings?.jersey_price, leagueSettings?.bib_price, defaultInstAmount])
 
@@ -61,10 +66,29 @@ export default function MakePaymentModal() {
     else if (type === 'other_approved') setAmount(10000)
   }
 
-  const handleConfirmPay = () => {
+  const handleConfirmPay = async () => {
+    setErrorMessage('')
     setIsProcessing(true)
 
-    // Paystack channels mapping based on user selection or full suite
+    // Option 1: Direct Pay with CitiPay Virtual Wallet Balance
+    if (paymentMethod === 'wallet') {
+      try {
+        const tx = await payWithWallet({
+          paymentType,
+          amount,
+          notes
+        })
+        setIsProcessing(false)
+        setSuccessTx(tx)
+        return
+      } catch (err) {
+        setIsProcessing(false)
+        setErrorMessage(err.message || 'Payment from wallet failed.')
+        return
+      }
+    }
+
+    // Option 2: Paystack Gateway (Card, Transfer, USSD, Multi-Channel)
     let selectedChannels = ['card', 'bank', 'ussd', 'qr', 'mobile_money', 'bank_transfer']
     if (paymentMethod === 'paystack_card') {
       selectedChannels = ['card']
@@ -347,7 +371,16 @@ export default function MakePaymentModal() {
                     <ShieldCheck size={11} /> Paystack Multi-Channel Active
                   </span>
                 </div>
-                <div className="method-pill-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+                <div className="method-pill-grid" style={{ gridTemplateColumns: 'repeat(5, 1fr)' }}>
+                  <button
+                    type="button"
+                    className={`method-pill-btn ${paymentMethod === 'wallet' ? 'active' : ''}`}
+                    onClick={() => setPaymentMethod('wallet')}
+                    title="Pay instantly using your CitiPay Virtual Wallet funds"
+                  >
+                    <Wallet size={14} className={paymentMethod === 'wallet' ? 'text-emerald-300' : 'text-emerald-600'} />
+                    <span>Wallet (₦{memberWalletBal.toLocaleString()})</span>
+                  </button>
                   <button
                     type="button"
                     className={`method-pill-btn ${paymentMethod === 'all_channels' ? 'active' : ''}`}
@@ -382,10 +415,43 @@ export default function MakePaymentModal() {
                     <span>USSD</span>
                   </button>
                 </div>
-                <p className="text-3xs text-slate-500 mt-1.5 flex items-center gap-1">
-                  💡 Select <strong>All Options</strong> to access Card, Instant Dedicated Bank Account, USSD (*737#), and Visa QR in the Paystack modal.
-                </p>
+                {paymentMethod === 'wallet' ? (
+                  <div className="mt-2 p-2 rounded-lg bg-emerald-50 border border-emerald-200 text-xs flex justify-between items-center">
+                    <div>
+                      <span className="text-emerald-900 font-bold">CitiPay Virtual Wallet Active:</span>{' '}
+                      <span className="text-emerald-700">Available Balance: ₦{memberWalletBal.toLocaleString()}</span>
+                      {memberWalletBal < amount && (
+                        <div className="text-rose-600 font-bold mt-0.5">
+                          ⚠️ Shortfall: ₦{(amount - memberWalletBal).toLocaleString()} needed.
+                        </div>
+                      )}
+                    </div>
+                    {memberWalletBal < amount && (
+                      <button
+                        type="button"
+                        className="px-2 py-1 rounded bg-emerald-600 text-white font-bold text-3xs hover:bg-emerald-700 transition-all cursor-pointer"
+                        onClick={() => {
+                          setPaymentModalState(prev => ({ ...prev, isOpen: false }))
+                          setWalletModalState({ isOpen: true, mode: 'fund' })
+                        }}
+                      >
+                        + Top Up Wallet
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-3xs text-slate-500 mt-1.5 flex items-center gap-1">
+                    💡 Select <strong>Wallet</strong> for 1-click payment from balance, or <strong>All Options</strong> for Paystack popup.
+                  </p>
+                )}
               </div>
+
+              {errorMessage && (
+                <div className="p-2.5 rounded-lg bg-rose-50 border border-rose-200 text-xs text-rose-700 font-medium flex items-center gap-2">
+                  <AlertCircle size={15} className="shrink-0 text-rose-500" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
 
               {/* Summary Checkout Box */}
               <div className="checkout-summary-box">

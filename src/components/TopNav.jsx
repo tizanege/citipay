@@ -15,7 +15,8 @@ export default function TopNav() {
     dbStatus,
     recheckDatabase,
     leagueSettings,
-    setIslCupModalState
+    setIslCupModalState,
+    setWalletModalState
   } = useCitiPay()
 
   const [showNotifications, setShowNotifications] = useState(false)
@@ -45,6 +46,20 @@ export default function TopNav() {
 
       {/* Right: Actions, Badges & Switchers */}
       <div className="topnav-actions-wrap">
+        {/* Wallet Balance & Top-Up Pill Trigger */}
+        <button
+          type="button"
+          onClick={() => setWalletModalState && setWalletModalState({ isOpen: true, mode: 'fund' })}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-300 hover:bg-emerald-100 hover:border-emerald-400 shadow-xs transition-all cursor-pointer active:scale-95"
+          title="CitiPay Virtual Wallet - Hold funds and pay for club dues & merchandise"
+        >
+          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="text-3xs uppercase tracking-tight text-emerald-700 font-extrabold">Wallet</span>
+          <span className="font-mono font-black text-xs text-emerald-900">
+            ₦{Number(currentMember?.wallet_balance || 0).toLocaleString()}
+          </span>
+        </button>
+
         {/* ISL Cup Finals 2026 Announcement Pill Trigger */}
         <button
           type="button"

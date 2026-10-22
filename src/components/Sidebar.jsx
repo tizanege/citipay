@@ -3,7 +3,7 @@ import {
   LayoutDashboard, User, CreditCard, History, TrendingUp,
   Trophy, Calendar, Bell, Settings, Users, ClipboardList,
   Building2, FileText, BarChart3, Shield, LogOut, Menu, X,
-  ChevronLeft, Sparkles, ShieldCheck, Sliders, Landmark
+  ChevronLeft, Sparkles, ShieldCheck, Sliders, Landmark, Wallet
 } from 'lucide-react'
 import { useState } from 'react'
 import { useCitiPay } from '../contexts/CitiPayContext'
@@ -13,7 +13,7 @@ export default function Sidebar() {
   const location = useLocation()
   const navigate = useNavigate()
   const [mobileOpen, setMobileOpen] = useState(false)
-  const { currentMember, currentClub } = useCitiPay()
+  const { currentMember, currentClub, setWalletModalState } = useCitiPay()
 
   const isClubAdmin = location.pathname.startsWith('/club')
   const isAdmin = location.pathname.startsWith('/admin')
@@ -23,6 +23,7 @@ export default function Sidebar() {
   const playerNav = [
     { to: '/dashboard', icon: LayoutDashboard, label: 'Overview' },
     { to: '/payments', icon: CreditCard, label: 'Payments' },
+    { to: '#wallet', icon: Wallet, label: 'Wallet', badge: `₦${Number(currentMember?.wallet_balance || 0).toLocaleString()}`, isModal: true },
     { to: '/payment-history', icon: History, label: 'Receipts' },
     { to: '/profile', icon: User, label: 'Profile' }
   ]
@@ -95,19 +96,38 @@ export default function Sidebar() {
           <div className="nav-section-title">
             Menu
           </div>
-          {activeNav.map(({ to, icon: Icon, label, badge }) => (
-            <NavLink
-              key={to}
-              to={to}
-              end={to === '/dashboard' || to === '/club/dashboard' || to === '/admin/dashboard'}
-              className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
-              onClick={() => setMobileOpen(false)}
-            >
-              <Icon size={18} className="nav-icon" />
-              <span className="nav-label">{label}</span>
-              {badge && <span className="nav-pill-badge">{badge}</span>}
-            </NavLink>
-          ))}
+          {activeNav.map(({ to, icon: Icon, label, badge, isModal }) => {
+            if (isModal) {
+              return (
+                <button
+                  key={to}
+                  type="button"
+                  className="sidebar-link w-full text-left cursor-pointer"
+                  onClick={() => {
+                    setMobileOpen(false)
+                    setWalletModalState({ isOpen: true, mode: 'fund' })
+                  }}
+                >
+                  <Icon size={18} className="nav-icon text-emerald-500" />
+                  <span className="nav-label font-medium">{label}</span>
+                  {badge && <span className="nav-pill-badge bg-emerald-100 text-emerald-800 font-bold font-mono text-3xs">{badge}</span>}
+                </button>
+              )
+            }
+            return (
+              <NavLink
+                key={to}
+                to={to}
+                end={to === '/dashboard' || to === '/club/dashboard' || to === '/admin/dashboard'}
+                className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+                onClick={() => setMobileOpen(false)}
+              >
+                <Icon size={18} className="nav-icon" />
+                <span className="nav-label">{label}</span>
+                {badge && <span className="nav-pill-badge">{badge}</span>}
+              </NavLink>
+            )
+          })}
         </nav>
 
         {/* User Card & Sign Out */}

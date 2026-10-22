@@ -146,6 +146,22 @@ export const dbService = {
       const membershipPaid = Number(plan?.amount_paid || 0)
       const membershipOutstanding = Math.max(0, membershipFee - membershipPaid)
 
+      // Read wallet balance from local store or default
+      let walletBal = 0
+      try {
+        const storedWallets = JSON.parse(localStorage.getItem('citipay_player_wallets') || '{}')
+        if (storedWallets[p.id] !== undefined) {
+          walletBal = Number(storedWallets[p.id])
+        } else if (storedWallets[p.member_id] !== undefined) {
+          walletBal = Number(storedWallets[p.member_id])
+        } else {
+          // Generous starting credit for testing & active members
+          walletBal = 15000
+        }
+      } catch (e) {
+        walletBal = 15000
+      }
+
       return {
         id: p.id,
         member_id: p.member_id,
@@ -171,6 +187,7 @@ export const dbService = {
         social_dues_current_month: 5000,
         social_dues_paid: 5000,
         social_dues_status: 'paid',
+        wallet_balance: walletBal,
         last_payment_date: 'Recent',
         next_payment_amount: membershipOutstanding > 0 ? Math.min(Math.round(membershipFee / 2), membershipOutstanding) : 0,
         next_payment_label: membershipOutstanding === 0 ? 'No payment currently due.' : `₦${membershipOutstanding.toLocaleString()} remaining`,
