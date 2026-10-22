@@ -82,7 +82,15 @@ export default function ClubSquadPage() {
               <span className="badge badge-success flex items-center gap-1 font-bold text-xs">
                 <ShieldCheck size={12} /> {currentClub.code} Executive Command
               </span>
-              <span className="badge badge-accent font-bold text-xs">Gameweek {leagueSettings.current_matchday} Clearance</span>
+              <button
+                type="button"
+                onClick={() => setRulesConfigModalState({ isOpen: true })}
+                className="badge badge-accent font-bold text-xs cursor-pointer hover:opacity-90 active:scale-95 transition-all flex items-center gap-1 border border-blue-200"
+                title="Click to adjust Gameweek for this club"
+              >
+                <span>Gameweek {currentClub.current_matchday || leagueSettings.current_matchday || 14} Clearance</span>
+                <span className="text-3xs text-blue-600 bg-white/70 px-1 rounded font-normal">Edit</span>
+              </button>
             </div>
             <h1 className="club-banner-title">Squad Roster & Matchday Clearance</h1>
             <p className="club-banner-sub flex items-center gap-1 text-xs">

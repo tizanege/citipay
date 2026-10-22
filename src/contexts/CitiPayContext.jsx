@@ -178,7 +178,9 @@ export function CitiPayProvider({ children }) {
       slug: 'sunday-league-fc',
       membership_fee: 100000,
       monthly_social_dues: 5000,
-      max_installments: 2
+      max_installments: 2,
+      current_matchday: 14,
+      total_matchdays: 38
     }
   }, [clubs, selectedClubId])
 
@@ -803,6 +805,59 @@ export function CitiPayProvider({ children }) {
     return true
   }, [members])
 
+  // Action: Admin Update Club Matchday / Gameweek
+  const updateClubMatchday = useCallback(async (clubId, newMatchday, adminName = 'Club Administrator') => {
+    const targetClubId = clubId || currentClub.id
+    const gwNumber = Math.max(1, Math.min(38, Number(newMatchday) || 1))
+
+    // 1. Update clubs list
+    setClubs(prev => prev.map(c => {
+      if (c.id === targetClubId || c.slug === targetClubId || c.code === targetClubId) {
+        return {
+          ...c,
+          current_matchday: gwNumber
+        }
+      }
+      return c
+    }))
+
+    // 2. Also keep global leagueSettings in sync if target club is the active club
+    setLeagueSettings(prev => ({
+      ...prev,
+      current_matchday: gwNumber
+    }))
+
+    // 3. Update availability template for matchday
+    setAvailability(prev => ({
+      ...prev,
+      gameweek: `GAMEWEEK ${gwNumber}`
+    }))
+
+    // 4. Update clubRules matchday
+    setClubRules(prev => ({
+      ...prev,
+      current_matchday: gwNumber
+    }))
+
+    // 5. Add to Audit Logs
+    const newLog = {
+      id: `log-gw-${Date.now()}`,
+      timestamp: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + ' · Gameweek Adjustment',
+      actor_name: adminName,
+      actor_role: 'Club Administrator',
+      action: 'CLUB_GAMEWEEK_UPDATED',
+      target_member_id: currentClub.code,
+      target_name: currentClub.name,
+      old_value: `GW ${currentClub.current_matchday || leagueSettings.current_matchday || 14}`,
+      new_value: `GW ${gwNumber}`,
+      reason: `Club Administrator adjusted active gameweek to Round ${gwNumber}.`,
+      details: `Active club gameweek shifted to Gameweek ${gwNumber}. Squad clearance and team sheets synchronized.`
+    }
+    setAuditLogs(prev => [newLog, ...prev])
+
+    return true
+  }, [currentClub, leagueSettings.current_matchday])
+
   // Action: Admin Update Configurable Status Rules (Item 5)
   const updateClubRules = useCallback(async (newRules) => {
     setClubRules(prev => ({
@@ -812,6 +867,18 @@ export function CitiPayProvider({ children }) {
       updated_by: 'President'
     }))
 
+    if (newRules.current_matchday !== undefined) {
+      const gwNumber = Math.max(1, Math.min(38, Number(newRules.current_matchday) || 1))
+      setClubs(prev => prev.map(c => {
+        if (c.id === currentClub.id || c.slug === currentClub.id || c.code === currentClub.id) {
+          return { ...c, current_matchday: gwNumber }
+        }
+        return c
+      }))
+      setLeagueSettings(prev => ({ ...prev, current_matchday: gwNumber }))
+      setAvailability(prev => ({ ...prev, gameweek: `GAMEWEEK ${gwNumber}` }))
+    }
+
     // Add Audit Log
     const newLog = {
       id: `log-${Date.now()}`,
@@ -820,11 +887,11 @@ export function CitiPayProvider({ children }) {
       actor_role: 'Club President',
       action: 'CONFIG_RULES_UPDATED',
       target_member_id: 'ALL_MEMBERS',
-      target_name: 'Sunday League FC Payment Rules',
-      old_value: `Yellow Max: ₦${clubRules.yellow_max_balance.toLocaleString()}`,
-      new_value: `Yellow Max: ₦${Number(newRules.yellow_max_balance || 20000).toLocaleString()}`,
-      reason: 'Administrator updated club eligibility thresholds in system settings.',
-      details: 'Eligibility thresholds recalculated across all member accounts.'
+      target_name: `${currentClub.name} Rules`,
+      old_value: `Yellow Max: ₦${clubRules.yellow_max_balance.toLocaleString()}${clubRules.current_matchday ? ` · GW ${clubRules.current_matchday}` : ''}`,
+      new_value: `Yellow Max: ₦${Number(newRules.yellow_max_balance || 20000).toLocaleString()}${newRules.current_matchday ? ` · GW ${newRules.current_matchday}` : ''}`,
+      reason: 'Administrator updated club eligibility thresholds and tournament settings.',
+      details: 'Eligibility thresholds and matchday parameters recalculated across all member accounts.'
     }
     setAuditLogs(prev => [newLog, ...prev])
 
@@ -837,11 +904,12 @@ export function CitiPayProvider({ children }) {
   }, [clubRules, currentClub])
 
   // Action: Admin Update Dues & Membership Fees
-  const updateClubFees = useCallback(async ({ clubId, membership_fee, monthly_social_dues, max_installments = 2, adminName = 'President' }) => {
+  const updateClubFees = useCallback(async ({ clubId, membership_fee, monthly_social_dues, max_installments = 2, current_matchday, adminName = 'President' }) => {
     const targetClubId = clubId || currentClub.id
     const newFee = Number(membership_fee || currentClub.membership_fee || 100000)
     const newDues = Number(monthly_social_dues || currentClub.monthly_social_dues || 5000)
     const newMaxInst = Number(max_installments || 2)
+    const newGw = current_matchday !== undefined ? Math.max(1, Math.min(38, Number(current_matchday) || 1)) : undefined
 
     // 1. Update clubs list
     setClubs(prev => prev.map(c => {
@@ -850,11 +918,17 @@ export function CitiPayProvider({ children }) {
           ...c,
           membership_fee: newFee,
           monthly_social_dues: newDues,
-          max_installments: newMaxInst
+          max_installments: newMaxInst,
+          ...(newGw !== undefined ? { current_matchday: newGw } : {})
         }
       }
       return c
     }))
+
+    if (newGw !== undefined) {
+      setLeagueSettings(prev => ({ ...prev, current_matchday: newGw }))
+      setAvailability(prev => ({ ...prev, gameweek: `GAMEWEEK ${newGw}` }))
+    }
 
     // 2. Update members belonging to this club
     setMembers(prev => prev.map(m => {
@@ -1267,6 +1341,7 @@ export function CitiPayProvider({ children }) {
     overrideMemberStatus,
     updateClubRules,
     updateClubFees,
+    updateClubMatchday,
     deleteClub,
     updateLeagueSettings,
     setMemberAvailability,

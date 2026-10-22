@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   X, Sliders, ShieldCheck, CheckCircle2, AlertCircle,
-  HelpCircle, RefreshCw, Save
+  HelpCircle, RefreshCw, Save, Calendar, Plus, Minus
 } from 'lucide-react'
 import { useCitiPay } from '../../contexts/CitiPayContext'
 import './ModalStyles.css'
@@ -13,9 +13,12 @@ export default function RuleConfigModal() {
     clubRules,
     updateClubRules,
     updateClubFees,
-    currentClub
+    updateClubMatchday,
+    currentClub,
+    leagueSettings
   } = useCitiPay()
 
+  const [clubMatchday, setClubMatchday] = useState(currentClub.current_matchday || leagueSettings.current_matchday || 14)
   const [membershipFee, setMembershipFee] = useState(currentClub.membership_fee || 100000)
   const [monthlyDues, setMonthlyDues] = useState(currentClub.monthly_social_dues || 5000)
   const [greenMax, setGreenMax] = useState(clubRules.green_max_balance || 0)
@@ -26,10 +29,29 @@ export default function RuleConfigModal() {
   const [requireSocialDues, setRequireSocialDues] = useState(clubRules.require_social_dues_current ?? true)
   const [isSaving, setIsSaving] = useState(false)
 
+  // Keep state synced when modal opens
+  useEffect(() => {
+    if (rulesConfigModalState.isOpen) {
+      setClubMatchday(currentClub.current_matchday || leagueSettings.current_matchday || 14)
+      setMembershipFee(currentClub.membership_fee || 100000)
+      setMonthlyDues(currentClub.monthly_social_dues || 5000)
+      setGreenMax(clubRules.green_max_balance || 0)
+      setYellowMax(clubRules.yellow_max_balance || 20000)
+      setYellowDays(clubRules.yellow_due_days_window || 14)
+      setRedMin(clubRules.red_min_balance || 20001)
+      setRedDays(clubRules.red_overdue_days_threshold || 14)
+      setRequireSocialDues(clubRules.require_social_dues_current ?? true)
+    }
+  }, [rulesConfigModalState.isOpen, currentClub, clubRules, leagueSettings])
+
   if (!rulesConfigModalState.isOpen) return null
 
   const handleClose = () => {
     setRulesConfigModalState({ isOpen: false })
+  }
+
+  const stepMatchday = (delta) => {
+    setClubMatchday(prev => Math.max(1, Math.min(38, Number(prev) + delta)))
   }
 
   const handleSave = (e) => {
@@ -41,9 +63,11 @@ export default function RuleConfigModal() {
         clubId: currentClub.id,
         membership_fee: Number(membershipFee),
         monthly_social_dues: Number(monthlyDues),
-        max_installments: 2
+        max_installments: 2,
+        current_matchday: Number(clubMatchday)
       })
       updateClubRules({
+        current_matchday: Number(clubMatchday),
         green_max_balance: Number(greenMax),
         yellow_max_balance: Number(yellowMax),
         yellow_due_days_window: Number(yellowDays),
@@ -51,6 +75,9 @@ export default function RuleConfigModal() {
         red_overdue_days_threshold: Number(redDays),
         require_social_dues_current: requireSocialDues
       })
+      if (updateClubMatchday) {
+        updateClubMatchday(currentClub.id, Number(clubMatchday), 'Club Administrator')
+      }
       setIsSaving(false)
       handleClose()
     }, 600)
@@ -79,6 +106,79 @@ export default function RuleConfigModal() {
 
         {/* Form (Item 5 Requirement) */}
         <form onSubmit={handleSave} className="modal-body-portal flex flex-col gap-4">
+          {/* Club Active Gameweek / Matchday Configuration */}
+          <div className="rule-config-block" style={{ background: '#f0fdf4', borderColor: '#86efac' }}>
+            <div className="rule-config-header">
+              <div className="flex items-center gap-2">
+                <span className="status-dot-sm" style={{ background: '#16a34a' }} />
+                <strong className="text-xs font-extrabold text-emerald-950 flex items-center gap-1.5">
+                  <Calendar size={14} className="text-emerald-700" /> ACTIVE CLUB GAMEWEEK
+                </strong>
+              </div>
+              <span className="badge badge-success text-3xs font-black font-mono">
+                GW {clubMatchday} of 38
+              </span>
+            </div>
+
+            <div className="rule-config-inputs mt-2.5 flex flex-col gap-2">
+              <div className="flex items-center justify-between text-xs">
+                <div>
+                  <span className="text-slate-800 font-bold block">Tournament Gameweek / Round:</span>
+                  <span className="text-3xs text-slate-500">Sets the active fixture round for {currentClub.name} clearance</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    className="w-7 h-7 rounded border border-slate-300 bg-white hover:bg-slate-100 flex items-center justify-center text-slate-700 font-bold transition-colors cursor-pointer"
+                    onClick={() => stepMatchday(-1)}
+                    disabled={clubMatchday <= 1}
+                  >
+                    <Minus size={13} />
+                  </button>
+                  <div className="flex items-center gap-1">
+                    <span className="font-bold text-emerald-800 text-xs">GW</span>
+                    <input
+                      type="number"
+                      min="1"
+                      max="38"
+                      className="rule-input-field font-mono font-extrabold text-center text-xs py-1 px-2 w-14"
+                      value={clubMatchday}
+                      onChange={(e) => setClubMatchday(Math.max(1, Math.min(38, Number(e.target.value) || 1)))}
+                      required
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    className="w-7 h-7 rounded border border-slate-300 bg-white hover:bg-slate-100 flex items-center justify-center text-slate-700 font-bold transition-colors cursor-pointer"
+                    onClick={() => stepMatchday(1)}
+                    disabled={clubMatchday >= 38}
+                  >
+                    <Plus size={13} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Quick Jump Pills */}
+              <div className="flex items-center gap-1.5 pt-1.5 border-t border-emerald-200/60 flex-wrap">
+                <span className="text-3xs text-emerald-800 font-bold uppercase tracking-wider">Quick Select:</span>
+                {[1, 5, 10, 14, 15, 16, 20, 38].map(gw => (
+                  <button
+                    key={gw}
+                    type="button"
+                    className={`text-3xs font-bold px-2 py-0.5 rounded border transition-all cursor-pointer ${
+                      Number(clubMatchday) === gw
+                        ? 'bg-emerald-700 text-white border-emerald-700 shadow-xs'
+                        : 'bg-white text-emerald-900 border-emerald-300 hover:bg-emerald-50'
+                    }`}
+                    onClick={() => setClubMatchday(gw)}
+                  >
+                    GW {gw}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
           {/* Club Dues & Membership Fee Configuration */}
           <div className="rule-config-block" style={{ background: '#f8fafc', borderColor: '#cbd5e1' }}>
             <div className="rule-config-header">

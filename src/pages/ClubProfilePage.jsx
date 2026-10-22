@@ -8,24 +8,30 @@ import { useCitiPay } from '../contexts/CitiPayContext'
 import './ClubDashboard.css'
 
 export default function ClubProfilePage() {
-  const { currentClub, clubRules, setRulesConfigModalState, adminMetrics, updateClubFees } = useCitiPay()
+  const { currentClub, clubRules, setRulesConfigModalState, adminMetrics, updateClubFees, updateClubMatchday, leagueSettings } = useCitiPay()
   const [isEditingFees, setIsEditingFees] = useState(false)
   const [membershipFee, setMembershipFee] = useState(currentClub.membership_fee || 100000)
   const [monthlyDues, setMonthlyDues] = useState(currentClub.monthly_social_dues || 5000)
+  const [clubMatchday, setClubMatchday] = useState(currentClub.current_matchday || leagueSettings.current_matchday || 14)
   const [saveSuccess, setSaveSuccess] = useState(false)
 
   useEffect(() => {
     setMembershipFee(currentClub.membership_fee || 100000)
     setMonthlyDues(currentClub.monthly_social_dues || 5000)
-  }, [currentClub.membership_fee, currentClub.monthly_social_dues])
+    setClubMatchday(currentClub.current_matchday || leagueSettings.current_matchday || 14)
+  }, [currentClub.membership_fee, currentClub.monthly_social_dues, currentClub.current_matchday, leagueSettings.current_matchday])
 
   const handleSaveFees = () => {
     updateClubFees({
       clubId: currentClub.id,
       membership_fee: Number(membershipFee),
       monthly_social_dues: Number(monthlyDues),
-      max_installments: 2
+      max_installments: 2,
+      current_matchday: Number(clubMatchday)
     })
+    if (updateClubMatchday) {
+      updateClubMatchday(currentClub.id, Number(clubMatchday), 'Club Administrator')
+    }
     setIsEditingFees(false)
     setSaveSuccess(true)
     setTimeout(() => setSaveSuccess(false), 3500)
@@ -218,6 +224,33 @@ export default function ClubProfilePage() {
                 <strong className="text-slate-900 font-mono text-sm font-extrabold">
                   ₦{(currentClub.monthly_social_dues || 5000).toLocaleString()}/mo
                 </strong>
+              )}
+            </div>
+
+            <div className="flex justify-between items-center py-2 border-b border-slate-100">
+              <div>
+                <span className="text-slate-700 font-bold block flex items-center gap-1.5">
+                  <Calendar size={13} className="text-blue-600" /> Active Club Gameweek / Matchday:
+                </span>
+                <span className="text-3xs text-slate-500">Tournament round determining squad roster clearance</span>
+              </div>
+              {isEditingFees ? (
+                <div className="flex items-center gap-1">
+                  <span className="font-bold text-slate-500">GW</span>
+                  <input
+                    type="number"
+                    className="form-input-portal font-mono font-bold text-xs py-1 px-2 w-20 text-center"
+                    value={clubMatchday}
+                    onChange={(e) => setClubMatchday(Math.max(1, Math.min(38, Number(e.target.value) || 1)))}
+                    step="1"
+                    min="1"
+                    max="38"
+                  />
+                </div>
+              ) : (
+                <span className="badge badge-accent font-bold font-mono text-xs">
+                  GW {currentClub.current_matchday || leagueSettings.current_matchday || 14} of 38
+                </span>
               )}
             </div>
 

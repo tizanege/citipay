@@ -230,7 +230,15 @@ export default function ClubDashboard() {
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="section-title text-base font-extrabold text-slate-900">CLUB PAYMENT OVERVIEW</h3>
-                <span className="badge badge-accent font-bold text-3xs">Gameweek {leagueSettings.current_matchday}</span>
+                <button
+                  type="button"
+                  onClick={() => setRulesConfigModalState({ isOpen: true })}
+                  className="badge badge-accent font-bold text-3xs cursor-pointer hover:opacity-90 active:scale-95 transition-all flex items-center gap-1 border border-blue-200"
+                  title="Click to adjust Gameweek for this club"
+                >
+                  <span>Gameweek {currentClub.current_matchday || leagueSettings.current_matchday || 14}</span>
+                  <span className="text-4xs text-blue-600 bg-white/70 px-1 rounded">Edit</span>
+                </button>
               </div>
               <p className="text-xs text-slate-500">Live roster clearance & financial collections ledger</p>
             </div>
