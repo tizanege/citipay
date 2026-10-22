@@ -72,6 +72,7 @@
 .register-hero-title span {
   background: linear-gradient(135deg, #A7F3D0 0%, #6EE7B7 50%, #67E8F9 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
