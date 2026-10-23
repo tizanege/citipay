@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import {
   X, CreditCard, ShieldCheck, CheckCircle2, ChevronRight,
   Sparkles, Check, ArrowRight, Wallet, Landmark, Smartphone,
-  FileText, ShoppingBag, Shield, HelpCircle
+  FileText, ShoppingBag, Shield, HelpCircle, Copy, AlertCircle, Building2
 } from 'lucide-react'
 import { useCitiPay } from '../../contexts/CitiPayContext'
 import './ModalStyles.css'
@@ -12,6 +12,7 @@ export default function MakePaymentModal() {
     paymentModalState,
     setPaymentModalState,
     processOnlinePayment,
+    recordManualPayment,
     payWithWallet,
     setWalletModalState,
     setReceiptModalState,
@@ -26,7 +27,10 @@ export default function MakePaymentModal() {
 
   const [paymentType, setPaymentType] = useState(paymentModalState.type || 'membership_installment')
   const [amount, setAmount] = useState(paymentModalState.defaultAmount || defaultInstAmount)
-  const [paymentMethod, setPaymentMethod] = useState('paystack_card') // 'wallet' | 'paystack_card' | 'bank_transfer' | 'ussd' | 'all_channels'
+  const [paymentMethod, setPaymentMethod] = useState('paystack') // 'paystack' | 'manual_bank' | 'wallet'
+  const [paystackChannel, setPaystackChannel] = useState('all_channels') // 'all_channels' | 'card' | 'bank_transfer' | 'ussd'
+  const [transferRef, setTransferRef] = useState('')
+  const [copiedAccount, setCopiedAccount] = useState(false)
   const [notes, setNotes] = useState('')
   const [isProcessing, setIsProcessing] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
@@ -88,13 +92,30 @@ export default function MakePaymentModal() {
       }
     }
 
-    // Option 2: Paystack Gateway (Card, Transfer, USSD, Multi-Channel)
+    // Option 2: Manual Bank Transfer
+    if (paymentMethod === 'manual_bank') {
+      setTimeout(() => {
+        const generatedRef = transferRef.trim() || `TRF-${Date.now().toString().slice(-6)}`
+        const tx = recordManualPayment({
+          memberId: currentMember.id,
+          amount: Number(amount),
+          paymentType,
+          reference: generatedRef,
+          notes: notes ? `Manual Bank Transfer: ${notes}` : 'Manual Direct Bank Transfer to Club Account'
+        })
+        setIsProcessing(false)
+        setSuccessTx(tx)
+      }, 700)
+      return
+    }
+
+    // Option 3: Paystack Gateway (Card, Transfer, USSD, Multi-Channel)
     let selectedChannels = ['card', 'bank', 'ussd', 'qr', 'mobile_money', 'bank_transfer']
-    if (paymentMethod === 'paystack_card') {
+    if (paystackChannel === 'card') {
       selectedChannels = ['card']
-    } else if (paymentMethod === 'bank_transfer') {
+    } else if (paystackChannel === 'bank_transfer') {
       selectedChannels = ['bank_transfer', 'bank']
-    } else if (paymentMethod === 'ussd') {
+    } else if (paystackChannel === 'ussd') {
       selectedChannels = ['ussd']
     }
 
@@ -125,17 +146,17 @@ export default function MakePaymentModal() {
         callback: function (response) {
           // Paystack callback on verified settlement
           const confirmedRef = response.reference || generatedRef
-          let methodLabel = 'Paystack (Card)'
-          if (paymentMethod === 'bank_transfer') methodLabel = 'Paystack (Instant Bank Transfer)'
-          else if (paymentMethod === 'ussd') methodLabel = 'Paystack (USSD)'
-          else if (paymentMethod === 'all_channels') methodLabel = 'Paystack Direct Gateway'
+          let methodLabel = 'Paystack Gateway'
+          if (paystackChannel === 'card') methodLabel = 'Paystack (Card)'
+          else if (paystackChannel === 'bank_transfer') methodLabel = 'Paystack (Instant Bank Transfer)'
+          else if (paystackChannel === 'ussd') methodLabel = 'Paystack (USSD)'
 
           const tx = processOnlinePayment({
             paymentType,
             amount,
             method: methodLabel,
             reference: confirmedRef,
-            paymentMethod,
+            paymentMethod: 'paystack',
             notes
           })
 
@@ -153,16 +174,16 @@ export default function MakePaymentModal() {
 
     // Graceful Instant Simulation (for test keys / offline dev)
     setTimeout(() => {
-      let methodLabel = 'Paystack (Debit Card)'
-      if (paymentMethod === 'bank_transfer') methodLabel = 'Paystack (Instant Bank Transfer)'
-      else if (paymentMethod === 'ussd') methodLabel = 'Paystack (USSD *737#)'
-      else if (paymentMethod === 'all_channels') methodLabel = 'Paystack Multi-Channel'
+      let methodLabel = 'Paystack Gateway'
+      if (paystackChannel === 'card') methodLabel = 'Paystack (Debit Card)'
+      else if (paystackChannel === 'bank_transfer') methodLabel = 'Paystack (Instant Bank Transfer)'
+      else if (paystackChannel === 'ussd') methodLabel = 'Paystack (USSD *737#)'
 
       const tx = processOnlinePayment({
         paymentType,
         amount,
         method: methodLabel,
-        paymentMethod,
+        paymentMethod: 'paystack',
         notes
       })
 
@@ -365,61 +386,169 @@ export default function MakePaymentModal() {
 
               {/* Payment Method Selector */}
               <div>
-                <div className="flex justify-between items-center mb-1">
-                  <label className="form-label-portal mb-0">PAYMENT METHOD</label>
-                  <span className="text-3xs text-emerald-700 font-semibold flex items-center gap-1">
-                    <ShieldCheck size={11} /> Paystack Multi-Channel Active
-                  </span>
+                <div className="flex justify-between items-center mb-1.5">
+                  <label className="form-label-portal mb-0">CHOOSE PAYMENT METHOD</label>
+                  <span className="text-3xs text-slate-500 font-medium">Select preferred channel</span>
                 </div>
-                <div className="method-pill-grid" style={{ gridTemplateColumns: 'repeat(5, 1fr)' }}>
+
+                <div className="grid grid-cols-3 gap-2">
+                  {/* Paystack Online Gateway */}
                   <button
                     type="button"
-                    className={`method-pill-btn ${paymentMethod === 'wallet' ? 'active' : ''}`}
+                    className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                      paymentMethod === 'paystack'
+                        ? 'border-slate-900 bg-slate-900 text-white shadow-sm'
+                        : 'border-slate-200 bg-white hover:border-slate-300 text-slate-800'
+                    }`}
+                    onClick={() => setPaymentMethod('paystack')}
+                  >
+                    <div className="flex items-center justify-between w-full mb-1">
+                      <CreditCard size={16} className={paymentMethod === 'paystack' ? 'text-emerald-400' : 'text-blue-600'} />
+                      <span className={`text-4xs uppercase tracking-wider font-extrabold px-1.5 py-0.5 rounded ${
+                        paymentMethod === 'paystack' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-blue-50 text-blue-700'
+                      }`}>Instant</span>
+                    </div>
+                    <div>
+                      <div className="font-extrabold text-xs">Paystack</div>
+                      <div className={`text-3xs ${paymentMethod === 'paystack' ? 'text-slate-300' : 'text-slate-500'}`}>Card, Transfer, USSD</div>
+                    </div>
+                  </button>
+
+                  {/* Manual Bank Transfer */}
+                  <button
+                    type="button"
+                    className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                      paymentMethod === 'manual_bank'
+                        ? 'border-slate-900 bg-slate-900 text-white shadow-sm'
+                        : 'border-slate-200 bg-white hover:border-slate-300 text-slate-800'
+                    }`}
+                    onClick={() => setPaymentMethod('manual_bank')}
+                  >
+                    <div className="flex items-center justify-between w-full mb-1">
+                      <Landmark size={16} className={paymentMethod === 'manual_bank' ? 'text-amber-400' : 'text-amber-600'} />
+                      <span className={`text-4xs uppercase tracking-wider font-extrabold px-1.5 py-0.5 rounded ${
+                        paymentMethod === 'manual_bank' ? 'bg-amber-500/20 text-amber-300' : 'bg-amber-50 text-amber-800'
+                      }`}>Direct</span>
+                    </div>
+                    <div>
+                      <div className="font-extrabold text-xs">Bank Transfer</div>
+                      <div className={`text-3xs ${paymentMethod === 'manual_bank' ? 'text-slate-300' : 'text-slate-500'}`}>Manual Bank Deposit</div>
+                    </div>
+                  </button>
+
+                  {/* CitiPay Virtual Wallet */}
+                  <button
+                    type="button"
+                    className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                      paymentMethod === 'wallet'
+                        ? 'border-slate-900 bg-slate-900 text-white shadow-sm'
+                        : 'border-slate-200 bg-white hover:border-slate-300 text-slate-800'
+                    }`}
                     onClick={() => setPaymentMethod('wallet')}
-                    title="Pay instantly using your CitiPay Virtual Wallet funds"
                   >
-                    <Wallet size={14} className={paymentMethod === 'wallet' ? 'text-emerald-300' : 'text-emerald-600'} />
-                    <span>Wallet (₦{memberWalletBal.toLocaleString()})</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={`method-pill-btn ${paymentMethod === 'all_channels' ? 'active' : ''}`}
-                    onClick={() => setPaymentMethod('all_channels')}
-                    title="Paystack gives you all checkout options: Card, Transfer, USSD, QR, Bank"
-                  >
-                    <Sparkles size={14} className="text-amber-500" />
-                    <span>All Options</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={`method-pill-btn ${paymentMethod === 'paystack_card' ? 'active' : ''}`}
-                    onClick={() => setPaymentMethod('paystack_card')}
-                  >
-                    <CreditCard size={14} />
-                    <span>Card</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={`method-pill-btn ${paymentMethod === 'bank_transfer' ? 'active' : ''}`}
-                    onClick={() => setPaymentMethod('bank_transfer')}
-                  >
-                    <Landmark size={14} />
-                    <span>Transfer</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={`method-pill-btn ${paymentMethod === 'ussd' ? 'active' : ''}`}
-                    onClick={() => setPaymentMethod('ussd')}
-                  >
-                    <Smartphone size={14} />
-                    <span>USSD</span>
+                    <div className="flex items-center justify-between w-full mb-1">
+                      <Wallet size={16} className={paymentMethod === 'wallet' ? 'text-emerald-300' : 'text-emerald-600'} />
+                      <span className={`text-4xs uppercase tracking-wider font-extrabold px-1.5 py-0.5 rounded ${
+                        paymentMethod === 'wallet' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-emerald-50 text-emerald-800'
+                      }`}>₦{memberWalletBal.toLocaleString()}</span>
+                    </div>
+                    <div>
+                      <div className="font-extrabold text-xs">Virtual Wallet</div>
+                      <div className={`text-3xs ${paymentMethod === 'wallet' ? 'text-slate-300' : 'text-slate-500'}`}>1-Click Settlement</div>
+                    </div>
                   </button>
                 </div>
-                {paymentMethod === 'wallet' ? (
-                  <div className="mt-2 p-2 rounded-lg bg-emerald-50 border border-emerald-200 text-xs flex justify-between items-center">
+
+                {/* Sub-view: Manual Bank Transfer Details */}
+                {paymentMethod === 'manual_bank' && (
+                  <div className="mt-3 p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs flex flex-col gap-2.5 animate-fadeIn">
+                    <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+                      <span className="text-3xs uppercase font-extrabold tracking-wider text-slate-500 flex items-center gap-1.5">
+                        <Building2 size={13} className="text-amber-600" />
+                        Official {currentClub.name} Bank Details
+                      </span>
+                      <span className="text-3xs text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded">
+                        Verified Club Account
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div>
+                        <span className="text-3xs text-slate-400 font-semibold block">BANK NAME</span>
+                        <strong className="text-slate-900 text-xs">Zenith Bank Plc</strong>
+                      </div>
+                      <div>
+                        <span className="text-3xs text-slate-400 font-semibold block">ACCOUNT NAME</span>
+                        <strong className="text-slate-900 text-xs">{currentClub.name}</strong>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between p-2.5 bg-white rounded-lg border border-slate-200">
+                      <div>
+                        <span className="text-3xs text-slate-400 font-semibold block">ACCOUNT NUMBER</span>
+                        <span className="font-mono text-base font-extrabold text-slate-900 tracking-wider">1018892341</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText('1018892341')
+                          setCopiedAccount(true)
+                          setTimeout(() => setCopiedAccount(false), 2000)
+                        }}
+                        className="btn btn-secondary text-2xs py-1.5 px-3 flex items-center gap-1 font-bold"
+                      >
+                        {copiedAccount ? <Check size={12} className="text-emerald-600" /> : <Copy size={12} />}
+                        <span>{copiedAccount ? 'Copied' : 'Copy'}</span>
+                      </button>
+                    </div>
+
+                    <div>
+                      <label className="text-3xs font-bold text-slate-600 block mb-1">
+                        TRANSFER REFERENCE / SENDER NAME (OPTIONAL)
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. TRF-10492 or Adebayo Bank App"
+                        value={transferRef}
+                        onChange={(e) => setTransferRef(e.target.value)}
+                        className="form-input-portal text-xs w-full bg-white font-mono"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Sub-view: Paystack Channel Customization */}
+                {paymentMethod === 'paystack' && (
+                  <div className="mt-2.5 flex items-center gap-1.5 flex-wrap text-3xs">
+                    <span className="text-slate-400 font-bold uppercase tracking-wider">Channels:</span>
+                    {[
+                      { id: 'all_channels', label: 'All Channels (Card, Transfer, USSD)' },
+                      { id: 'card', label: 'Card Only' },
+                      { id: 'bank_transfer', label: 'Bank Transfer' },
+                      { id: 'ussd', label: 'USSD' }
+                    ].map(ch => (
+                      <button
+                        key={ch.id}
+                        type="button"
+                        onClick={() => setPaystackChannel(ch.id)}
+                        className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${
+                          paystackChannel === ch.id
+                            ? 'bg-slate-900 text-white font-bold'
+                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                        }`}
+                      >
+                        {ch.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Sub-view: Wallet Status */}
+                {paymentMethod === 'wallet' && (
+                  <div className="mt-2.5 p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs flex justify-between items-center">
                     <div>
                       <span className="text-emerald-900 font-bold">CitiPay Virtual Wallet Active:</span>{' '}
-                      <span className="text-emerald-700">Available Balance: ₦{memberWalletBal.toLocaleString()}</span>
+                      <span className="text-emerald-700">Available: ₦{memberWalletBal.toLocaleString()}</span>
                       {memberWalletBal < amount && (
                         <div className="text-rose-600 font-bold mt-0.5">
                           ⚠️ Shortfall: ₦{(amount - memberWalletBal).toLocaleString()} needed.
@@ -429,7 +558,7 @@ export default function MakePaymentModal() {
                     {memberWalletBal < amount && (
                       <button
                         type="button"
-                        className="px-2 py-1 rounded bg-emerald-600 text-white font-bold text-3xs hover:bg-emerald-700 transition-all cursor-pointer"
+                        className="px-2.5 py-1 rounded bg-emerald-600 text-white font-bold text-3xs hover:bg-emerald-700 transition-all cursor-pointer"
                         onClick={() => {
                           setPaymentModalState(prev => ({ ...prev, isOpen: false }))
                           setWalletModalState({ isOpen: true, mode: 'fund' })
@@ -439,10 +568,6 @@ export default function MakePaymentModal() {
                       </button>
                     )}
                   </div>
-                ) : (
-                  <p className="text-3xs text-slate-500 mt-1.5 flex items-center gap-1">
-                    💡 Select <strong>Wallet</strong> for 1-click payment from balance, or <strong>All Options</strong> for Paystack popup.
-                  </p>
                 )}
               </div>
 
@@ -464,11 +589,15 @@ export default function MakePaymentModal() {
                   <strong className="text-slate-900">{currentClub.name}</strong>
                 </div>
                 <div className="flex justify-between text-xs text-slate-600 mb-1.5">
-                  <span>Payment Gateway:</span>
-                  <span className="text-emerald-700 font-bold">Paystack Nigeria (Zero Fees)</span>
+                  <span>Payment Channel:</span>
+                  <span className="text-slate-900 font-bold">
+                    {paymentMethod === 'paystack' && 'Paystack Gateway (Instant)'}
+                    {paymentMethod === 'manual_bank' && 'Manual Direct Bank Transfer'}
+                    {paymentMethod === 'wallet' && 'CitiPay Virtual Wallet'}
+                  </span>
                 </div>
                 <div className="pt-2 mt-2 border-t border-slate-200 flex justify-between items-baseline">
-                  <span className="font-extrabold text-sm text-slate-900">Total to Charge:</span>
+                  <span className="font-extrabold text-sm text-slate-900">Total to Pay:</span>
                   <span className="font-extrabold text-xl text-emerald-600 font-mono">
                     ₦{Number(amount).toLocaleString()}
                   </span>
@@ -492,10 +621,14 @@ export default function MakePaymentModal() {
                   disabled={isProcessing || amount <= 0}
                 >
                   {isProcessing ? (
-                    <span>Processing Paystack...</span>
+                    <span>
+                      {paymentMethod === 'paystack' ? 'Processing Paystack...' : 'Recording Payment...'}
+                    </span>
                   ) : (
                     <>
-                      <span>CONFIRM PAYMENT</span>
+                      <span>
+                        {paymentMethod === 'manual_bank' ? 'CONFIRM BANK TRANSFER' : 'CONFIRM PAYMENT'}
+                      </span>
                       <ArrowRight size={16} />
                     </>
                   )}
