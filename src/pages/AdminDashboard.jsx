@@ -157,7 +157,7 @@ export default function AdminDashboard() {
           </div>
           <div className="text-2xl font-extrabold text-purple-600 font-heading">{clubs.length} Clubs</div>
           <div className="text-xs text-slate-500 mt-1 font-medium flex items-center justify-between">
-            <span>Sunday League FC Primary Active</span>
+            <span>{currentClub?.name || 'Ikoyi Sunday League'} Primary Active</span>
             <ArrowRight size={12} className="text-purple-500" />
           </div>
         </div>

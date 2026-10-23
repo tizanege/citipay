@@ -87,9 +87,10 @@ export const dbService = {
       .single()
 
     if (error) throw error
-    if (data?.slug === 'sunday-league-fc' || data?.code === 'SLFC') {
+    if (data?.slug === 'ikoyi-sunday-league' || data?.slug === 'sunday-league-fc' || data?.code === 'ISL' || data?.code === 'SLFC') {
       return {
         ...data,
+        name: data?.name === 'Sunday League FC' ? 'Ikoyi Sunday League' : (data?.name || 'Ikoyi Sunday League'),
         primary_color: '#2563EB',
         secondary_color: '#DC2626',
         accent_color: '#FFFFFF'
@@ -241,8 +242,8 @@ export const dbService = {
       date_display: new Date(tx.paid_at).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
       description: tx.description,
       member_name: tx.profiles?.full_name || 'Member',
-      member_id: tx.profiles?.member_id || 'SLFC',
-      club: tx.clubs?.name || 'Sunday League FC',
+      member_id: tx.profiles?.member_id || 'ISL',
+      club: tx.clubs?.name === 'Sunday League FC' ? 'Ikoyi Sunday League' : (tx.clubs?.name || 'Ikoyi Sunday League'),
       amount: Number(tx.amount),
       currency: tx.currency || 'NGN',
       payment_type: tx.payment_type,

@@ -139,7 +139,7 @@ export default function ClubSquadPage() {
         <div className="kpi-mini-card">
           <span className="kpi-mini-lbl">REGISTERED SQUAD</span>
           <div className="kpi-mini-val text-slate-900 font-mono font-extrabold">{adminMetrics.totalMembers}</div>
-          <span className="text-3xs text-slate-500 font-medium">Sunday League FC Roster</span>
+          <span className="text-3xs text-slate-500 font-medium">{currentClub?.name || 'Ikoyi Sunday League'} Roster</span>
         </div>
 
         <div className="kpi-mini-card green-kpi">

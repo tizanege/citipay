@@ -173,9 +173,9 @@ export function CitiPayProvider({ children }) {
   const currentClub = useMemo(() => {
     return clubs.find(c => c.id === selectedClubId || c.slug === selectedClubId || c.code === selectedClubId) || clubs[0] || initialClubs[0] || {
       id: '11111111-1111-1111-1111-111111111111',
-      name: 'Sunday League FC',
-      code: 'SLFC',
-      slug: 'sunday-league-fc',
+      name: 'Ikoyi Sunday League',
+      code: 'ISL',
+      slug: 'ikoyi-sunday-league',
       membership_fee: 100000,
       monthly_social_dues: 5000,
       max_installments: 2,
@@ -1060,8 +1060,8 @@ export function CitiPayProvider({ children }) {
   // Action: Super Admin Delete / Disband Club
   const deleteClub = useCallback(async (clubId, adminName = 'Super Admin') => {
     // 1. Guard against deleting primary club
-    if (clubId === 'club-sunday-league' || clubId === 'club-001') {
-      throw new Error('Primary club (Sunday League FC) cannot be deleted as it is the default federation anchor.')
+    if (clubId === 'club-sunday-league' || clubId === 'club-001' || clubId === '11111111-1111-1111-1111-111111111111') {
+      throw new Error('Primary club (Ikoyi Sunday League) cannot be deleted as it is the default federation anchor.')
     }
 
     const clubToDelete = clubs.find(c => c.id === clubId)

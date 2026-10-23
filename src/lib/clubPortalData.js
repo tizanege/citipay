@@ -6,9 +6,9 @@
 export const initialClubs = [
   {
     id: '11111111-1111-1111-1111-111111111111',
-    name: 'Sunday League FC',
-    slug: 'sunday-league-fc',
-    code: 'SLFC',
+    name: 'Ikoyi Sunday League',
+    slug: 'ikoyi-sunday-league',
+    code: 'ISL',
     tagline: 'Premier Recreational & Competitive Football Club',
     logo_url: '/crests/sunday-league-fc.svg',
     primary_color: '#2563EB',
@@ -50,7 +50,7 @@ export const initialAuditLogs = []
 // Matchday Availability Template
 export const initialAvailability = {
   gameweek: 'GAMEWEEK 14',
-  fixture: 'Sunday League FC vs Scheduled Opponent',
+  fixture: 'Ikoyi Sunday League vs Scheduled Opponent',
   date: 'Saturday, 04 Oct 2026 · 16:00 WAT',
   venue: 'Campos Memorial Mini Stadium, Lagos Island',
   user_vote: null, // 'yes' | 'maybe' | 'no'

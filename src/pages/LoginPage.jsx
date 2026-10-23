@@ -137,7 +137,7 @@ export default function LoginPage() {
         <div className="auth-hero-footer">
           <span className="flex items-center gap-1.5"><ShieldCheck size={13} className="text-emerald-400" /> Paystack Secured</span>
           <span>·</span>
-          <span>Sunday League FC</span>
+          <span>Ikoyi Sunday League</span>
           <span>·</span>
           <span>Citi Football</span>
         </div>

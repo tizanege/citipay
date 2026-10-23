@@ -139,7 +139,7 @@ export default function TopNav() {
                       <div className="notif-dot-marker" />
                       <div>
                         <div className="font-bold text-xs text-slate-900">Gameweek {leagueSettings?.current_matchday || 14} Clearance Audit</div>
-                        <div className="text-3xs text-slate-500 mt-0.5">Sunday League FC roster 22/30 verified</div>
+                        <div className="text-3xs text-slate-500 mt-0.5">{currentClub?.name || 'Ikoyi Sunday League'} roster 22/30 verified</div>
                       </div>
                     </div>
                   </>

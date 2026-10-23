@@ -11,13 +11,13 @@ export default function DeleteClubModal({ isOpen, club, onClose, onConfirm }) {
 
   if (!isOpen || !club) return null
 
-  const isPrimary = club.id === 'club-sunday-league' || club.id === 'club-001'
+  const isPrimary = club.id === 'club-sunday-league' || club.id === 'club-001' || club.id === '11111111-1111-1111-1111-111111111111'
   const isMatch = confirmCode.trim().toUpperCase() === club.code.toUpperCase()
 
   const handleDelete = async (e) => {
     e.preventDefault()
     if (isPrimary) {
-      setError('Cannot delete Sunday League FC: it is the primary anchor club.')
+      setError('Cannot delete Ikoyi Sunday League: it is the primary anchor club.')
       return
     }
 

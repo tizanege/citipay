@@ -98,7 +98,7 @@ export default function ClubAuditPage() {
         <div className="flex justify-between items-center mb-3 pb-2 border-b border-slate-100 flex-wrap gap-2">
           <div>
             <h3 className="section-title text-base font-extrabold text-slate-900">AUDIT LOG ENTRIES</h3>
-            <p className="text-xs text-slate-500">Chronological feed of administrative operations on Sunday League FC portal</p>
+            <p className="text-xs text-slate-500">Chronological feed of administrative operations on {currentClub?.name || 'Ikoyi Sunday League'} portal</p>
           </div>
         </div>
 
