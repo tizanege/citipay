@@ -8,11 +8,11 @@
   margin: 0 auto;
 }
 
-/* ── Digital Dot-Matrix Style ────────────────────────── */
+/* ── Digital Counter Display Style ────────────────────────── */
 .sp-dot-matrix {
-  font-family: var(--font-digital), 'Courier New', monospace;
-  letter-spacing: -0.04em;
-  font-weight: 700;
+  font-family: var(--font-digital), 'Outfit', -apple-system, sans-serif;
+  letter-spacing: -0.03em;
+  font-weight: 800;
 }
 
 /* ── Minimalist Persona Quick Switcher ────────────────── */
@@ -98,9 +98,11 @@
 }
 
 .sp-counter-value {
-  font-size: 1.85rem;
-  color: #18181B;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #09090B;
   line-height: 1;
+  letter-spacing: -0.02em;
 }
 
 .sp-counter-label {
