@@ -170,46 +170,6 @@ export default function PlayerDashboard() {
         </div>
       </div>
 
-      {/* ISL CUP FINALS 2026 PROMINENT TOURNAMENT BANNER */}
-      <div
-        className="isl-dashboard-banner"
-        onClick={() => setIslCupModalState({ isOpen: true })}
-        role="button"
-        tabIndex={0}
-      >
-        <div className="isl-banner-left">
-          <div className="isl-banner-trophy-box">
-            <Trophy size={26} />
-          </div>
-          <div>
-            <div className="isl-banner-title-row">
-              <span className="isl-banner-tag">OFFICIAL CUP FINALS</span>
-              <span className="isl-banner-stats-pill">16 Teams · 2 Winners · ₦2.8M Pool</span>
-            </div>
-            <h3 className="isl-banner-heading">
-              THE ISL CUP FINALS 2026 IS HERE! ⚽🔥
-            </h3>
-            <p className="isl-banner-details">
-              Match Dates: <strong>Nov 22 & 29, 2026 (7:20 AM)</strong> · Venue: <strong>Lagos Preparatory School, Ikoyi</strong> · Reg Fee: <strong>₦300,000</strong> (Includes 2 VIP Spectators)
-            </p>
-          </div>
-        </div>
-
-        <div className="isl-banner-right">
-          <div className="isl-banner-prize-highlight">
-            <span className="isl-banner-prize-lbl">GRAND PRIZE</span>
-            <span className="isl-banner-prize-val font-mono">₦2,000,000</span>
-          </div>
-          <button
-            type="button"
-            className="isl-banner-cta-btn"
-          >
-            <span>View & Register</span>
-            <ArrowRight size={14} />
-          </button>
-        </div>
-      </div>
-
       {/* DUAL GLOWING HERO CARDS (Superpower Score & Biological/Matchday Age) */}
       <div className="superpower-hero-grid mb-6">
         {/* Card 1: Superpower Eligibility Score */}
