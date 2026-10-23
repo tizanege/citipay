@@ -109,45 +109,6 @@ export default function PlayerDashboard() {
             </div>
           </div>
         </div>
-
-        {/* Action Widgets on Right (Wallet, Upload & Matchday Radar) */}
-        <div className="superpower-quick-actions">
-          <div
-            className="sp-action-card cursor-pointer border-emerald-300 bg-emerald-50/50 hover:bg-emerald-50 transition-all"
-            onClick={() => setWalletModalState && setWalletModalState({ isOpen: true, mode: 'fund' })}
-            title="CitiPay Virtual Wallet - Hold funds and pay for services"
-          >
-            <div className="sp-action-title text-emerald-900 font-extrabold flex items-center justify-between">
-              <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                Wallet
-              </span>
-              <span className="sp-plus-icon text-emerald-700">+</span>
-            </div>
-            <div className="sp-action-sub text-emerald-700 font-mono font-black text-xs">
-              ₦{Number(member.wallet_balance || 0).toLocaleString()}
-            </div>
-          </div>
-
-          <div className="sp-action-card" onClick={() => navigate('/payment-history')}>
-            <div className="sp-action-title">
-              <span>Payment Receipts</span>
-              <span className="sp-plus-icon">+</span>
-            </div>
-            <div className="sp-action-sub">{memberTxs.length} files on file</div>
-          </div>
-
-          <div className="sp-action-card pulse-card" onClick={() => handleOpenPayment('membership_installment')}>
-            <div className="sp-action-title">
-              <span>Quick Settle</span>
-              <span className="sp-plus-icon">+</span>
-            </div>
-            <div className="sp-radar-glow">
-              <div className="sp-radar-core" />
-              <div className="sp-radar-ring" />
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* TIMELINE / SEASON CHECK-IN BAR */}
