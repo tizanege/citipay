@@ -147,10 +147,10 @@ export default function EditLeagueSettingsModal() {
                     <button
                       key={gw}
                       type="button"
-                      className={`text-2xs font-bold px-2 py-1 rounded border transition-colors cursor-pointer ${
+                      className={`text-2xs font-bold px-2 py-1 rounded transition-colors cursor-pointer border-0 ${
                         Number(matchday) === gw
-                          ? 'bg-blue-600 text-white border-blue-600'
-                          : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-white text-slate-600 hover:bg-slate-100'
                       }`}
                       onClick={() => setMatchday(gw)}
                     >
@@ -159,7 +159,7 @@ export default function EditLeagueSettingsModal() {
                   ))}
                   <button
                     type="button"
-                    className="text-2xs font-bold px-2 py-1 rounded bg-blue-50 text-blue-700 border border-blue-200 ml-auto hover:bg-blue-100 cursor-pointer"
+                    className="text-2xs font-bold px-2 py-1 rounded bg-blue-50 text-blue-700 ml-auto hover:bg-blue-100 cursor-pointer border-0"
                     onClick={() => stepMatchday(1)}
                   >
                     Next Round +1
@@ -168,7 +168,7 @@ export default function EditLeagueSettingsModal() {
               </div>
 
               {/* 2. OFFICIAL JERSEY PRICING */}
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+              <div className="p-4 rounded-xl bg-slate-50">
                 <div className="flex items-center justify-between mb-2">
                   <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5 uppercase tracking-wide">
                     <Shirt size={14} className="text-emerald-600" /> Official Matchday Jersey Price (₦)
@@ -200,10 +200,10 @@ export default function EditLeagueSettingsModal() {
                     <button
                       key={amt}
                       type="button"
-                      className={`text-2xs font-mono font-bold px-2 py-0.5 rounded border transition-colors cursor-pointer ${
+                      className={`text-2xs font-mono font-bold px-2 py-0.5 rounded transition-colors cursor-pointer border-0 ${
                         Number(jerseyPrice) === amt
-                          ? 'bg-emerald-600 text-white border-emerald-600'
-                          : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
+                          ? 'bg-emerald-600 text-white'
+                          : 'bg-white text-slate-600 hover:bg-slate-100'
                       }`}
                       onClick={() => setJerseyPrice(amt)}
                     >
@@ -214,7 +214,7 @@ export default function EditLeagueSettingsModal() {
               </div>
 
               {/* 3. OFFICIAL TRAINING BIB PRICING */}
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+              <div className="p-4 rounded-xl bg-slate-50">
                 <div className="flex items-center justify-between mb-2">
                   <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5 uppercase tracking-wide">
                     <Tag size={14} className="text-amber-600" /> Official Training Bib Price (₦)
@@ -246,10 +246,10 @@ export default function EditLeagueSettingsModal() {
                     <button
                       key={amt}
                       type="button"
-                      className={`text-2xs font-mono font-bold px-2 py-0.5 rounded border transition-colors cursor-pointer ${
+                      className={`text-2xs font-mono font-bold px-2 py-0.5 rounded transition-colors cursor-pointer border-0 ${
                         Number(bibPrice) === amt
-                          ? 'bg-amber-600 text-white border-amber-600'
-                          : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
+                          ? 'bg-amber-600 text-white'
+                          : 'bg-white text-slate-600 hover:bg-slate-100'
                       }`}
                       onClick={() => setBibPrice(amt)}
                     >

@@ -107,14 +107,14 @@ export default function AdminSettingsPage() {
           </div>
 
           <div className="flex flex-col gap-4 text-xs">
-            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+            <div className="p-3.5 rounded-xl bg-slate-50 flex items-center justify-between">
               <div>
                 <span className="text-3xs font-bold uppercase tracking-wider text-slate-500 block">Active League Gameweek</span>
                 <div className="text-xl font-extrabold font-mono text-slate-900 mt-0.5">
                   Gameweek {matchday} <span className="text-xs font-normal text-slate-400">of 38</span>
                 </div>
               </div>
-              <span className="badge badge-primary font-mono font-bold text-xs py-1 px-2.5">
+              <span className="badge badge-primary font-mono font-bold text-xs py-1 px-2.5 border-0">
                 LIVE ROUND
               </span>
             </div>
@@ -127,7 +127,7 @@ export default function AdminSettingsPage() {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  className="w-10 h-10 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-700 font-bold transition-all shadow-sm active:scale-95 disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
+                  className="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-700 font-bold transition-all active:scale-95 disabled:opacity-40 disabled:pointer-events-none cursor-pointer border-0"
                   onClick={() => stepMatchday(-1)}
                   disabled={matchday <= 1}
                   title="Previous Gameweek"
@@ -135,7 +135,7 @@ export default function AdminSettingsPage() {
                   <Minus size={15} />
                 </button>
 
-                <div className="flex-1 flex items-center bg-white border border-slate-200 rounded-xl px-3 py-1.5 shadow-sm focus-within:border-slate-900 focus-within:ring-2 focus-within:ring-slate-900/5 transition-all">
+                <div className="flex-1 flex items-center bg-slate-100/80 rounded-xl px-3 py-1.5 focus-within:bg-white focus-within:ring-2 focus-within:ring-slate-900/10 transition-all">
                   <span className="text-xs font-bold text-slate-400 mr-2 select-none">GW</span>
                   <input
                     type="number"
@@ -150,7 +150,7 @@ export default function AdminSettingsPage() {
 
                 <button
                   type="button"
-                  className="w-10 h-10 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-700 font-bold transition-all shadow-sm active:scale-95 disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
+                  className="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-700 font-bold transition-all active:scale-95 disabled:opacity-40 disabled:pointer-events-none cursor-pointer border-0"
                   onClick={() => stepMatchday(1)}
                   disabled={matchday >= 38}
                   title="Next Gameweek"
@@ -160,7 +160,7 @@ export default function AdminSettingsPage() {
 
                 <button
                   type="button"
-                  className="btn btn-secondary text-xs font-bold py-2.5 px-3.5 rounded-xl whitespace-nowrap shadow-sm hover:border-slate-300"
+                  className="btn btn-secondary text-xs font-bold py-2.5 px-3.5 rounded-xl whitespace-nowrap border-0 bg-slate-100 hover:bg-slate-200"
                   onClick={() => stepMatchday(1)}
                   disabled={matchday >= 38}
                 >
@@ -175,10 +175,10 @@ export default function AdminSettingsPage() {
                   <button
                     key={gw}
                     type="button"
-                    className={`text-2xs font-semibold px-2.5 py-1 rounded-lg border transition-all cursor-pointer ${
+                    className={`text-2xs font-semibold px-2.5 py-1 rounded-lg transition-all cursor-pointer border-0 ${
                       Number(matchday) === gw
-                        ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
-                        : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                        ? 'bg-slate-900 text-white shadow-sm'
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                     }`}
                     onClick={() => setMatchday(gw)}
                   >
@@ -188,8 +188,8 @@ export default function AdminSettingsPage() {
               </div>
             </div>
 
-            <div className="pt-3 border-t border-slate-100 flex flex-col gap-2">
-              <div className="flex justify-between py-1 border-b border-slate-100">
+            <div className="pt-3 flex flex-col gap-2">
+              <div className="flex justify-between py-1">
                 <span className="text-slate-500 font-medium">Competition Title:</span>
                 <strong className="text-slate-900">Citi Football Premier Championship</strong>
               </div>
@@ -211,24 +211,24 @@ export default function AdminSettingsPage() {
               </h3>
               <p className="text-xs text-slate-500">Super Admin uniform & training gear price matrix</p>
             </div>
-            <span className="badge badge-success font-bold text-xs">Super Admin Authority</span>
+            <span className="badge badge-success font-bold text-xs border-0">Super Admin Authority</span>
           </div>
 
           <div className="flex flex-col gap-3.5 text-xs">
             {/* Jersey Price */}
-            <div className="p-3.5 rounded-xl bg-slate-50/70 border border-slate-200/80">
+            <div className="p-3.5 rounded-xl bg-slate-50/70">
               <div className="flex justify-between items-center mb-1">
                 <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
                   <Shirt size={14} className="text-emerald-600" /> Official Matchday Jersey Price
                 </label>
-                <span className="font-mono font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200 text-xs">
+                <span className="font-mono font-bold text-emerald-800 bg-emerald-100/70 px-2 py-0.5 rounded-md text-xs">
                   ₦{Number(jerseyPrice).toLocaleString()}
                 </span>
               </div>
               <p className="text-3xs text-slate-500 mb-2.5">Customized Home & Away team jersey with player name & squad number.</p>
 
               <div className="flex items-center gap-2 mb-2.5">
-                <div className="flex-1 flex items-center bg-white border border-slate-200 rounded-xl px-3 py-2 shadow-sm focus-within:border-slate-900 focus-within:ring-2 focus-within:ring-slate-900/5 transition-all">
+                <div className="flex-1 flex items-center bg-white rounded-xl px-3 py-2 shadow-xs focus-within:ring-2 focus-within:ring-slate-900/10 transition-all">
                   <span className="font-mono font-bold text-slate-400 text-sm mr-2 select-none">₦</span>
                   <input
                     type="number"
@@ -249,10 +249,10 @@ export default function AdminSettingsPage() {
                   <button
                     key={amt}
                     type="button"
-                    className={`text-2xs font-mono font-semibold px-2.5 py-1 rounded-lg border transition-all cursor-pointer ${
+                    className={`text-2xs font-mono font-semibold px-2.5 py-1 rounded-lg transition-all cursor-pointer border-0 ${
                       Number(jerseyPrice) === amt
-                        ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
-                        : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                        ? 'bg-slate-900 text-white shadow-sm'
+                        : 'bg-white text-slate-600 hover:bg-slate-100'
                     }`}
                     onClick={() => setJerseyPrice(amt)}
                   >
@@ -263,19 +263,19 @@ export default function AdminSettingsPage() {
             </div>
 
             {/* Bib Price */}
-            <div className="p-3.5 rounded-xl bg-slate-50/70 border border-slate-200/80">
+            <div className="p-3.5 rounded-xl bg-slate-50/70">
               <div className="flex justify-between items-center mb-1">
                 <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
                   <Tag size={14} className="text-amber-600" /> Official Training Bib Price
                 </label>
-                <span className="font-mono font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200 text-xs">
+                <span className="font-mono font-bold text-amber-800 bg-amber-100/70 px-2 py-0.5 rounded-md text-xs">
                   ₦{Number(bibPrice).toLocaleString()}
                 </span>
               </div>
               <p className="text-3xs text-slate-500 mb-2.5">Numbered scrimmage bib pack for training and practice matches.</p>
 
               <div className="flex items-center gap-2 mb-2.5">
-                <div className="flex-1 flex items-center bg-white border border-slate-200 rounded-xl px-3 py-2 shadow-sm focus-within:border-slate-900 focus-within:ring-2 focus-within:ring-slate-900/5 transition-all">
+                <div className="flex-1 flex items-center bg-white rounded-xl px-3 py-2 shadow-xs focus-within:ring-2 focus-within:ring-slate-900/10 transition-all">
                   <span className="font-mono font-bold text-slate-400 text-sm mr-2 select-none">₦</span>
                   <input
                     type="number"
@@ -296,10 +296,10 @@ export default function AdminSettingsPage() {
                   <button
                     key={amt}
                     type="button"
-                    className={`text-2xs font-mono font-semibold px-2.5 py-1 rounded-lg border transition-all cursor-pointer ${
+                    className={`text-2xs font-mono font-semibold px-2.5 py-1 rounded-lg transition-all cursor-pointer border-0 ${
                       Number(bibPrice) === amt
-                        ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
-                        : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                        ? 'bg-slate-900 text-white shadow-sm'
+                        : 'bg-white text-slate-600 hover:bg-slate-100'
                     }`}
                     onClick={() => setBibPrice(amt)}
                   >
@@ -310,7 +310,7 @@ export default function AdminSettingsPage() {
             </div>
 
             {/* Live Impact Pill */}
-            <div className="p-2.5 rounded-xl bg-emerald-50/80 border border-emerald-200/80 flex items-center gap-2 text-2xs text-emerald-900 font-medium">
+            <div className="p-2.5 rounded-xl bg-emerald-50/80 flex items-center gap-2 text-2xs text-emerald-900 font-medium">
               <Sparkles size={14} className="text-emerald-600 shrink-0" />
               <span>Instantly reflects in all Player Portals, Kit Store & Paystack Checkout.</span>
             </div>
