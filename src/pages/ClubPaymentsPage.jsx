@@ -20,8 +20,10 @@ export default function ClubPaymentsPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [typeFilter, setTypeFilter] = useState('all')
   const [channelFilter, setChannelFilter] = useState('all')
+  const [statusFilter, setStatusFilter] = useState('all')
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
+  const { confirmManualPayment } = useCitiPay()
 
   // Filter transactions for this club
   const clubTransactions = transactions.filter(tx => {
@@ -35,12 +37,14 @@ export default function ClubPaymentsPage() {
 
     const matchesType = typeFilter === 'all' || tx.payment_type === typeFilter
     const matchesChannel = channelFilter === 'all' || tx.channel === channelFilter
+    const matchesStatus = statusFilter === 'all' || (statusFilter === 'pending' ? tx.status === 'Pending' : tx.status !== 'Pending')
 
-    return matchesClub && matchesSearch && matchesType && matchesChannel
+    return matchesClub && matchesSearch && matchesType && matchesChannel && matchesStatus
   })
 
   const totalItems = clubTransactions.length
   const paginatedTransactions = clubTransactions.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+  const pendingCount = transactions.filter(tx => tx.status === 'Pending').length
 
   // Calculation of revenue streams
   const membershipTotal = clubTransactions
@@ -201,6 +205,18 @@ export default function ClubPaymentsPage() {
               <option value="admin_manual">Bank Transfer / Cash (Manual)</option>
             </select>
           </div>
+
+          <div className="filter-box-wrap">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="text-xs font-semibold"
+            >
+              <option value="all">All Statuses ({totalItems})</option>
+              <option value="pending">⏳ Awaiting Confirmation ({pendingCount})</option>
+              <option value="paid">✓ Confirmed & Paid</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -216,8 +232,8 @@ export default function ClubPaymentsPage() {
                 <th style={{ minWidth: '160px' }}>Description</th>
                 <th style={{ minWidth: '110px', textAlign: 'right' }}>Amount</th>
                 <th style={{ minWidth: '130px' }}>Channel</th>
-                <th style={{ minWidth: '90px', textAlign: 'center' }}>Status</th>
-                <th style={{ minWidth: '100px', textAlign: 'right' }}>Receipt</th>
+                <th style={{ minWidth: '110px', textAlign: 'center' }}>Status</th>
+                <th style={{ minWidth: '120px', textAlign: 'right' }}>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -229,7 +245,7 @@ export default function ClubPaymentsPage() {
                 </tr>
               ) : (
                 paginatedTransactions.map((tx) => (
-                  <tr key={tx.id} className="hover:bg-slate-50 transition-colors">
+                  <tr key={tx.id} className={`hover:bg-slate-50 transition-colors ${tx.status === 'Pending' ? 'bg-amber-50/40' : ''}`}>
                     <td>
                       <span className="font-mono text-xs font-bold text-slate-800">{tx.reference}</span>
                       {tx.receipt_no && (
@@ -263,18 +279,38 @@ export default function ClubPaymentsPage() {
                     </td>
 
                     <td style={{ textAlign: 'center' }}>
-                      <span className="badge badge-success text-3xs font-bold">
-                        ✓ PAID
-                      </span>
+                      {tx.status === 'Pending' ? (
+                        <span className="badge badge-warning text-3xs font-extrabold flex items-center justify-center gap-1">
+                          ⏳ PENDING
+                        </span>
+                      ) : (
+                        <span className="badge badge-success text-3xs font-bold">
+                          ✓ PAID
+                        </span>
+                      )}
                     </td>
 
                     <td style={{ textAlign: 'right' }}>
-                      <button
-                        className="btn btn-secondary text-3xs py-1 px-2.5 font-bold"
-                        onClick={() => setReceiptModalState({ isOpen: true, transaction: tx })}
-                      >
-                        Receipt
-                      </button>
+                      {tx.status === 'Pending' ? (
+                        <button
+                          className="btn btn-primary text-3xs py-1.5 px-3 font-extrabold bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center gap-1 shadow-sm"
+                          onClick={async () => {
+                            if (window.confirm(`Confirm offline bank transfer of ₦${Number(tx.amount).toLocaleString()} from ${tx.member_name}? This will clear their dues obligation.`)) {
+                              await confirmManualPayment({ transactionId: tx.id, adminName: 'Club President' })
+                            }
+                          }}
+                        >
+                          <CheckCircle2 size={13} />
+                          <span>CONFIRM</span>
+                        </button>
+                      ) : (
+                        <button
+                          className="btn btn-secondary text-3xs py-1 px-2.5 font-bold"
+                          onClick={() => setReceiptModalState({ isOpen: true, transaction: tx })}
+                        >
+                          Receipt
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))

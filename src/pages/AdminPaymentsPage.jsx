@@ -8,10 +8,11 @@ import Pagination from '../components/Pagination'
 import './AdminDashboard.css'
 
 export default function AdminPaymentsPage() {
-  const { transactions, clubs, setReceiptModalState, adminMetrics } = useCitiPay()
+  const { transactions, clubs, setReceiptModalState, adminMetrics, confirmManualPayment } = useCitiPay()
   const [searchTerm, setSearchTerm] = useState('')
   const [clubFilter, setClubFilter] = useState('all')
   const [typeFilter, setTypeFilter] = useState('all')
+  const [statusFilter, setStatusFilter] = useState('all')
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
 
@@ -25,12 +26,14 @@ export default function AdminPaymentsPage() {
 
     const matchesClub = clubFilter === 'all' || (tx.club && tx.club.toLowerCase().includes(clubFilter.toLowerCase()))
     const matchesType = typeFilter === 'all' || tx.payment_type === typeFilter
+    const matchesStatus = statusFilter === 'all' || (statusFilter === 'pending' ? tx.status === 'Pending' : tx.status !== 'Pending')
 
-    return matchesSearch && matchesClub && matchesType
+    return matchesSearch && matchesClub && matchesType && matchesStatus
   })
 
   const totalItems = filteredTransactions.length
   const paginatedTransactions = filteredTransactions.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+  const pendingCount = transactions.filter(tx => tx.status === 'Pending').length
 
   const totalPaystackVolume = transactions.reduce((sum, tx) => sum + (Number(tx.amount) || 0), 0)
 
@@ -138,6 +141,18 @@ export default function AdminPaymentsPage() {
               <option value="merchandise">Merchandise</option>
             </select>
           </div>
+
+          <div className="filter-box-wrap">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="text-xs font-semibold"
+            >
+              <option value="all">All Statuses ({totalItems})</option>
+              <option value="pending">⏳ Awaiting Confirmation ({pendingCount})</option>
+              <option value="paid">✓ Confirmed & Settled</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -147,7 +162,7 @@ export default function AdminPaymentsPage() {
           <table className="data-table">
             <thead>
               <tr>
-                <th style={{ minWidth: '120px' }}>Paystack Ref</th>
+                <th style={{ minWidth: '120px' }}>Reference</th>
                 <th style={{ minWidth: '110px' }}>Date</th>
                 <th style={{ minWidth: '160px' }}>Payer (Member)</th>
                 <th style={{ minWidth: '150px' }}>Beneficiary Club</th>
@@ -155,7 +170,7 @@ export default function AdminPaymentsPage() {
                 <th style={{ minWidth: '110px', textAlign: 'right' }}>Gross Amount</th>
                 <th style={{ minWidth: '120px' }}>Channel</th>
                 <th style={{ minWidth: '100px', textAlign: 'center' }}>Settlement</th>
-                <th style={{ minWidth: '100px', textAlign: 'right' }}>Receipt</th>
+                <th style={{ minWidth: '120px', textAlign: 'right' }}>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -167,7 +182,7 @@ export default function AdminPaymentsPage() {
                 </tr>
               ) : (
                 paginatedTransactions.map((tx) => (
-                  <tr key={tx.id} className="hover:bg-slate-50 transition-colors">
+                  <tr key={tx.id} className={`hover:bg-slate-50 transition-colors ${tx.status === 'Pending' ? 'bg-amber-50/40' : ''}`}>
                     <td>
                       <span className="font-mono text-xs font-bold text-slate-800">{tx.reference}</span>
                       <span className="text-3xs text-slate-400 block font-mono">{tx.receipt_no || 'REC-VERIFIED'}</span>
@@ -184,7 +199,7 @@ export default function AdminPaymentsPage() {
 
                     <td>
                       <span className="badge badge-accent font-semibold text-3xs">
-                        {tx.club || 'Sunday League FC'}
+                        {tx.club || 'Ikoyi Sunday League'}
                       </span>
                     </td>
 
@@ -205,18 +220,38 @@ export default function AdminPaymentsPage() {
                     </td>
 
                     <td style={{ textAlign: 'center' }}>
-                      <span className="badge badge-success text-3xs font-bold">
-                        ✓ SETTLED
-                      </span>
+                      {tx.status === 'Pending' ? (
+                        <span className="badge badge-warning text-3xs font-extrabold">
+                          ⏳ PENDING
+                        </span>
+                      ) : (
+                        <span className="badge badge-success text-3xs font-bold">
+                          ✓ SETTLED
+                        </span>
+                      )}
                     </td>
 
                     <td style={{ textAlign: 'right' }}>
-                      <button
-                        className="btn btn-secondary text-3xs py-1 px-2.5 font-bold"
-                        onClick={() => setReceiptModalState({ isOpen: true, transaction: tx })}
-                      >
-                        Receipt
-                      </button>
+                      {tx.status === 'Pending' ? (
+                        <button
+                          className="btn btn-primary text-3xs py-1.5 px-3 font-extrabold bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center gap-1 shadow-sm"
+                          onClick={async () => {
+                            if (window.confirm(`Confirm offline bank transfer of ₦${Number(tx.amount).toLocaleString()} for ${tx.member_name}?`)) {
+                              await confirmManualPayment({ transactionId: tx.id, adminName: 'Super Admin' })
+                            }
+                          }}
+                        >
+                          <CheckCircle2 size={13} />
+                          <span>CONFIRM</span>
+                        </button>
+                      ) : (
+                        <button
+                          className="btn btn-secondary text-3xs py-1 px-2.5 font-bold"
+                          onClick={() => setReceiptModalState({ isOpen: true, transaction: tx })}
+                        >
+                          Receipt
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))

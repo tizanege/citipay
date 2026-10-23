@@ -637,6 +637,145 @@ export function CitiPayProvider({ children }) {
     return newTx
   }, [currentMember, currentClub, clubRules])
 
+  // Action: Player submits a Direct Manual Bank Transfer (Awaiting Admin Confirmation)
+  const submitManualPaymentTransfer = useCallback(async ({ memberId, amount, paymentType, reference, notes }) => {
+    const target = members.find(m => m.id === memberId || m.member_id === memberId) || currentMember
+    if (!target) return false
+
+    const refNum = reference ? reference.trim() : `TRF-${Date.now().toString().slice(-6)}`
+    const receiptRef = `PENDING-${Date.now().toString().slice(-5)}`
+
+    let typeDesc = 'Manual Bank Transfer (Pending Confirmation)'
+    if (paymentType === 'membership') typeDesc = 'Full Season Membership (Bank Transfer)'
+    else if (paymentType === 'membership_installment') typeDesc = 'Membership installment (Bank Transfer)'
+    else if (paymentType === 'social_dues') typeDesc = 'Social Dues (Direct Transfer)'
+    else if (paymentType === 'merchandise' || paymentType === 'merchandise_jersey') typeDesc = 'Matchday Jersey (Bank Transfer)'
+    else if (paymentType === 'merchandise_bib') typeDesc = 'Training Bib Pack (Bank Transfer)'
+    else if (paymentType === 'guest_pass') typeDesc = 'Guest Player Pass (Bank Transfer)'
+    else typeDesc = 'Club Service Payment (Bank Transfer)'
+
+    const newTx = {
+      id: `tx-pending-${Date.now()}`,
+      date: new Date().toISOString(),
+      date_display: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
+      description: typeDesc,
+      member_name: target.full_name,
+      member_id: target.member_id,
+      club: currentClub.name,
+      amount: Number(amount),
+      currency: 'NGN',
+      payment_type: paymentType,
+      method: 'Direct Bank Transfer',
+      channel: 'admin_manual',
+      status: 'Pending',
+      reference: refNum,
+      receipt_no: receiptRef,
+      notes: notes || 'Direct bank transfer receipt submitted by member, awaiting admin verification.'
+    }
+
+    // Add to transactions ledger with Pending status
+    setTransactions(prev => [newTx, ...prev])
+
+    // Background write to Supabase if available
+    try {
+      await dbService.recordPayment({
+        userId: target.id,
+        clubId: currentClub.id,
+        paymentType,
+        amount: Number(amount),
+        reference: refNum,
+        description: typeDesc,
+        notes: notes || 'Manual bank transfer awaiting admin confirmation',
+        paymentMethod: 'bank_transfer',
+        paymentChannel: 'admin_manual'
+      })
+    } catch (e) {
+      console.warn('Pending transfer sync notice:', e.message)
+    }
+
+    return newTx
+  }, [members, currentMember, currentClub])
+
+  // Action: Admin Confirms a Pending Manual Bank Transfer
+  const confirmManualPayment = useCallback(async ({ transactionId, adminName = 'President' }) => {
+    const tx = transactions.find(t => t.id === transactionId || t.reference === transactionId)
+    if (!tx) return false
+
+    const target = members.find(m => m.member_id === tx.member_id || m.full_name === tx.member_name)
+    const officialReceiptNo = `SL-2026-CONFIRMED-${Math.floor(100 + Math.random() * 900)}`
+
+    // 1. Mark transaction as 'Paid' and update receipt number
+    setTransactions(prev => prev.map(t => {
+      if (t.id === tx.id || t.reference === tx.reference) {
+        return {
+          ...t,
+          status: 'Paid',
+          receipt_no: officialReceiptNo,
+          notes: `${t.notes || ''} [Verified & Approved by ${adminName}]`
+        }
+      }
+      return t
+    }))
+
+    // 2. If target member found, update their payment balance & 3-color eligibility status
+    if (target) {
+      setMembers(prev => prev.map(m => {
+        if (m.id === target.id || m.member_id === target.member_id) {
+          let newPaid = m.membership_paid
+          let newSocialPaid = m.social_dues_paid
+
+          if (tx.payment_type === 'membership' || tx.payment_type === 'membership_installment') {
+            newPaid = Math.min(m.membership_fee, m.membership_paid + Number(tx.amount))
+          } else if (tx.payment_type === 'social_dues') {
+            newSocialPaid = Number(currentClub.monthly_social_dues || 5000)
+          }
+
+          const newOut = Math.max(0, m.membership_fee - newPaid)
+          const newStatus = newOut === 0 ? 'green' : newOut <= clubRules.yellow_max_balance ? 'yellow' : 'red'
+
+          const updatedInstallments = m.installments?.map(inst => {
+            if (inst.status === 'pending') {
+              return { ...inst, status: 'paid', paid_at: new Date().toISOString().split('T')[0], ref: tx.reference }
+            }
+            return inst
+          })
+
+          return {
+            ...m,
+            membership_paid: newPaid,
+            membership_outstanding: newOut,
+            membership_status: newOut === 0 ? 'paid' : 'partial',
+            social_dues_paid: newSocialPaid,
+            social_dues_status: newSocialPaid >= Number(currentClub.monthly_social_dues || 5000) ? 'paid' : 'due',
+            status: newStatus,
+            last_payment_date: 'Today',
+            next_payment_label: newOut === 0 ? 'No payment currently due.' : `₦${newOut.toLocaleString()} remaining`,
+            installments: updatedInstallments || m.installments
+          }
+        }
+        return m
+      }))
+
+      // 3. Add to Audit Log
+      const auditLog = {
+        id: `log-${Date.now()}`,
+        timestamp: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + ' · Payment Approved',
+        actor_name: adminName,
+        actor_role: 'Club Administrator',
+        action: 'MANUAL_PAYMENT_CONFIRMED',
+        target_member_id: target.member_id,
+        target_name: target.full_name,
+        old_value: 'PENDING_APPROVAL',
+        new_value: 'PAID & CLEARED',
+        reason: `Admin verified offline bank credit of ₦${Number(tx.amount).toLocaleString()} for ${tx.member_name}. Ref: ${tx.reference}. Receipt: ${officialReceiptNo}`,
+        details: `Offline bank transfer approved and cleared into active federation ledger.`
+      }
+      setAuditLogs(prev => [auditLog, ...prev])
+    }
+
+    return true
+  }, [transactions, members, currentClub, clubRules])
+
   // Action: Admin Record Manual Offline Payment
   const recordManualPayment = useCallback(async ({ memberId, amount, paymentType, reference, date, notes }) => {
     const target = members.find(m => m.id === memberId || m.member_id === memberId)
@@ -1445,6 +1584,8 @@ export function CitiPayProvider({ children }) {
     fundWallet,
     payWithWallet,
     recordManualPayment,
+    submitManualPaymentTransfer,
+    confirmManualPayment,
     overrideMemberStatus,
     updateClubRules,
     updateClubFees,

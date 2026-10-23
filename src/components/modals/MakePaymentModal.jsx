@@ -13,6 +13,7 @@ export default function MakePaymentModal() {
     setPaymentModalState,
     processOnlinePayment,
     recordManualPayment,
+    submitManualPaymentTransfer,
     payWithWallet,
     setWalletModalState,
     setReceiptModalState,
@@ -94,9 +95,9 @@ export default function MakePaymentModal() {
 
     // Option 2: Manual Bank Transfer
     if (paymentMethod === 'manual_bank') {
-      setTimeout(() => {
+      setTimeout(async () => {
         const generatedRef = transferRef.trim() || `TRF-${Date.now().toString().slice(-6)}`
-        const tx = recordManualPayment({
+        const tx = await submitManualPaymentTransfer({
           memberId: currentMember.id,
           amount: Number(amount),
           paymentType,
@@ -205,6 +206,8 @@ export default function MakePaymentModal() {
     }
   }
 
+  const isPendingTransfer = successTx && successTx.status === 'Pending'
+
   return (
     <div className="modal-backdrop-portal" onClick={handleClose}>
       <div className="modal-content-portal max-w-lg" onClick={e => e.stopPropagation()}>
@@ -212,13 +215,13 @@ export default function MakePaymentModal() {
         <div className="modal-header-portal">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="badge badge-success text-xs font-bold flex items-center gap-1">
-                <ShieldCheck size={12} /> Paystack 256-Bit Secured
+              <span className={`badge ${isPendingTransfer ? 'badge-warning' : 'badge-success'} text-xs font-bold flex items-center gap-1`}>
+                <ShieldCheck size={12} /> {isPendingTransfer ? 'Direct Transfer Submitted' : 'Paystack 256-Bit Secured'}
               </span>
               <span className="text-xs text-slate-500 font-mono">{currentMember.member_id}</span>
             </div>
             <h2 className="modal-title-portal">
-              {successTx ? 'Payment Cleared' : 'Make Approved Payment'}
+              {successTx ? (isPendingTransfer ? 'Transfer Receipt Submitted' : 'Payment Cleared') : 'Make Approved Payment'}
             </h2>
           </div>
           <button className="modal-close-btn" onClick={handleClose}>
@@ -229,34 +232,57 @@ export default function MakePaymentModal() {
         {/* Body */}
         <div className="modal-body-portal">
           {successTx ? (
-            /* Success View (Item 8 requirement) */
+            /* Success / Pending View */
             <div className="payment-success-card">
               <div className="success-icon-badge">
-                <CheckCircle2 size={44} className="text-emerald-500" />
+                {isPendingTransfer ? (
+                  <Landmark size={44} className="text-amber-500" />
+                ) : (
+                  <CheckCircle2 size={44} className="text-emerald-500" />
+                )}
               </div>
-              <h3 className="success-title">PAYMENT SUCCESSFUL</h3>
+              <h3 className="success-title">
+                {isPendingTransfer ? 'TRANSFER RECEIPT SUBMITTED' : 'PAYMENT SUCCESSFUL'}
+              </h3>
               <p className="success-sub">
-                Your payment to <strong>{currentClub.name}</strong> was confirmed and credited instantly.
+                {isPendingTransfer ? (
+                  <>
+                    Your direct bank transfer of <strong>₦{Number(successTx.amount).toLocaleString()}</strong> has been recorded and submitted to <strong>{currentClub.name}</strong> executives for confirmation.
+                  </>
+                ) : (
+                  <>
+                    Your payment to <strong>{currentClub.name}</strong> was confirmed and credited instantly.
+                  </>
+                )}
               </p>
 
               <div className="success-reference-box">
                 <div className="flex justify-between items-center text-xs text-slate-500 mb-1">
-                  <span>Transaction Reference</span>
-                  <span className="badge badge-success text-xs font-bold">PAID</span>
+                  <span>{isPendingTransfer ? 'Deposit Reference' : 'Transaction Reference'}</span>
+                  <span className={`badge ${isPendingTransfer ? 'badge-warning' : 'badge-success'} text-xs font-bold`}>
+                    {isPendingTransfer ? 'PENDING ADMIN APPROVAL' : 'PAID'}
+                  </span>
                 </div>
-                <div className="font-mono font-extrabold text-base text-emerald-800 tracking-wider">
-                  {successTx.receipt_no}
+                <div className="font-mono font-extrabold text-base text-slate-900 tracking-wider">
+                  {successTx.reference}
                 </div>
-                <div className="mt-2 pt-2 border-t border-emerald-100 flex justify-between text-xs text-slate-700">
-                  <span>Amount Settled:</span>
+                <div className="mt-2 pt-2 border-t border-slate-200 flex justify-between text-xs text-slate-700">
+                  <span>Amount Deposited:</span>
                   <strong className="font-mono text-sm text-slate-900">₦{Number(successTx.amount).toLocaleString()}</strong>
                 </div>
+                {isPendingTransfer && (
+                  <p className="text-3xs text-amber-700 font-medium mt-2 pt-2 border-t border-amber-100">
+                    💡 Once club management verifies the bank credit on their statement, your dues will automatically clear and your eligibility will update.
+                  </p>
+                )}
               </div>
 
               <div className="flex flex-col gap-2.5 mt-6">
-                <button className="btn btn-primary w-full flex items-center justify-center gap-2 font-bold py-3" onClick={handleViewReceipt}>
-                  <FileText size={17} /> VIEW OFFICIAL RECEIPT
-                </button>
+                {!isPendingTransfer && (
+                  <button className="btn btn-primary w-full flex items-center justify-center gap-2 font-bold py-3" onClick={handleViewReceipt}>
+                    <FileText size={17} /> VIEW OFFICIAL RECEIPT
+                  </button>
+                )}
                 <button className="btn btn-secondary w-full text-xs font-semibold py-2.5" onClick={handleClose}>
                   Back to Dashboard
                 </button>
@@ -475,11 +501,11 @@ export default function MakePaymentModal() {
                     <div className="grid grid-cols-2 gap-2 text-xs">
                       <div>
                         <span className="text-3xs text-slate-400 font-semibold block">BANK NAME</span>
-                        <strong className="text-slate-900 text-xs">Zenith Bank Plc</strong>
+                        <strong className="text-slate-900 text-xs font-bold">Zenith Bank Plc</strong>
                       </div>
                       <div>
                         <span className="text-3xs text-slate-400 font-semibold block">ACCOUNT NAME</span>
-                        <strong className="text-slate-900 text-xs">{currentClub.name}</strong>
+                        <strong className="text-slate-900 text-xs font-bold">{currentClub.name}</strong>
                       </div>
                     </div>
 
@@ -502,9 +528,16 @@ export default function MakePaymentModal() {
                       </button>
                     </div>
 
+                    <div className="p-2.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-3xs font-medium flex items-start gap-1.5">
+                      <AlertCircle size={14} className="text-amber-600 flex-shrink-0 mt-0.5" />
+                      <span>
+                        <strong>Admin Confirmation Required:</strong> Transfer directly to the bank account above. After you submit your reference, the club administrator will verify the bank deposit before your payment is marked successful and your clearance is activated.
+                      </span>
+                    </div>
+
                     <div>
                       <label className="text-3xs font-bold text-slate-600 block mb-1">
-                        TRANSFER REFERENCE / SENDER NAME (OPTIONAL)
+                        TRANSFER REFERENCE / SENDER ACCOUNT NAME
                       </label>
                       <input
                         type="text"
@@ -622,12 +655,16 @@ export default function MakePaymentModal() {
                 >
                   {isProcessing ? (
                     <span>
-                      {paymentMethod === 'paystack' ? 'Processing Paystack...' : 'Recording Payment...'}
+                      {paymentMethod === 'paystack'
+                        ? 'Opening Paystack Gateway...'
+                        : paymentMethod === 'manual_bank'
+                        ? 'Submitting Transfer Receipt...'
+                        : 'Processing Wallet Payment...'}
                     </span>
                   ) : (
                     <>
                       <span>
-                        {paymentMethod === 'manual_bank' ? 'CONFIRM BANK TRANSFER' : 'CONFIRM PAYMENT'}
+                        {paymentMethod === 'manual_bank' ? 'SUBMIT TRANSFER RECEIPT' : 'CONFIRM PAYMENT'}
                       </span>
                       <ArrowRight size={16} />
                     </>
