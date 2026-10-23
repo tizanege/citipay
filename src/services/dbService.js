@@ -98,6 +98,24 @@ export const dbService = {
     return data
   },
 
+  async createClub(clubPayload) {
+    try {
+      const { data, error } = await supabase
+        .from('clubs')
+        .insert([clubPayload])
+        .select()
+        .single()
+      if (error) {
+        console.warn('Supabase createClub warning:', error.message)
+        return { success: false, error: error.message, data: clubPayload }
+      }
+      return { success: true, data }
+    } catch (err) {
+      console.warn('Supabase createClub error:', err.message)
+      return { success: false, error: err.message, data: clubPayload }
+    }
+  },
+
   async deleteClub(clubId) {
     try {
       const { error } = await supabase

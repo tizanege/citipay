@@ -1003,6 +1003,60 @@ export function CitiPayProvider({ children }) {
     return true
   }, [currentClub])
 
+  // Action: Super Admin License / Register New Club
+  const addClub = useCallback(async (clubData, adminName = 'Super Admin') => {
+    const slug = (clubData.slug || clubData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''))
+    const newClub = {
+      id: clubData.id || `club-${Date.now()}`,
+      name: clubData.name.trim(),
+      slug: slug,
+      code: (clubData.code || clubData.name.slice(0, 4)).toUpperCase().trim(),
+      tagline: clubData.tagline || 'Chartered Citi Football League Club',
+      logo_url: clubData.logo_url || '/crests/sunday-league-fc.svg',
+      primary_color: clubData.primary_color || '#2563EB',
+      secondary_color: clubData.secondary_color || '#DC2626',
+      accent_color: clubData.accent_color || '#FFFFFF',
+      stadium: clubData.stadium || 'Main City Stadium',
+      city: clubData.city || 'Lagos',
+      country: clubData.country || 'Nigeria',
+      founded_year: Number(clubData.founded_year) || new Date().getFullYear(),
+      membership_fee: Number(clubData.membership_fee) || 100000,
+      monthly_social_dues: Number(clubData.monthly_social_dues) || 5000,
+      max_installments: Number(clubData.max_installments) || 2,
+      current_matchday: Number(leagueSettings?.current_matchday || 14),
+      total_matchdays: 38,
+      status: 'active'
+    }
+
+    // 1. Add to clubs state
+    setClubs(prev => [newClub, ...prev])
+
+    // 2. Audit log entry
+    const newLog = {
+      id: `log-club-add-${Date.now()}`,
+      timestamp: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + ' · Club Licensing',
+      actor_name: adminName,
+      actor_role: 'Super Administrator',
+      action: 'CLUB_CHARTERED',
+      target_member_id: newClub.code,
+      target_name: newClub.name,
+      old_value: 'N/A',
+      new_value: `Licensed (${newClub.code})`,
+      reason: `Super Admin licensed and chartered new club "${newClub.name}" into Citi Football League.`,
+      details: `Home ground: ${newClub.stadium}, ${newClub.city} · Membership Fee: ₦${newClub.membership_fee.toLocaleString()}`
+    }
+    setAuditLogs(prev => [newLog, ...prev])
+
+    // 3. Persist to Supabase if connected
+    try {
+      await dbService.createClub(newClub)
+    } catch (e) {
+      console.warn('Supabase createClub background sync:', e)
+    }
+
+    return newClub
+  }, [leagueSettings])
+
   // Action: Super Admin Delete / Disband Club
   const deleteClub = useCallback(async (clubId, adminName = 'Super Admin') => {
     // 1. Guard against deleting primary club
@@ -1395,6 +1449,7 @@ export function CitiPayProvider({ children }) {
     updateClubRules,
     updateClubFees,
     updateClubMatchday,
+    addClub,
     deleteClub,
     updateLeagueSettings,
     setMemberAvailability,

@@ -6,12 +6,14 @@ import {
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
 import DeleteClubModal from '../components/modals/DeleteClubModal'
+import LicenseClubModal from '../components/modals/LicenseClubModal'
 import './AdminDashboard.css'
 
 export default function AdminClubsPage() {
-  const { clubs, members, transactions, setRulesConfigModalState, setSelectedClubId, leagueSettings, deleteClub } = useCitiPay()
+  const { clubs, members, transactions, setRulesConfigModalState, setSelectedClubId, leagueSettings, addClub, deleteClub } = useCitiPay()
   const [searchTerm, setSearchTerm] = useState('')
   const [deleteModalState, setDeleteModalState] = useState({ isOpen: false, club: null })
+  const [licenseModalOpen, setLicenseModalOpen] = useState(false)
 
   const filteredClubs = clubs.filter(c =>
     c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -34,6 +36,10 @@ export default function AdminClubsPage() {
     await deleteClub(clubId)
   }
 
+  const handleCreateClub = async (clubData) => {
+    await addClub(clubData)
+  }
+
   return (
     <div className="admin-dashboard-wrap">
       {/* Header Banner */}
@@ -54,7 +60,7 @@ export default function AdminClubsPage() {
         <div className="flex gap-2.5 flex-wrap">
           <button
             className="btn btn-primary flex items-center gap-2 text-xs font-semibold"
-            onClick={() => alert('New Club Licensing Application modal will open. Required documentation: CAC Registration, Home Ground lease agreement, and Federation charter.')}
+            onClick={() => setLicenseModalOpen(true)}
           >
             <Plus size={15} /> License New Club
           </button>
@@ -226,6 +232,13 @@ export default function AdminClubsPage() {
         club={deleteModalState.club}
         onClose={() => setDeleteModalState({ isOpen: false, club: null })}
         onConfirm={handleDeleteClub}
+      />
+
+      {/* License New Club Modal */}
+      <LicenseClubModal
+        isOpen={licenseModalOpen}
+        onClose={() => setLicenseModalOpen(false)}
+        onClubCreated={handleCreateClub}
       />
     </div>
   )
