@@ -45,13 +45,13 @@ async function runImport() {
   const members = JSON.parse(fs.readFileSync(dataPath, 'utf8'))
   console.log(`Loaded ${members.length} members from JSON extraction.`)
 
-  // 1. Ensure Sunday League FC exists
-  console.log('\n[1/5] Ensuring Sunday League FC exists...')
+  // 1. Ensure Ikoyi Sunday League exists
+  console.log('\n[1/5] Ensuring Ikoyi Sunday League exists...')
   const { error: clubErr } = await supabase.from('clubs').upsert({
     id: CLUB_ID,
-    name: 'Sunday League FC',
-    slug: 'sunday-league-fc',
-    code: 'SLFC',
+    name: 'Ikoyi Sunday League',
+    slug: 'ikoyi-sunday-league',
+    code: 'ISL',
     logo_url: '/crests/sunday-league-fc.svg',
     primary_color: '#2563EB',
     secondary_color: '#DC2626',
@@ -60,7 +60,7 @@ async function runImport() {
   }, { onConflict: 'id' })
 
   if (clubErr) console.warn('Club upsert note:', clubErr.message)
-  else console.log('✅ Sunday League FC club record verified.')
+  else console.log('✅ Ikoyi Sunday League club record verified.')
 
   // 2. Insert Profiles
   console.log('\n[2/5] Upserting Profiles...')
