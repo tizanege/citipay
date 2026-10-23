@@ -146,7 +146,7 @@ export const dbService = {
       const membershipPaid = Number(plan?.amount_paid || 0)
       const membershipOutstanding = Math.max(0, membershipFee - membershipPaid)
 
-      // Read wallet balance from local store or default
+      // Read wallet balance from local store or default to 0
       let walletBal = 0
       try {
         const storedWallets = JSON.parse(localStorage.getItem('citipay_player_wallets') || '{}')
@@ -155,11 +155,11 @@ export const dbService = {
         } else if (storedWallets[p.member_id] !== undefined) {
           walletBal = Number(storedWallets[p.member_id])
         } else {
-          // Generous starting credit for testing & active members
-          walletBal = 15000
+          // Default starting wallet balance is ₦0
+          walletBal = 0
         }
       } catch (e) {
-        walletBal = 15000
+        walletBal = 0
       }
 
       return {
