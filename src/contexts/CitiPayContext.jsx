@@ -723,8 +723,17 @@ export function CitiPayProvider({ children }) {
         if (m.id === target.id || m.member_id === target.member_id) {
           let newPaid = m.membership_paid
           let newSocialPaid = m.social_dues_paid
+          let newWalletBal = Number(m.wallet_balance || 0)
 
-          if (tx.payment_type === 'membership' || tx.payment_type === 'membership_installment') {
+          if (tx.payment_type === 'wallet_topup') {
+            newWalletBal += Number(tx.amount)
+            try {
+              const stored = JSON.parse(localStorage.getItem('citipay_player_wallets') || '{}')
+              stored[m.id] = newWalletBal
+              stored[m.member_id] = newWalletBal
+              localStorage.setItem('citipay_player_wallets', JSON.stringify(stored))
+            } catch (e) {}
+          } else if (tx.payment_type === 'membership' || tx.payment_type === 'membership_installment') {
             newPaid = Math.min(m.membership_fee, m.membership_paid + Number(tx.amount))
           } else if (tx.payment_type === 'social_dues') {
             newSocialPaid = Number(currentClub.monthly_social_dues || 5000)
@@ -742,6 +751,7 @@ export function CitiPayProvider({ children }) {
 
           return {
             ...m,
+            wallet_balance: newWalletBal,
             membership_paid: newPaid,
             membership_outstanding: newOut,
             membership_status: newOut === 0 ? 'paid' : 'partial',

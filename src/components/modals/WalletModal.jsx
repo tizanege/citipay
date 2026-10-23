@@ -2,7 +2,7 @@ import { useState } from 'react'
 import {
   X, Wallet, ArrowDownRight, ArrowUpRight, ShieldCheck,
   CreditCard, Landmark, Smartphone, Sparkles, CheckCircle2,
-  AlertCircle, History, ArrowRight
+  AlertCircle, History, ArrowRight, Copy, Check, Building2
 } from 'lucide-react'
 import { useCitiPay } from '../../contexts/CitiPayContext'
 import './ModalStyles.css'
@@ -16,11 +16,15 @@ export default function WalletModal() {
     currentMember,
     currentClub,
     fundWallet,
+    submitManualPaymentTransfer,
     transactions
   } = useCitiPay()
 
   const [topupAmount, setTopupAmount] = useState(20000)
+  const [fundingMethod, setFundingMethod] = useState('paystack') // 'paystack' | 'manual_bank'
   const [selectedChannel, setSelectedChannel] = useState('all_channels') // 'all_channels' | 'card' | 'bank_transfer'
+  const [transferRef, setTransferRef] = useState('')
+  const [copiedAccount, setCopiedAccount] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
   const [successInfo, setSuccessInfo] = useState(null)
   const [errorMsg, setErrorMsg] = useState('')
@@ -45,6 +49,27 @@ export default function WalletModal() {
 
     setIsProcessing(true)
 
+    // Option A: Manual Bank Transfer
+    if (fundingMethod === 'manual_bank') {
+      setTimeout(async () => {
+        const generatedRef = transferRef.trim() || `WLT-TRF-${Date.now().toString().slice(-6)}`
+        const tx = await submitManualPaymentTransfer({
+          memberId: currentMember.id,
+          amount: Number(topupAmount),
+          paymentType: 'wallet_topup',
+          reference: generatedRef,
+          notes: `Direct bank transfer for wallet funding (${currentMember.full_name})`
+        })
+        setIsProcessing(false)
+        setSuccessInfo({
+          ...tx,
+          isPending: true
+        })
+      }, 700)
+      return
+    }
+
+    // Option B: Paystack Gateway
     const paystackKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY
     const isLiveKey = paystackKey && paystackKey.startsWith('pk_') && paystackKey !== 'pk_test_your-key'
 
@@ -147,24 +172,55 @@ export default function WalletModal() {
           {successInfo ? (
             <div className="payment-success-card">
               <div className="success-icon-badge">
-                <CheckCircle2 size={44} className="text-emerald-500" />
+                {successInfo.isPending ? (
+                  <Landmark size={44} className="text-amber-500" />
+                ) : (
+                  <CheckCircle2 size={44} className="text-emerald-500" />
+                )}
               </div>
-              <h3 className="success-title">WALLET FUNDED SUCCESSFULLY</h3>
+              <h3 className="success-title">
+                {successInfo.isPending ? 'TRANSFER SUBMITTED FOR APPROVAL' : 'WALLET FUNDED SUCCESSFULLY'}
+              </h3>
               <p className="success-sub">
-                ₦{Number(successInfo.amount).toLocaleString()} has been credited to your CitiPay wallet.
+                {successInfo.isPending ? (
+                  <>
+                    Your direct deposit of <strong>₦{Number(successInfo.amount).toLocaleString()}</strong> was submitted to <strong>{currentClub?.name || 'Ikoyi Sunday League'}</strong> management for bank reconciliation.
+                  </>
+                ) : (
+                  <>
+                    ₦{Number(successInfo.amount).toLocaleString()} has been credited to your CitiPay wallet.
+                  </>
+                )}
               </p>
-              <div className="mt-4 p-3 bg-emerald-50 rounded-xl border border-emerald-200">
-                <div className="text-xs text-emerald-800 font-semibold">Updated Wallet Balance</div>
-                <div className="text-2xl font-black font-mono text-emerald-700 mt-0.5">
-                  ₦{Number(currentMember?.wallet_balance || 0).toLocaleString()}
+
+              {successInfo.isPending ? (
+                <div className="mt-4 p-3 bg-amber-50 rounded-xl border border-amber-200 text-left">
+                  <div className="flex justify-between items-center text-xs text-slate-500 mb-1">
+                    <span>Deposit Reference:</span>
+                    <span className="badge badge-warning text-xs font-bold">PENDING ADMIN CONFIRMATION</span>
+                  </div>
+                  <div className="font-mono font-extrabold text-base text-slate-900 tracking-wider">
+                    {successInfo.reference}
+                  </div>
+                  <div className="text-3xs text-amber-800 font-medium mt-2 pt-2 border-t border-amber-200">
+                    💡 Once the club administrator verifies the funds on the club statement, your wallet balance will automatically increase.
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="mt-4 p-3 bg-emerald-50 rounded-xl border border-emerald-200">
+                  <div className="text-xs text-emerald-800 font-semibold">Updated Wallet Balance</div>
+                  <div className="text-2xl font-black font-mono text-emerald-700 mt-0.5">
+                    ₦{Number(currentMember?.wallet_balance || 0).toLocaleString()}
+                  </div>
+                </div>
+              )}
+
               <div className="flex gap-2 mt-5">
                 <button
                   className="btn btn-secondary flex-1 font-semibold text-xs py-2.5"
                   onClick={() => setSuccessInfo(null)}
                 >
-                  Fund More
+                  Back
                 </button>
                 <button
                   className="btn btn-primary flex-1 font-bold text-xs py-2.5"
@@ -223,35 +279,154 @@ export default function WalletModal() {
                 </div>
               </div>
 
-              {/* Top-up Method Selection */}
+              {/* Choose Funding Method: Paystack Gateway OR Manual Bank Transfer */}
               <div>
-                <label className="form-label-portal">FUNDING GATEWAY</label>
-                <div className="method-pill-grid">
+                <div className="flex justify-between items-center mb-1.5">
+                  <label className="form-label-portal mb-0">CHOOSE TOP-UP METHOD</label>
+                  <span className="text-3xs text-slate-500 font-medium">Select gateway or direct bank</span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 mb-3">
                   <button
                     type="button"
-                    className={`method-pill-btn ${selectedChannel === 'all_channels' ? 'active' : ''}`}
-                    onClick={() => setSelectedChannel('all_channels')}
+                    className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                      fundingMethod === 'paystack'
+                        ? 'border-slate-900 bg-slate-900 text-white shadow-sm'
+                        : 'border-slate-200 bg-white hover:border-slate-300 text-slate-800'
+                    }`}
+                    onClick={() => setFundingMethod('paystack')}
                   >
-                    <Sparkles size={14} className="text-amber-500" />
-                    <span>Paystack All</span>
+                    <div className="flex items-center justify-between w-full mb-1">
+                      <CreditCard size={16} className={fundingMethod === 'paystack' ? 'text-emerald-400' : 'text-blue-600'} />
+                      <span className={`text-4xs uppercase tracking-wider font-extrabold px-1.5 py-0.5 rounded ${
+                        fundingMethod === 'paystack' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-blue-50 text-blue-700'
+                      }`}>Instant</span>
+                    </div>
+                    <div>
+                      <div className="font-extrabold text-xs">Paystack</div>
+                      <div className={`text-3xs ${fundingMethod === 'paystack' ? 'text-slate-300' : 'text-slate-500'}`}>Card, Transfer, USSD</div>
+                    </div>
                   </button>
+
                   <button
                     type="button"
-                    className={`method-pill-btn ${selectedChannel === 'card' ? 'active' : ''}`}
-                    onClick={() => setSelectedChannel('card')}
+                    className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                      fundingMethod === 'manual_bank'
+                        ? 'border-slate-900 bg-slate-900 text-white shadow-sm'
+                        : 'border-slate-200 bg-white hover:border-slate-300 text-slate-800'
+                    }`}
+                    onClick={() => setFundingMethod('manual_bank')}
                   >
-                    <CreditCard size={14} />
-                    <span>Debit Card</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={`method-pill-btn ${selectedChannel === 'bank_transfer' ? 'active' : ''}`}
-                    onClick={() => setSelectedChannel('bank_transfer')}
-                  >
-                    <Landmark size={14} />
-                    <span>Bank Transfer</span>
+                    <div className="flex items-center justify-between w-full mb-1">
+                      <Landmark size={16} className={fundingMethod === 'manual_bank' ? 'text-amber-400' : 'text-amber-600'} />
+                      <span className={`text-4xs uppercase tracking-wider font-extrabold px-1.5 py-0.5 rounded ${
+                        fundingMethod === 'manual_bank' ? 'bg-amber-500/20 text-amber-300' : 'bg-amber-50 text-amber-800'
+                      }`}>Manual</span>
+                    </div>
+                    <div>
+                      <div className="font-extrabold text-xs">Bank Transfer</div>
+                      <div className={`text-3xs ${fundingMethod === 'manual_bank' ? 'text-slate-300' : 'text-slate-500'}`}>Direct Deposit & Confirm</div>
+                    </div>
                   </button>
                 </div>
+
+                {/* Sub-view: Manual Bank Transfer Details */}
+                {fundingMethod === 'manual_bank' && (
+                  <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs flex flex-col gap-2.5 animate-fadeIn">
+                    <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+                      <span className="text-3xs uppercase font-extrabold tracking-wider text-slate-500 flex items-center gap-1.5">
+                        <Building2 size={13} className="text-amber-600" />
+                        Official {currentClub?.name || 'Ikoyi Sunday League'} Account
+                      </span>
+                      <span className="text-3xs text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded">
+                        Verified Club Account
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div>
+                        <span className="text-3xs text-slate-400 font-semibold block">BANK NAME</span>
+                        <strong className="text-slate-900 text-xs font-bold">Zenith Bank Plc</strong>
+                      </div>
+                      <div>
+                        <span className="text-3xs text-slate-400 font-semibold block">ACCOUNT NAME</span>
+                        <strong className="text-slate-900 text-xs font-bold">{currentClub?.name || 'Ikoyi Sunday League'}</strong>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between p-2.5 bg-white rounded-lg border border-slate-200">
+                      <div>
+                        <span className="text-3xs text-slate-400 font-semibold block">ACCOUNT NUMBER</span>
+                        <span className="font-mono text-base font-extrabold text-slate-900 tracking-wider">1018892341</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText('1018892341')
+                          setCopiedAccount(true)
+                          setTimeout(() => setCopiedAccount(false), 2000)
+                        }}
+                        className="btn btn-secondary text-2xs py-1.5 px-3 flex items-center gap-1 font-bold"
+                      >
+                        {copiedAccount ? <Check size={12} className="text-emerald-600" /> : <Copy size={12} />}
+                        <span>{copiedAccount ? 'Copied' : 'Copy'}</span>
+                      </button>
+                    </div>
+
+                    <div className="p-2.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-3xs font-medium flex items-start gap-1.5">
+                      <AlertCircle size={14} className="text-amber-600 flex-shrink-0 mt-0.5" />
+                      <span>
+                        <strong>Admin Confirmation Required:</strong> Transfer directly to the club account above. After you submit your reference, the club administrator will verify the bank deposit on their statement before your wallet balance is credited.
+                      </span>
+                    </div>
+
+                    <div>
+                      <label className="text-3xs font-bold text-slate-600 block mb-1">
+                        TRANSFER REFERENCE / SENDER ACCOUNT NAME
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. TRF-10492 or Adebayo Bank App"
+                        value={transferRef}
+                        onChange={(e) => setTransferRef(e.target.value)}
+                        className="form-input-portal text-xs w-full bg-white font-mono"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Sub-view: Paystack Channel Customization */}
+                {fundingMethod === 'paystack' && (
+                  <div>
+                    <label className="text-3xs font-bold text-slate-600 block mb-1">PAYSTACK CHANNEL</label>
+                    <div className="method-pill-grid">
+                      <button
+                        type="button"
+                        className={`method-pill-btn ${selectedChannel === 'all_channels' ? 'active' : ''}`}
+                        onClick={() => setSelectedChannel('all_channels')}
+                      >
+                        <Sparkles size={14} className="text-amber-500" />
+                        <span>All Channels</span>
+                      </button>
+                      <button
+                        type="button"
+                        className={`method-pill-btn ${selectedChannel === 'card' ? 'active' : ''}`}
+                        onClick={() => setSelectedChannel('card')}
+                      >
+                        <CreditCard size={14} />
+                        <span>Debit Card</span>
+                      </button>
+                      <button
+                        type="button"
+                        className={`method-pill-btn ${selectedChannel === 'bank_transfer' ? 'active' : ''}`}
+                        onClick={() => setSelectedChannel('bank_transfer')}
+                      >
+                        <Landmark size={14} />
+                        <span>Bank Transfer</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {errorMsg && (
@@ -269,11 +444,17 @@ export default function WalletModal() {
                 disabled={isProcessing || topupAmount <= 0}
               >
                 {isProcessing ? (
-                  <span>Connecting to Paystack...</span>
+                  <span>
+                    {fundingMethod === 'manual_bank' ? 'Submitting Transfer Request...' : 'Connecting to Paystack...'}
+                  </span>
                 ) : (
                   <>
                     <Wallet size={16} />
-                    <span>TOP UP ₦{Number(topupAmount).toLocaleString()} VIA PAYSTACK</span>
+                    <span>
+                      {fundingMethod === 'manual_bank'
+                        ? `SUBMIT TRANSFER RECEIPT (₦${Number(topupAmount).toLocaleString()})`
+                        : `TOP UP ₦${Number(topupAmount).toLocaleString()} VIA PAYSTACK`}
+                    </span>
                   </>
                 )}
               </button>
