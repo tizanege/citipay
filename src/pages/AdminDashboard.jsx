@@ -11,7 +11,7 @@ import './AdminDashboard.css'
 
 export default function AdminDashboard() {
   const navigate = useNavigate()
-  const { clubs, members, adminMetrics, auditLogs, setRulesConfigModalState, leagueSettings, setLeagueSettingsModalState } = useCitiPay()
+  const { clubs, members, currentClub, adminMetrics, auditLogs, setRulesConfigModalState, leagueSettings, setLeagueSettingsModalState } = useCitiPay()
 
   return (
     <div className="admin-dashboard-wrap">
