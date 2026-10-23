@@ -61,13 +61,17 @@ export const dbService = {
 
     if (error) throw error
     return (data || []).map(c => {
+      const isPrimary = c.slug === 'ikoyi-sunday-league' || c.slug === 'sunday-league-fc' || c.code === 'ISL' || c.code === 'SLFC' || c.id === '11111111-1111-1111-1111-111111111111'
       const base = {
         ...c,
+        name: isPrimary && c.name === 'Sunday League FC' ? 'Ikoyi Sunday League' : (c.name || 'Ikoyi Sunday League'),
+        code: isPrimary ? 'ISL' : c.code,
+        slug: isPrimary ? 'ikoyi-sunday-league' : c.slug,
         membership_fee: Number(c.membership_fee || 100000),
         monthly_social_dues: Number(c.monthly_social_dues || 5000),
         max_installments: Number(c.max_installments || 2)
       }
-      if (c.slug === 'sunday-league-fc' || c.code === 'SLFC') {
+      if (isPrimary) {
         return {
           ...base,
           primary_color: '#2563EB',
