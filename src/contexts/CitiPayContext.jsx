@@ -256,6 +256,22 @@ export function CitiPayProvider({ children }) {
     }
   }, [selectedClubId])
 
+  // Clear any test wallet balances so every player starts at ₦0 during testing
+  const clearAllWallets = useCallback(() => {
+    try {
+      localStorage.removeItem('citipay_player_wallets')
+    } catch (e) {}
+    setMembers(prev => prev.map(m => ({ ...m, wallet_balance: 0 })))
+  }, [])
+
+  useEffect(() => {
+    // Clear any existing test wallet top-up balances
+    try {
+      localStorage.removeItem('citipay_player_wallets')
+    } catch (e) {}
+    setMembers(prev => prev.map(m => ({ ...m, wallet_balance: 0 })))
+  }, [])
+
   useEffect(() => {
     loadDatabaseData()
   }, [loadDatabaseData])
@@ -1593,6 +1609,7 @@ export function CitiPayProvider({ children }) {
     processOnlinePayment,
     fundWallet,
     payWithWallet,
+    clearAllWallets,
     recordManualPayment,
     submitManualPaymentTransfer,
     confirmManualPayment,

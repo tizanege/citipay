@@ -174,11 +174,10 @@ export const dbService = {
       try {
         const storedWallets = JSON.parse(localStorage.getItem('citipay_player_wallets') || '{}')
         if (storedWallets[p.id] !== undefined) {
-          walletBal = Number(storedWallets[p.id])
+          walletBal = Math.max(0, Number(storedWallets[p.id]))
         } else if (storedWallets[p.member_id] !== undefined) {
-          walletBal = Number(storedWallets[p.member_id])
+          walletBal = Math.max(0, Number(storedWallets[p.member_id]))
         } else {
-          // Default starting wallet balance is ₦0
           walletBal = 0
         }
       } catch (e) {
