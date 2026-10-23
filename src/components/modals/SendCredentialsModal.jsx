@@ -25,6 +25,7 @@ export default function SendCredentialsModal() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
     if (sendCredentialsModalState.isOpen && member) {
@@ -35,6 +36,7 @@ export default function SendCredentialsModal() {
       setIsSubmitting(false)
       setCopied(false)
       setShowEmailPreview(false)
+      setErrorMessage('')
     }
   }, [sendCredentialsModalState.isOpen, member])
 
@@ -74,6 +76,7 @@ Note: Change your temporary password upon your first sign in.`
     if (!email) return
 
     setIsSubmitting(true)
+    setErrorMessage('')
 
     try {
       await sendMemberCredentials({
@@ -87,6 +90,7 @@ Note: Change your temporary password upon your first sign in.`
     } catch (err) {
       console.error(err)
       setIsSubmitting(false)
+      setErrorMessage(err.message || 'Failed to dispatch credentials. Please copy credentials manually.')
     }
   }
 
@@ -201,6 +205,13 @@ Note: Change your temporary password upon your first sign in.`
                   {member.status === 'red' && '🔴 Ineligible'}
                 </span>
               </div>
+
+              {errorMessage && (
+                <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl flex items-center gap-2">
+                  <AlertCircle size={15} className="shrink-0 text-rose-600" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
 
               {/* Recipient Email */}
               <div>
