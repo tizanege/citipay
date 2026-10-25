@@ -123,8 +123,13 @@ export default function MakePaymentModal() {
     const paystackKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY
     const isLiveKey = paystackKey && paystackKey.startsWith('pk_') && paystackKey !== 'pk_test_your-key'
 
-    // If Paystack inline script is available and we have a valid key (or in test environment)
-    if (typeof window !== 'undefined' && window.PaystackPop && isLiveKey) {
+    if (!isLiveKey) {
+      setIsProcessing(false)
+      setErrorMessage('Paystack is not configured yet. Please select "Bank Transfer" or configure your Paystack Public Key.')
+      return
+    }
+
+    if (typeof window !== 'undefined' && window.PaystackPop) {
       const generatedRef = `SL-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`
       const playerEmail = currentMember.email || `${currentMember.member_id.toLowerCase().replace(/[^a-z0-9]/g, '')}@citileague.ng`
 
@@ -134,7 +139,7 @@ export default function MakePaymentModal() {
         amount: Math.round(Number(amount) * 100), // In Kobo
         currency: 'NGN',
         ref: generatedRef,
-        channels: selectedChannels,
+        channels: ['card', 'bank', 'ussd', 'qr', 'mobile_money', 'bank_transfer'],
         metadata: {
           custom_fields: [
             { display_name: 'Member Name', variable_name: 'member_name', value: currentMember.full_name },
@@ -145,17 +150,11 @@ export default function MakePaymentModal() {
           ]
         },
         callback: function (response) {
-          // Paystack callback on verified settlement
           const confirmedRef = response.reference || generatedRef
-          let methodLabel = 'Paystack Gateway'
-          if (paystackChannel === 'card') methodLabel = 'Paystack (Card)'
-          else if (paystackChannel === 'bank_transfer') methodLabel = 'Paystack (Instant Bank Transfer)'
-          else if (paystackChannel === 'ussd') methodLabel = 'Paystack (USSD)'
-
           const tx = processOnlinePayment({
             paymentType,
             amount,
-            method: methodLabel,
+            method: 'Paystack Gateway',
             reference: confirmedRef,
             paymentMethod: 'paystack',
             notes
@@ -173,24 +172,8 @@ export default function MakePaymentModal() {
       return
     }
 
-    // Graceful Instant Simulation (for test keys / offline dev)
-    setTimeout(() => {
-      let methodLabel = 'Paystack Gateway'
-      if (paystackChannel === 'card') methodLabel = 'Paystack (Debit Card)'
-      else if (paystackChannel === 'bank_transfer') methodLabel = 'Paystack (Instant Bank Transfer)'
-      else if (paystackChannel === 'ussd') methodLabel = 'Paystack (USSD *737#)'
-
-      const tx = processOnlinePayment({
-        paymentType,
-        amount,
-        method: methodLabel,
-        paymentMethod: 'paystack',
-        notes
-      })
-
-      setIsProcessing(false)
-      setSuccessTx(tx)
-    }, 1100)
+    setIsProcessing(false)
+    setErrorMessage('Unable to initialize Paystack checkout. Please try again or select "Bank Transfer".')
   }
 
   const handleClose = () => {

@@ -73,8 +73,13 @@ export default function WalletModal() {
     const paystackKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY
     const isLiveKey = paystackKey && paystackKey.startsWith('pk_') && paystackKey !== 'pk_test_your-key'
 
-    // Live Paystack popup for top-up
-    if (typeof window !== 'undefined' && window.PaystackPop && isLiveKey) {
+    if (!isLiveKey) {
+      setIsProcessing(false)
+      setErrorMsg('Paystack is not configured yet. Please use Direct Bank Transfer or add your Paystack Public Key.')
+      return
+    }
+
+    if (typeof window !== 'undefined' && window.PaystackPop) {
       const generatedRef = `WLT-TOP-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`
       const playerEmail = currentMember.email || `${currentMember.member_id.toLowerCase().replace(/[^a-z0-9]/g, '')}@citileague.ng`
 
@@ -84,7 +89,7 @@ export default function WalletModal() {
         amount: Math.round(Number(topupAmount) * 100),
         currency: 'NGN',
         ref: generatedRef,
-        channels: selectedChannel === 'card' ? ['card'] : selectedChannel === 'bank_transfer' ? ['bank_transfer'] : ['card', 'bank', 'ussd', 'qr', 'bank_transfer'],
+        channels: ['card', 'bank', 'ussd', 'qr', 'bank_transfer'],
         metadata: {
           custom_fields: [
             { display_name: 'Member Name', variable_name: 'member_name', value: currentMember.full_name },
@@ -112,19 +117,8 @@ export default function WalletModal() {
       return
     }
 
-    // Offline / Test Simulation
-    setTimeout(() => {
-      fundWallet({
-        amount: topupAmount,
-        method: 'Paystack Test Simulation'
-      }).then(tx => {
-        setIsProcessing(false)
-        setSuccessInfo(tx)
-      }).catch(err => {
-        setIsProcessing(false)
-        setErrorMsg(err.message)
-      })
-    }, 1000)
+    setIsProcessing(false)
+    setErrorMsg('Unable to initialize Paystack checkout. Please refresh or use Direct Bank Transfer.')
   }
 
   const handleClose = () => {
