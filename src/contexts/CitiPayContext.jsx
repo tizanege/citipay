@@ -218,7 +218,7 @@ export function CitiPayProvider({ children }) {
           setClubs(liveClubs.value)
         }
         if (liveMembers.status === 'fulfilled' && liveMembers.value?.length > 0) {
-          setMembers(liveMembers.value)
+          setMembers(liveMembers.value.map(m => ({ ...m, wallet_balance: 0 })))
         }
         if (liveTxs.status === 'fulfilled' && liveTxs.value?.length > 0) {
           setTransactions(liveTxs.value)

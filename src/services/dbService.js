@@ -168,21 +168,7 @@ export const dbService = {
       const membershipFee = Number(plan?.total_amount || 100000)
       const membershipPaid = Number(plan?.amount_paid || 0)
       const membershipOutstanding = Math.max(0, membershipFee - membershipPaid)
-
-      // Read wallet balance from local store or default to 0
-      let walletBal = 0
-      try {
-        const storedWallets = JSON.parse(localStorage.getItem('citipay_player_wallets') || '{}')
-        if (storedWallets[p.id] !== undefined) {
-          walletBal = Math.max(0, Number(storedWallets[p.id]))
-        } else if (storedWallets[p.member_id] !== undefined) {
-          walletBal = Math.max(0, Number(storedWallets[p.member_id]))
-        } else {
-          walletBal = 0
-        }
-      } catch (e) {
-        walletBal = 0
-      }
+      const walletBal = 0
 
       return {
         id: p.id,
