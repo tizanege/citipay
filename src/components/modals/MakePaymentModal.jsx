@@ -501,23 +501,23 @@ export default function MakePaymentModal() {
                     <div className="grid grid-cols-2 gap-2 text-xs">
                       <div>
                         <span className="text-3xs text-slate-400 font-semibold block">BANK NAME</span>
-                        <strong className="text-slate-900 text-xs font-bold">Zenith Bank Plc</strong>
+                        <strong className="text-slate-900 text-xs font-bold">Kuda Microfinance Bank</strong>
                       </div>
                       <div>
                         <span className="text-3xs text-slate-400 font-semibold block">ACCOUNT NAME</span>
-                        <strong className="text-slate-900 text-xs font-bold">{currentClub.name}</strong>
+                        <strong className="text-slate-900 text-xs font-bold">080H00KAH GLOBAL SERVICES</strong>
                       </div>
                     </div>
 
                     <div className="flex items-center justify-between p-2.5 bg-white rounded-lg border border-slate-200">
                       <div>
                         <span className="text-3xs text-slate-400 font-semibold block">ACCOUNT NUMBER</span>
-                        <span className="font-mono text-base font-extrabold text-slate-900 tracking-wider">1018892341</span>
+                        <span className="font-mono text-base font-extrabold text-slate-900 tracking-wider">3003340214</span>
                       </div>
                       <button
                         type="button"
                         onClick={() => {
-                          navigator.clipboard.writeText('1018892341')
+                          navigator.clipboard.writeText('3003340214')
                           setCopiedAccount(true)
                           setTimeout(() => setCopiedAccount(false), 2000)
                         }}
