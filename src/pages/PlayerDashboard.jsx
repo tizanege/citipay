@@ -64,6 +64,23 @@ export default function PlayerDashboard() {
     })
   }
 
+  // Dynamic Calculations for the 3 Hero Cards:
+  // 1. Dynamic Player Clearance Score (% of Membership paid, weighted with social dues)
+  const membershipRatio = membershipFee > 0 ? (membershipPaid / membershipFee) : 1
+  const socialPaidRatio = member.social_dues_paid ? 1 : 0
+  const clearanceScore = Math.min(100, Math.round((membershipRatio * 85) + (socialPaidRatio * 15)))
+
+  // 2. Dynamic Matchday Attendance / Readiness Index (Based on confirmed payments or matchday eligibility)
+  const matchdayPeakIndex = isGreen ? '98%' : isYellow ? '72%' : '40%'
+  const peakIndexDesc = isGreen ? 'Top Tier Matchday Cleared' : isYellow ? 'Conditional Clearance' : 'Dues Suspended'
+
+  // 3. Dynamic Days to Next Sunday Match Fixture
+  const today = new Date()
+  const dayOfWeek = today.getDay() // 0 = Sunday, 1 = Monday, etc.
+  const daysToSunday = dayOfWeek === 0 ? 0 : (7 - dayOfWeek)
+  const nextGameweek = currentClub?.current_matchday || 14
+  const seasonProgressPct = Math.min(100, Math.round(((currentClub?.current_matchday || 14) / (currentClub?.total_matchdays || 38)) * 100))
+
   return (
     <div className="portal-dashboard-wrapper">
 
@@ -71,39 +88,45 @@ export default function PlayerDashboard() {
       <div className="superpower-profile-row mb-6">
         <div className="superpower-profile-left">
           <div className="superpower-name-row">
-            <h1 className="superpower-player-name">{member.full_name || 'Sophia Caldwell'}</h1>
+            <h1 className="superpower-player-name">{member.full_name || 'Player'}</h1>
             <span className="superpower-verified-badge">
               <ShieldCheck size={14} className="text-emerald-500" />
-              <span>#{member.jersey_number || '10'} · {member.position || 'CAM'}</span>
+              <span>#{member.jersey_number || '10'} · {member.position || 'Player'}</span>
             </span>
           </div>
           <p className="superpower-subtext">
-            {currentClub?.name || 'Sunday League FC'} · Member ID: <span className="font-mono">{member.member_id || 'SL-8K4P2'}</span>
+            {currentClub?.name || 'Ikoyi Sunday League'} · Member ID: <span className="font-mono">{member.member_id}</span>
           </p>
         </div>
 
-        {/* Top Count Stats (Dot Matrix Style: Total, Optimal, Due, Out of range) */}
+        {/* Top Count Stats */}
         <div className="superpower-stats-bar">
           <div className="sp-counter-item">
-            <div className="sp-counter-value sp-dot-matrix">106</div>
+            <div className="sp-counter-value sp-dot-matrix">{members.length || 1}</div>
             <div className="sp-counter-label">
-              <span className="sp-mini-badge yellow">Total</span>
+              <span className="sp-mini-badge yellow">Roster</span>
             </div>
           </div>
           <div className="sp-counter-item">
-            <div className="sp-counter-value sp-dot-matrix">{isGreen ? '80' : '45'}</div>
+            <div className="sp-counter-value sp-dot-matrix">
+              {members.filter(m => m.status === 'green').length}
+            </div>
             <div className="sp-counter-label">
               <span className="sp-pill-label">Cleared</span>
             </div>
           </div>
           <div className="sp-counter-item">
-            <div className="sp-counter-value sp-dot-matrix">{isYellow ? '21' : '12'}</div>
+            <div className="sp-counter-value sp-dot-matrix">
+              {members.filter(m => m.status === 'yellow').length}
+            </div>
             <div className="sp-counter-label">
               <span className="sp-pill-label">In Grace</span>
             </div>
           </div>
           <div className="sp-counter-item">
-            <div className="sp-counter-value sp-dot-matrix">{isRed ? '5' : '0'}</div>
+            <div className="sp-counter-value sp-dot-matrix">
+              {members.filter(m => m.status === 'red').length}
+            </div>
             <div className="sp-counter-label">
               <span className="sp-pill-label alert">Due Flag</span>
             </div>
@@ -111,53 +134,51 @@ export default function PlayerDashboard() {
         </div>
       </div>
 
-      {/* TIMELINE / SEASON CHECK-IN BAR */}
+      {/* TIMELINE / SEASON PROGRESS BAR */}
       <div className="superpower-timeline-card mb-4">
         <div className="sp-timeline-track">
-          <span className="sp-timeline-month">August</span>
+          <span className="sp-timeline-month">Matchday {currentClub?.current_matchday || 14} of {currentClub?.total_matchdays || 38}</span>
           <div className="sp-timeline-dots">
             <span className="sp-tl-dot done" />
             <span className="sp-tl-dot done" />
             <span className="sp-tl-dot done" />
             <div className="sp-timeline-pill-floating">
               <Sparkles size={12} className="text-amber-500" />
-              <span>Matchday Fitness Peak (+4.8 rating)</span>
+              <span>{isGreen ? 'Eligible for Starting XI' : isYellow ? 'Grace Period Active' : 'Payment Required'}</span>
             </div>
             <span className="sp-tl-dot current" />
             <span className="sp-tl-dot future" />
             <span className="sp-tl-dot future" />
           </div>
-          <span className="sp-timeline-month">November</span>
+          <span className="sp-timeline-month">{seasonProgressPct}% Season</span>
         </div>
       </div>
 
-      {/* DUAL GLOWING HERO CARDS (Superpower Score & Biological/Matchday Age) */}
+      {/* DUAL GLOWING HERO CARDS (Dynamic Clearance & Matchday Readiness) */}
       <div className="superpower-hero-grid mb-6">
-        {/* Card 1: Superpower Eligibility Score */}
+        {/* Card 1: Dynamic Clearance Score */}
         <div className={`sp-hero-card ${isRed ? 'sp-hero-danger' : isYellow ? 'sp-hero-warning' : 'sp-hero-green'}`}>
           <div className="sp-hero-card-header">
             <span className="sp-hero-label">Player Clearance Score</span>
           </div>
           <div className="sp-hero-body">
             <div className="sp-hero-big-number sp-dot-matrix">
-              {isGreen ? '94' : isYellow ? '70' : '38'}
+              {clearanceScore}%
             </div>
             <div className="sp-hero-status-pill">
-              {isGreen ? 'Matchday Ready · 100% Cleared' : isYellow ? 'On Track · Grace Period' : 'Action Required · Ineligible'}
+              {isGreen ? 'Matchday Ready · 100% Cleared' : isYellow ? 'Grace Period · Partial Dues' : 'Action Required · Ineligible'}
             </div>
           </div>
           {/* Micro dots equalizer */}
           <div className="sp-hero-equalizer">
-            <span style={{ height: '30%' }} />
-            <span style={{ height: '60%' }} />
-            <span style={{ height: '40%' }} />
-            <span style={{ height: '80%' }} />
-            <span style={{ height: '100%' }} />
-            <span style={{ height: '70%' }} />
-            <span style={{ height: '90%' }} />
-            <span style={{ height: '50%' }} />
-            <span style={{ height: '75%' }} />
-            <span style={{ height: '85%' }} />
+            <span style={{ height: `${Math.max(20, clearanceScore * 0.4)}%` }} />
+            <span style={{ height: `${Math.max(30, clearanceScore * 0.7)}%` }} />
+            <span style={{ height: `${Math.max(25, clearanceScore * 0.5)}%` }} />
+            <span style={{ height: `${Math.max(40, clearanceScore * 0.85)}%` }} />
+            <span style={{ height: `${clearanceScore}%` }} />
+            <span style={{ height: `${Math.max(35, clearanceScore * 0.75)}%` }} />
+            <span style={{ height: `${Math.max(45, clearanceScore * 0.9)}%` }} />
+            <span style={{ height: `${Math.max(25, clearanceScore * 0.6)}%` }} />
           </div>
         </div>
 
@@ -168,35 +189,37 @@ export default function PlayerDashboard() {
           </div>
           <div className="sp-hero-body">
             <div className="sp-hero-big-number sp-dot-matrix">
-              {member.jersey_number || '25'}
+              {matchdayPeakIndex}
             </div>
             <div className="sp-hero-status-pill amber">
-              Top 5% League Conditioning
+              {peakIndexDesc}
             </div>
           </div>
           {/* Vertical gauge ruler */}
           <div className="sp-hero-gauge-ruler">
             {Array.from({ length: 24 }).map((_, i) => (
-              <span key={i} className={`gauge-tick ${i === 14 ? 'active-tick' : ''}`} />
+              <span key={i} className={`gauge-tick ${i === Math.round((clearanceScore / 100) * 23) ? 'active-tick' : ''}`} />
             ))}
           </div>
         </div>
 
-        {/* Card 3: Pending Verification Box */}
+        {/* Card 3: Dynamic Upcoming Fixture Window */}
         <div className="sp-pending-kit-card">
           <div className="flex justify-between items-start mb-2">
             <span className="text-xs font-medium text-slate-500">Upcoming Fixture Window</span>
-            <button className="text-slate-400 hover:text-slate-600 text-xs">✕</button>
+            <span className="text-3xs font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">GW {nextGameweek}</span>
           </div>
           <div className="sp-pending-counter">
-            <span className="sp-pending-num font-mono">3-5</span>
-            <span className="sp-pending-unit">Days</span>
+            <span className="sp-pending-num font-mono">{daysToSunday === 0 ? 'Today' : `${daysToSunday}`}</span>
+            <span className="sp-pending-unit">{daysToSunday === 0 ? 'Matchday' : daysToSunday === 1 ? 'Day' : 'Days'}</span>
           </div>
           <div className="sp-progress-line mb-3">
-            <div className="sp-progress-filled" style={{ width: '65%' }} />
+            <div className="sp-progress-filled" style={{ width: `${Math.max(15, Math.round(((7 - daysToSunday) / 7) * 100))}%` }} />
           </div>
           <p className="text-3xs text-slate-400">
-            Next matchday squad submission deadline approaching for Gameweek 14.
+            {daysToSunday === 0
+              ? `Gameweek ${nextGameweek} matchday is live! Check in with team captains.`
+              : `Gameweek ${nextGameweek} squad submission deadline is in ${daysToSunday} ${daysToSunday === 1 ? 'day' : 'days'}.`}
           </p>
         </div>
       </div>
