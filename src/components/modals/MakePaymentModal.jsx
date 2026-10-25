@@ -225,12 +225,12 @@ export default function MakePaymentModal() {
                 )}
               </div>
               <h3 className="success-title">
-                {isPendingTransfer ? 'TRANSFER RECEIPT SUBMITTED' : 'PAYMENT SUCCESSFUL'}
+                {isPendingTransfer ? 'TRANSFER PENDING CONFIRMATION' : 'PAYMENT SUCCESSFUL'}
               </h3>
               <p className="success-sub">
                 {isPendingTransfer ? (
                   <>
-                    Your direct bank transfer of <strong>₦{Number(successTx.amount).toLocaleString()}</strong> has been recorded and submitted to <strong>{currentClub.name}</strong> executives for confirmation.
+                    Your transfer notice of <strong>₦{Number(successTx.amount).toLocaleString()}</strong> was received. It will <strong>only become successful once the club admin confirms</strong> the transaction on their bank statement.
                   </>
                 ) : (
                   <>

@@ -170,12 +170,12 @@ export default function WalletModal() {
                 )}
               </div>
               <h3 className="success-title">
-                {successInfo.isPending ? 'TRANSFER SUBMITTED FOR APPROVAL' : 'WALLET FUNDED SUCCESSFULLY'}
+                {successInfo.isPending ? 'TRANSFER PENDING CONFIRMATION' : 'WALLET FUNDED SUCCESSFULLY'}
               </h3>
               <p className="success-sub">
                 {successInfo.isPending ? (
                   <>
-                    Your direct deposit of <strong>₦{Number(successInfo.amount).toLocaleString()}</strong> was submitted to <strong>{currentClub?.name || 'Ikoyi Sunday League'}</strong> management for bank reconciliation.
+                    Your direct deposit of <strong>₦{Number(successInfo.amount).toLocaleString()}</strong> was recorded. It will <strong>only be credited to your wallet once the admin confirms</strong> the transaction.
                   </>
                 ) : (
                   <>
