@@ -323,23 +323,23 @@ export default function WalletModal() {
                     <div className="grid grid-cols-2 gap-2 text-xs">
                       <div>
                         <span className="text-3xs text-slate-400 font-semibold block">BANK</span>
-                        <strong className="text-slate-900 text-xs font-bold">Kuda Microfinance Bank</strong>
+                        <strong className="text-slate-900 text-xs font-bold">Access Bank</strong>
                       </div>
                       <div>
                         <span className="text-3xs text-slate-400 font-semibold block">ACCOUNT NAME</span>
-                        <strong className="text-slate-900 text-xs font-bold">080H00KAH GLOBAL SERVICES</strong>
+                        <strong className="text-slate-900 text-xs font-bold">Oxsa int’l Nig Ltd.</strong>
                       </div>
                     </div>
 
                     <div className="flex items-center justify-between p-2.5 bg-white rounded-lg border border-slate-200">
                       <div>
                         <span className="text-3xs text-slate-400 font-semibold block">ACCOUNT NUMBER</span>
-                        <span className="font-mono text-base font-extrabold text-slate-900 tracking-wider">3003340214</span>
+                        <span className="font-mono text-base font-extrabold text-slate-900 tracking-wider">0092042084</span>
                       </div>
                       <button
                         type="button"
                         onClick={() => {
-                          navigator.clipboard.writeText('3003340214')
+                          navigator.clipboard.writeText('0092042084')
                           setCopiedAccount(true)
                           setTimeout(() => setCopiedAccount(false), 2000)
                         }}
