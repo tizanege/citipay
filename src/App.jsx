@@ -1,5 +1,5 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
-import { useAuth } from './contexts/AuthContext'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { useCitiPay } from './contexts/CitiPayContext'
 import DashboardLayout from './layouts/DashboardLayout'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
@@ -8,8 +8,6 @@ import RegisterPage from './pages/RegisterPage'
 import PlayerDashboard from './pages/PlayerDashboard'
 import PaymentsPage from './pages/PaymentsPage'
 import PaymentHistoryPage from './pages/PaymentHistoryPage'
-import PerformancePage from './pages/PerformancePage'
-import RankingsPage from './pages/RankingsPage'
 import ProfilePage from './pages/ProfilePage'
 
 // 2. Club Executive Access Level Pages
@@ -28,9 +26,33 @@ import AdminPaymentsPage from './pages/AdminPaymentsPage'
 import AdminAuditPage from './pages/AdminAuditPage'
 import AdminSettingsPage from './pages/AdminSettingsPage'
 
-// Protected route wrapper
+function getHomePathForRole(role) {
+  if (role === 'super_admin') return '/admin/dashboard'
+  if (role === 'club_admin' || role === 'president') return '/club/dashboard'
+  return '/dashboard'
+}
+
+// Protected route wrapper enforcing authentication
 function ProtectedRoute({ children }) {
-  const { user, loading } = useAuth()
+  const { isAuthenticated } = useCitiPay()
+  const location = useLocation()
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location }} replace />
+  }
+  return children
+}
+
+// Role-restricted route wrapper
+function RoleRoute({ allowedRoles, children }) {
+  const { isAuthenticated, currentRole } = useCitiPay()
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />
+  }
+  if (allowedRoles && !allowedRoles.includes(currentRole)) {
+    return <Navigate to={getHomePathForRole(currentRole)} replace />
+  }
   return children
 }
 
@@ -42,7 +64,7 @@ function PublicRoute({ children }) {
 export default function App() {
   return (
     <Routes>
-      {/* Public routes - Login is now the primary entrance */}
+      {/* Public routes - Login is the primary entrance */}
       <Route path="/" element={<PublicRoute><LoginPage /></PublicRoute>} />
       <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
       <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
@@ -63,21 +85,21 @@ export default function App() {
         <Route path="/performance" element={<Navigate to="/dashboard" replace />} />
         <Route path="/rankings" element={<Navigate to="/dashboard" replace />} />
 
-        {/* ── 2. Club Executive Access Level ── */}
-        <Route path="/club/dashboard" element={<ClubDashboard />} />
-        <Route path="/club/players" element={<ClubSquadPage />} />
-        <Route path="/club/payments" element={<ClubPaymentsPage />} />
-        <Route path="/club/receipts" element={<ClubReceiptsPage />} />
-        <Route path="/club/audit" element={<ClubAuditPage />} />
-        <Route path="/club/profile" element={<ClubProfilePage />} />
+        {/* ── 2. Club Executive Access Level (Ikoyi Sunday League Admin) ── */}
+        <Route path="/club/dashboard" element={<RoleRoute allowedRoles={['club_admin', 'president', 'super_admin']}><ClubDashboard /></RoleRoute>} />
+        <Route path="/club/players" element={<RoleRoute allowedRoles={['club_admin', 'president', 'super_admin']}><ClubSquadPage /></RoleRoute>} />
+        <Route path="/club/payments" element={<RoleRoute allowedRoles={['club_admin', 'president', 'super_admin']}><ClubPaymentsPage /></RoleRoute>} />
+        <Route path="/club/receipts" element={<RoleRoute allowedRoles={['club_admin', 'president', 'super_admin']}><ClubReceiptsPage /></RoleRoute>} />
+        <Route path="/club/audit" element={<RoleRoute allowedRoles={['club_admin', 'president', 'super_admin']}><ClubAuditPage /></RoleRoute>} />
+        <Route path="/club/profile" element={<RoleRoute allowedRoles={['club_admin', 'president', 'super_admin']}><ClubProfilePage /></RoleRoute>} />
 
         {/* ── 3. Super Admin Federation Access Level ── */}
-        <Route path="/admin/dashboard" element={<AdminDashboard />} />
-        <Route path="/admin/clubs" element={<AdminClubsPage />} />
-        <Route path="/admin/players" element={<AdminPlayersPage />} />
-        <Route path="/admin/payments" element={<AdminPaymentsPage />} />
-        <Route path="/admin/audit" element={<AdminAuditPage />} />
-        <Route path="/admin/settings" element={<AdminSettingsPage />} />
+        <Route path="/admin/dashboard" element={<RoleRoute allowedRoles={['super_admin']}><AdminDashboard /></RoleRoute>} />
+        <Route path="/admin/clubs" element={<RoleRoute allowedRoles={['super_admin']}><AdminClubsPage /></RoleRoute>} />
+        <Route path="/admin/players" element={<RoleRoute allowedRoles={['super_admin']}><AdminPlayersPage /></RoleRoute>} />
+        <Route path="/admin/payments" element={<RoleRoute allowedRoles={['super_admin']}><AdminPaymentsPage /></RoleRoute>} />
+        <Route path="/admin/audit" element={<RoleRoute allowedRoles={['super_admin']}><AdminAuditPage /></RoleRoute>} />
+        <Route path="/admin/settings" element={<RoleRoute allowedRoles={['super_admin']}><AdminSettingsPage /></RoleRoute>} />
       </Route>
 
       {/* Default Catch-all redirects to the login main page */}

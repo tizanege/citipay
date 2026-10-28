@@ -334,7 +334,9 @@ export const dbService = {
       old_value: log.old_value,
       new_value: log.new_value,
       reason: log.reason,
-      details: log.reason
+      details: typeof log.details === 'string' ? log.details : log.reason,
+      raw_details: log.details || null,
+      created_at: log.created_at
     }))
   },
 

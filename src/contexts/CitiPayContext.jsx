@@ -20,12 +20,47 @@ import {
 const CitiPayContext = createContext(null)
 
 export function CitiPayProvider({ children }) {
-  // 1. Current Club & User State
+  // 1. Current Club, Auth Session & User State
+  const savedAuth = useMemo(() => {
+    try {
+      const raw = sessionStorage.getItem('citipay_auth_session')
+      if (raw) return JSON.parse(raw)
+    } catch (e) {}
+    return null
+  }, [])
+
   const [clubs, setClubs] = useState(initialClubs)
-  const [selectedClubId, setSelectedClubId] = useState('11111111-1111-1111-1111-111111111111') // Sunday League FC UUID
+  const [selectedClubId, setSelectedClubId] = useState(savedAuth?.clubId || '11111111-1111-1111-1111-111111111111') // Sunday League FC UUID
   const [members, setMembers] = useState(initialMembers)
-  const [currentMemberId, setCurrentMemberId] = useState('mem-001') // Michael Esu
-  const [currentRole, setCurrentRole] = useState('member') // 'member' | 'club_admin' | 'president' | 'super_admin'
+  const [currentMemberId, setCurrentMemberId] = useState(savedAuth?.memberId || 'mem-001') // Michael Esu
+  const [currentRole, setCurrentRole] = useState(savedAuth?.role || 'member') // 'member' | 'club_admin' | 'president' | 'super_admin'
+  const [isAuthenticated, setIsAuthenticated] = useState(Boolean(savedAuth?.isAuthenticated))
+
+  const loginSession = useCallback(({ role = 'member', memberId = null, clubId = null } = {}) => {
+    const resolvedRole = role
+    const resolvedMemberId = memberId || currentMemberId
+    const resolvedClubId = clubId || selectedClubId
+    setCurrentRole(resolvedRole)
+    if (memberId) setCurrentMemberId(memberId)
+    if (clubId) setSelectedClubId(clubId)
+    setIsAuthenticated(true)
+    try {
+      sessionStorage.setItem('citipay_auth_session', JSON.stringify({
+        isAuthenticated: true,
+        role: resolvedRole,
+        memberId: resolvedMemberId,
+        clubId: resolvedClubId
+      }))
+    } catch (e) {}
+  }, [currentMemberId, selectedClubId])
+
+  const logoutSession = useCallback(() => {
+    setIsAuthenticated(false)
+    setCurrentRole('member')
+    try {
+      sessionStorage.removeItem('citipay_auth_session')
+    } catch (e) {}
+  }, [])
   
   // 2. Financials, Transactions & Rules
   const [transactions, setTransactions] = useState(initialTransactions)
@@ -96,42 +131,11 @@ export function CitiPayProvider({ children }) {
 
   const [islCupTeams, setIslCupTeams] = useState(() => {
     try {
-      const saved = localStorage.getItem('isl_cup_teams_2026')
+      localStorage.removeItem('isl_cup_teams_2026')
+      const saved = localStorage.getItem('isl_cup_registered_teams_2026')
       if (saved) return JSON.parse(saved)
     } catch (e) {}
-    // Seed initial demo teams so matrix is partially populated
-    return [
-      {
-        id: 'isl-team-1',
-        teamName: 'Sunday League All-Stars',
-        coachName: 'Coach Seyi Lawal',
-        captainName: 'Ukpongote Esu',
-        vipSpectator1: 'Barrister Femi Adeleke',
-        vipSpectator2: 'Alhaji Bashir Dangote',
-        logoUrl: '/crests/sunday-league-fc.svg',
-        registeredAt: new Date().toISOString()
-      },
-      {
-        id: 'isl-team-2',
-        teamName: 'Ikoyi Strikers Elite',
-        coachName: 'Coach Frank Obinna',
-        captainName: 'David Alaba',
-        vipSpectator1: 'Chief Emeka Ihedioha',
-        vipSpectator2: 'Mrs. Folake Solanke',
-        logoUrl: '/crests/sunday-league-fc.svg',
-        registeredAt: new Date().toISOString()
-      },
-      {
-        id: 'isl-team-3',
-        teamName: 'Victoria Island Dynamo',
-        coachName: 'Coach Tunde Ednut',
-        captainName: 'Victor Moses',
-        vipSpectator1: 'Engr. Dapo Abiodun',
-        vipSpectator2: 'Dr. Kunle Bakare',
-        logoUrl: '/crests/sunday-league-fc.svg',
-        registeredAt: new Date().toISOString()
-      }
-    ]
+    return []
   })
 
   const registerIslCupTeam = useCallback((teamPayload) => {
@@ -146,12 +150,13 @@ export function CitiPayProvider({ children }) {
     setIslCupTeams(prev => {
       const next = [...prev, newTeam]
       try {
-        localStorage.setItem('isl_cup_teams_2026', JSON.stringify(next))
+        localStorage.setItem('isl_cup_registered_teams_2026', JSON.stringify(next))
       } catch (e) {}
       return next
     })
 
-    // Log to Audit trail
+    // Log to Audit trail & persist to Supabase
+    const logDetailsText = `Coach: ${teamPayload.coachName} · Captain: ${teamPayload.captainName} · VIP 1: ${teamPayload.vipSpectator1 || 'N/A'} · VIP 2: ${teamPayload.vipSpectator2 || 'N/A'}`
     const newLog = {
       id: `log-isl-${Date.now()}`,
       timestamp: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + ' · ISL Cup Entry',
@@ -163,9 +168,23 @@ export function CitiPayProvider({ children }) {
       old_value: 'N/A',
       new_value: '₦300,000 Entry Paid',
       reason: `Registered "${teamPayload.teamName}" for ISL Cup Finals 2026 with 2 VIP Spectator badges.`,
-      details: `Coach: ${teamPayload.coachName} · Captain: ${teamPayload.captainName} · VIP 1: ${teamPayload.vipSpectator1 || 'N/A'} · VIP 2: ${teamPayload.vipSpectator2 || 'N/A'}`
+      details: logDetailsText,
+      raw_details: newTeam
     }
     setAuditLogs(prev => [newLog, ...prev])
+
+    dbService.insertAuditLog({
+      actorName: teamPayload.captainName || 'Team Representative',
+      actorRole: 'ISL Cup Participant',
+      action: 'ISL_CUP_REGISTERED',
+      targetMemberId: teamPayload.teamName,
+      targetName: `ISL Cup 2026: ${teamPayload.teamName}`,
+      oldValue: 'N/A',
+      newValue: '₦300,000 Entry Paid',
+      reason: `Registered "${teamPayload.teamName}" for ISL Cup Finals 2026 with 2 VIP Spectator badges.`,
+      details: newTeam
+    }).catch(err => console.warn('Supabase ISL Cup sync warning:', err?.message))
+
     return newTeam
   }, [islCupTeams])
 
@@ -225,6 +244,23 @@ export function CitiPayProvider({ children }) {
         }
         if (liveLogs.status === 'fulfilled' && liveLogs.value?.length > 0) {
           setAuditLogs(liveLogs.value)
+          // Hydrate ISL Cup Finals registered teams from Supabase audit_logs
+          const dbTeams = liveLogs.value
+            .filter(l => l.action === 'ISL_CUP_REGISTERED' && l.raw_details && typeof l.raw_details === 'object' && l.raw_details.teamName)
+            .map(l => ({
+              id: l.raw_details.id || l.id,
+              teamName: l.raw_details.teamName,
+              coachName: l.raw_details.coachName || '',
+              captainName: l.raw_details.captainName || '',
+              vipSpectator1: l.raw_details.vipSpectator1 || '',
+              vipSpectator2: l.raw_details.vipSpectator2 || '',
+              logoUrl: l.raw_details.logoUrl || '/crests/sunday-league-fc.svg',
+              registeredAt: l.raw_details.registeredAt || l.created_at
+            }))
+            .reverse()
+          if (dbTeams.length > 0) {
+            setIslCupTeams(dbTeams)
+          }
         }
         if (liveRules.status === 'fulfilled' && liveRules.value) {
           setClubRules(liveRules.value)
@@ -354,7 +390,11 @@ export function CitiPayProvider({ children }) {
 
   // Overview Metrics for Club Admin Dashboard
   const adminMetrics = useMemo(() => {
-    const clubMembers = members.filter(m => m.club_id === selectedClubId || !m.club_id || m.club_id === 'club-sunday-league' || m.club_id === '11111111-1111-1111-1111-111111111111')
+    const clubMembers = members.filter(m =>
+      m.club_id === selectedClubId ||
+      !m.club_id ||
+      (selectedClubId === '11111111-1111-1111-1111-111111111111' && m.club_id === 'club-sunday-league')
+    )
     const totalCount = clubMembers.length
     
     const greenCount = clubMembers.filter(m => m.status === 'green').length
@@ -1407,6 +1447,9 @@ export function CitiPayProvider({ children }) {
 
     setMembers(prev => [newMember, ...prev])
     setCurrentMemberId(newMember.id)
+    if (!isAuthenticated) {
+      loginSession({ role: 'member', memberId: newMember.id, clubId: newMember.club_id })
+    }
 
     // Add Audit Log for Registration
     const regLog = {
@@ -1595,6 +1638,9 @@ export function CitiPayProvider({ children }) {
     switchMember,
     currentRole,
     setCurrentRole,
+    isAuthenticated,
+    loginSession,
+    logoutSession,
     
     // Financials & Rules
     transactions,

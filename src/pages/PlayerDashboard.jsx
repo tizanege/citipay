@@ -20,10 +20,15 @@ export default function PlayerDashboard() {
     setReceiptModalState,
     transactions,
     members,
+    adminMetrics,
     switchMember,
     setIslCupModalState,
     setWalletModalState
   } = useCitiPay()
+
+  const clubMembers = (members || []).filter(
+    m => m.club_id === currentClub?.id || !m.club_id
+  )
 
   const member = currentMember || {}
   const isGreen = member.status === 'green'
@@ -102,14 +107,14 @@ export default function PlayerDashboard() {
         {/* Top Count Stats */}
         <div className="superpower-stats-bar">
           <div className="sp-counter-item">
-            <div className="sp-counter-value sp-dot-matrix">{members.length || 1}</div>
+            <div className="sp-counter-value sp-dot-matrix">{adminMetrics?.totalMembers ?? clubMembers.length}</div>
             <div className="sp-counter-label">
               <span className="sp-mini-badge yellow">Roster</span>
             </div>
           </div>
           <div className="sp-counter-item">
             <div className="sp-counter-value sp-dot-matrix">
-              {members.filter(m => m.status === 'green').length}
+              {adminMetrics?.eligibleGreen ?? clubMembers.filter(m => m.status === 'green').length}
             </div>
             <div className="sp-counter-label">
               <span className="sp-pill-label">Cleared</span>
@@ -117,7 +122,7 @@ export default function PlayerDashboard() {
           </div>
           <div className="sp-counter-item">
             <div className="sp-counter-value sp-dot-matrix">
-              {members.filter(m => m.status === 'yellow').length}
+              {adminMetrics?.dueSoonYellow ?? clubMembers.filter(m => m.status === 'yellow').length}
             </div>
             <div className="sp-counter-label">
               <span className="sp-pill-label">In Grace</span>
@@ -125,7 +130,7 @@ export default function PlayerDashboard() {
           </div>
           <div className="sp-counter-item">
             <div className="sp-counter-value sp-dot-matrix">
-              {members.filter(m => m.status === 'red').length}
+              {adminMetrics?.notEligibleRed ?? clubMembers.filter(m => m.status === 'red').length}
             </div>
             <div className="sp-counter-label">
               <span className="sp-pill-label alert">Due Flag</span>
@@ -221,6 +226,129 @@ export default function PlayerDashboard() {
               ? `Gameweek ${nextGameweek} matchday is live! Check in with team captains.`
               : `Gameweek ${nextGameweek} squad submission deadline is in ${daysToSunday} ${daysToSunday === 1 ? 'day' : 'days'}.`}
           </p>
+        </div>
+      </div>
+
+      {/* 16. PLAYER AVAILABILITY INTEGRATION (Moved directly under Upcoming Fixture Window) */}
+      <div className="card availability-card flex flex-col justify-between mb-6">
+        <div>
+          <div className="flex justify-between items-center mb-3 pb-3 border-b border-slate-100">
+            <div className="flex items-center gap-2">
+              <span className="badge badge-accent text-xs font-bold">PLAYER AVAILABILITY</span>
+            </div>
+            <span className="text-xs text-slate-500 font-mono">Matchday Roster</span>
+          </div>
+
+          <div className="gameweek-hero-box mb-4">
+            <span className="gameweek-pill-badge">{availability.gameweek}</span>
+            <h3 className="gameweek-fixture-title">{availability.fixture}</h3>
+            <p className="gameweek-meta-line">
+              <Calendar size={13} className="inline mr-1" /> {availability.date}
+            </p>
+            <p className="gameweek-meta-line">
+              <MapPin size={13} className="inline mr-1" /> {availability.venue}
+            </p>
+          </div>
+
+          {/* Voting Question (Item 16 requirement) */}
+          <div className="availability-voting-box mb-4">
+            <span className="availability-question-lbl">Are you available for this match?</span>
+            <div className="availability-vote-buttons-grid">
+              <button
+                type="button"
+                className={`vote-choice-btn green ${availability.user_vote === 'yes' ? 'selected' : ''}`}
+                onClick={() => setMemberAvailability('yes')}
+              >
+                <span className="vote-emoji">🟢</span>
+                <span className="vote-label">YES</span>
+                {availability.user_vote === 'yes' && <Check size={14} className="ml-auto text-emerald-700" />}
+              </button>
+
+              <button
+                type="button"
+                className={`vote-choice-btn yellow ${availability.user_vote === 'maybe' ? 'selected' : ''}`}
+                onClick={() => setMemberAvailability('maybe')}
+              >
+                <span className="vote-emoji">🟡</span>
+                <span className="vote-label">MAYBE</span>
+                {availability.user_vote === 'maybe' && <Check size={14} className="ml-auto text-amber-700" />}
+              </button>
+
+              <button
+                type="button"
+                className={`vote-choice-btn red ${availability.user_vote === 'no' ? 'selected' : ''}`}
+                onClick={() => setMemberAvailability('no')}
+              >
+                <span className="vote-emoji">🔴</span>
+                <span className="vote-label">NO</span>
+                {availability.user_vote === 'no' && <Check size={14} className="ml-auto text-rose-700" />}
+              </button>
+            </div>
+          </div>
+
+          {/* Extra Unregistered Guests Option (₦10,000 per person) */}
+          <div className="guest-pass-container mb-4">
+            <div className="flex justify-between items-center mb-2">
+              <div className="flex items-center gap-1.5">
+                <UserPlus size={15} className="text-emerald-600" />
+                <span className="text-xs font-bold text-slate-900">Coming with Extra Guests?</span>
+              </div>
+              <span className="text-3xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                ₦10,000 / guest
+              </span>
+            </div>
+            <p className="text-3xs text-slate-500 mb-3">
+              Bring unregistered friends or guest players for this fixture. Unregistered players require a matchday guest clearance pass.
+            </p>
+
+            <div className="guest-selector-row">
+              <div className="guest-counter-pill">
+                <button
+                  type="button"
+                  className="guest-count-btn"
+                  onClick={() => setGuestCount(prev => Math.max(0, prev - 1))}
+                  disabled={guestCount === 0}
+                  title="Decrease guest count"
+                >
+                  <Minus size={13} />
+                </button>
+                <div className="guest-count-display font-mono">
+                  <span className="guest-num">{guestCount}</span>
+                  <span className="guest-lbl">{guestCount === 1 ? 'Guest' : 'Guests'}</span>
+                </div>
+                <button
+                  type="button"
+                  className="guest-count-btn"
+                  onClick={() => setGuestCount(prev => Math.min(10, prev + 1))}
+                  title="Add another guest"
+                >
+                  <Plus size={13} />
+                </button>
+              </div>
+
+              <button
+                type="button"
+                className={`btn guest-pay-btn ${guestCount > 0 ? 'btn-primary' : 'btn-disabled'}`}
+                disabled={guestCount === 0}
+                onClick={handlePayForGuests}
+              >
+                <CreditCard size={13} />
+                <span>
+                  {guestCount > 0 ? `Pay ₦${totalGuestAmount.toLocaleString()} via Paystack` : 'Select Guest Count'}
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Squad Roster Live Bar */}
+        <div className="squad-response-counter pt-3 border-t border-slate-100 flex justify-between items-center text-xs text-slate-600">
+          <span>Squad Responses:</span>
+          <div className="flex gap-3 font-semibold">
+            <span className="text-emerald-700">🔵 {availability.roster.yes} Available</span>
+            <span className="text-amber-700">🟡 {availability.roster.maybe} Unsure</span>
+            <span className="text-rose-700">🔴 {availability.roster.no} Out</span>
+          </div>
         </div>
       </div>
 
@@ -326,242 +454,107 @@ export default function PlayerDashboard() {
           </div>
 
           <div className="sp-supp-card">
-            <span className="sp-supp-badge yellow">Recovery</span>
+            <span className="sp-supp-badge yellow">Training Gear</span>
             <div className="sp-supp-orb blue-orb">
-              <span>⚡</span>
+              <span>🎽</span>
             </div>
-            <div className="sp-supp-title">Electrolyte & Iso Fuel</div>
+            <div className="sp-supp-title">2026/27 Bib</div>
             <div className="sp-supp-price">₦8,200</div>
-          </div>
-
-          <div className="sp-supp-card">
-            <span className="sp-supp-badge">Standard</span>
-            <div className="sp-supp-orb orange-orb">
-              <span>🛡️</span>
-            </div>
-            <div className="sp-supp-title">Carbon Shin Guards</div>
-            <div className="sp-supp-price">₦14,000</div>
           </div>
         </div>
       </div>
 
-      {/* 9. INSTALLMENT PAYMENT PLAN & 16. AVAILABILITY INTEGRATION (2-Column Grid) */}
-      <div className="grid-2 mb-6 gap-5">
-        {/* 9. MEMBERSHIP PAYMENT PLAN (Item 9 Requirement) */}
-        <div className="card installment-plan-card">
-          <div className="flex justify-between items-center mb-3 pb-3 border-b border-slate-100">
-            <div>
-              <h3 className="section-title text-base font-extrabold text-slate-900">MEMBERSHIP PAYMENT PLAN</h3>
-              <p className="text-xs text-slate-500">2026/27 Sunday League Official Membership Schedule</p>
-            </div>
-            <span className="badge badge-accent font-bold text-xs">4 Milestones</span>
+      {/* 9. MEMBERSHIP PAYMENT PLAN (Item 9 Requirement) */}
+      <div className="card installment-plan-card mb-6">
+        <div className="flex justify-between items-center mb-3 pb-3 border-b border-slate-100">
+          <div>
+            <h3 className="section-title text-base font-extrabold text-slate-900">MEMBERSHIP PAYMENT PLAN</h3>
+            <p className="text-xs text-slate-500">2026/27 Sunday League Official Membership Schedule</p>
           </div>
+          <span className="badge badge-accent font-bold text-xs">4 Milestones</span>
+        </div>
 
-          {/* Plan Totals Banner */}
-          <div className="plan-stats-bar mb-4">
-            <div className="plan-stat-item">
-              <span className="plan-stat-lbl">Total:</span>
-              <strong className="plan-stat-val text-slate-900 font-mono">₦{membershipFee.toLocaleString()}</strong>
-            </div>
-            <div className="plan-stat-item">
-              <span className="plan-stat-lbl">Paid:</span>
-              <strong className="plan-stat-val text-emerald-700 font-mono">₦{membershipPaid.toLocaleString()}</strong>
-            </div>
-            <div className="plan-stat-item">
-              <span className="plan-stat-lbl">Remaining:</span>
-              <strong className="plan-stat-val text-rose-600 font-mono">₦{membershipOutstanding.toLocaleString()}</strong>
-            </div>
+        {/* Plan Totals Banner */}
+        <div className="plan-stats-bar mb-4">
+          <div className="plan-stat-item">
+            <span className="plan-stat-lbl">Total:</span>
+            <strong className="plan-stat-val text-slate-900 font-mono">₦{membershipFee.toLocaleString()}</strong>
           </div>
+          <div className="plan-stat-item">
+            <span className="plan-stat-lbl">Paid:</span>
+            <strong className="plan-stat-val text-emerald-700 font-mono">₦{membershipPaid.toLocaleString()}</strong>
+          </div>
+          <div className="plan-stat-item">
+            <span className="plan-stat-lbl">Remaining:</span>
+            <strong className="plan-stat-val text-rose-600 font-mono">₦{membershipOutstanding.toLocaleString()}</strong>
+          </div>
+        </div>
 
-          {/* Payment Schedule (Item 9 format) */}
-          <div className="installment-schedule-list flex flex-col gap-2.5 mb-4">
-            {member.installments && member.installments.length > 0 ? (
-              member.installments.map((inst, idx) => (
-                <div key={inst.id || idx} className={`installment-item-row ${inst.status === 'paid' ? 'paid-row' : 'pending-row'}`}>
-                  <div className="flex items-center gap-2.5">
-                    {inst.status === 'paid' ? (
-                      <span className="inst-badge-status green">✅</span>
-                    ) : (
-                      <span className="inst-badge-status red">🔴</span>
-                    )}
-                    <div>
-                      <div className="font-bold text-xs text-slate-900">
-                        {inst.label || `Installment ${inst.number || idx + 1}`} — ₦{Number(inst.amount || installmentAmount).toLocaleString()}
-                      </div>
-                      <div className="text-3xs text-slate-500">
-                        {inst.status === 'paid' ? `Paid on ${inst.paid_at || 'Settled'} · Ref: ${inst.ref || 'SL001'}` : `Due for settlement`}
-                      </div>
+        {/* Payment Schedule (Item 9 format) */}
+        <div className="installment-schedule-list flex flex-col gap-2.5 mb-4">
+          {member.installments && member.installments.length > 0 ? (
+            member.installments.map((inst, idx) => (
+              <div key={inst.id || idx} className={`installment-item-row ${inst.status === 'paid' ? 'paid-row' : 'pending-row'}`}>
+                <div className="flex items-center gap-2.5">
+                  {inst.status === 'paid' ? (
+                    <span className="inst-badge-status green">✅</span>
+                  ) : (
+                    <span className="inst-badge-status red">🔴</span>
+                  )}
+                  <div>
+                    <div className="font-bold text-xs text-slate-900">
+                      {inst.label || `Installment ${inst.number || idx + 1}`} — ₦{Number(inst.amount || installmentAmount).toLocaleString()}
+                    </div>
+                    <div className="text-3xs text-slate-500">
+                      {inst.status === 'paid' ? `Paid on ${inst.paid_at || 'Settled'} · Ref: ${inst.ref || 'SL001'}` : `Due for settlement`}
                     </div>
                   </div>
+                </div>
 
-                  <span className={`badge ${inst.status === 'paid' ? 'badge-success' : 'badge-warning'} text-xs font-bold`}>
-                    {inst.status === 'paid' ? 'PAID' : 'DUE'}
-                  </span>
-                </div>
-              ))
-            ) : (
-              <>
-                <div className="installment-item-row paid-row">
-                  <div className="flex items-center gap-2">
-                    <span className="inst-badge-status green">✅</span>
-                    <span className="font-bold text-xs text-slate-900">Installment 1 (1st Half - 50%) — ₦{installmentAmount.toLocaleString()}</span>
-                  </div>
-                  <span className="badge badge-success text-xs font-bold">PAID</span>
-                </div>
-                <div className={`installment-item-row ${membershipOutstanding > 0 ? 'pending-row' : 'paid-row'}`}>
-                  <div className="flex items-center gap-2">
-                    <span className={`inst-badge-status ${membershipOutstanding > 0 ? 'red' : 'green'}`}>
-                      {membershipOutstanding > 0 ? '🔴' : '✅'}
-                    </span>
-                    <span className="font-bold text-xs text-slate-900">Installment 2 (2nd Half - 50%) — ₦{installmentAmount.toLocaleString()}</span>
-                  </div>
-                  <span className={`badge ${membershipOutstanding > 0 ? 'badge-warning' : 'badge-success'} text-xs font-bold`}>
-                    {membershipOutstanding > 0 ? 'DUE' : 'PAID'}
-                  </span>
-                </div>
-              </>
-            )}
-          </div>
-
-          {/* Button (Item 9 requirement) */}
-          {membershipOutstanding > 0 ? (
-            <button
-              className="btn btn-primary w-full flex items-center justify-center gap-2 font-bold py-2.5"
-              onClick={() => handleOpenPayment('membership_installment', Math.min(installmentAmount, membershipOutstanding))}
-            >
-              <CreditCard size={16} />
-              <span>[PAY NEXT INSTALLMENT — ₦{Math.min(installmentAmount, membershipOutstanding).toLocaleString()}]</span>
-            </button>
+                <span className={`badge ${inst.status === 'paid' ? 'badge-success' : 'badge-warning'} text-xs font-bold`}>
+                  {inst.status === 'paid' ? 'PAID' : 'DUE'}
+                </span>
+              </div>
+            ))
           ) : (
-            <div className="flex items-center justify-center gap-2 p-3 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-xl font-bold text-xs">
-              <CheckCircle2 size={16} className="text-emerald-600" />
-              <span>ALL MEMBERSHIP INSTALLMENTS SETTLED (PAID IN FULL)</span>
-            </div>
+            <>
+              <div className="installment-item-row paid-row">
+                <div className="flex items-center gap-2">
+                  <span className="inst-badge-status green">✅</span>
+                  <span className="font-bold text-xs text-slate-900">Installment 1 (1st Half - 50%) — ₦{installmentAmount.toLocaleString()}</span>
+                </div>
+                <span className="badge badge-success text-xs font-bold">PAID</span>
+              </div>
+              <div className={`installment-item-row ${membershipOutstanding > 0 ? 'pending-row' : 'paid-row'}`}>
+                <div className="flex items-center gap-2">
+                  <span className={`inst-badge-status ${membershipOutstanding > 0 ? 'red' : 'green'}`}>
+                    {membershipOutstanding > 0 ? '🔴' : '✅'}
+                  </span>
+                  <span className="font-bold text-xs text-slate-900">Installment 2 (2nd Half - 50%) — ₦{installmentAmount.toLocaleString()}</span>
+                </div>
+                <span className={`badge ${membershipOutstanding > 0 ? 'badge-warning' : 'badge-success'} text-xs font-bold`}>
+                  {membershipOutstanding > 0 ? 'DUE' : 'PAID'}
+                </span>
+              </div>
+            </>
           )}
         </div>
 
-        {/* 16. PLAYER AVAILABILITY INTEGRATION (Item 16 Requirement) */}
-        <div className="card availability-card flex flex-col justify-between">
-          <div>
-            <div className="flex justify-between items-center mb-3 pb-3 border-b border-slate-100">
-              <div className="flex items-center gap-2">
-                <span className="badge badge-accent text-xs font-bold">PLAYER AVAILABILITY</span>
-              </div>
-              <span className="text-xs text-slate-500 font-mono">Matchday Roster</span>
-            </div>
-
-            <div className="gameweek-hero-box mb-4">
-              <span className="gameweek-pill-badge">{availability.gameweek}</span>
-              <h3 className="gameweek-fixture-title">{availability.fixture}</h3>
-              <p className="gameweek-meta-line">
-                <Calendar size={13} className="inline mr-1" /> {availability.date}
-              </p>
-              <p className="gameweek-meta-line">
-                <MapPin size={13} className="inline mr-1" /> {availability.venue}
-              </p>
-            </div>
-
-            {/* Voting Question (Item 16 requirement) */}
-            <div className="availability-voting-box mb-4">
-              <span className="availability-question-lbl">Are you available for this match?</span>
-              <div className="availability-vote-buttons-grid">
-                <button
-                  type="button"
-                  className={`vote-choice-btn green ${availability.user_vote === 'yes' ? 'selected' : ''}`}
-                  onClick={() => setMemberAvailability('yes')}
-                >
-                  <span className="vote-emoji">🟢</span>
-                  <span className="vote-label">YES</span>
-                  {availability.user_vote === 'yes' && <Check size={14} className="ml-auto text-emerald-700" />}
-                </button>
-
-                <button
-                  type="button"
-                  className={`vote-choice-btn yellow ${availability.user_vote === 'maybe' ? 'selected' : ''}`}
-                  onClick={() => setMemberAvailability('maybe')}
-                >
-                  <span className="vote-emoji">🟡</span>
-                  <span className="vote-label">MAYBE</span>
-                  {availability.user_vote === 'maybe' && <Check size={14} className="ml-auto text-amber-700" />}
-                </button>
-
-                <button
-                  type="button"
-                  className={`vote-choice-btn red ${availability.user_vote === 'no' ? 'selected' : ''}`}
-                  onClick={() => setMemberAvailability('no')}
-                >
-                  <span className="vote-emoji">🔴</span>
-                  <span className="vote-label">NO</span>
-                  {availability.user_vote === 'no' && <Check size={14} className="ml-auto text-rose-700" />}
-                </button>
-              </div>
-            </div>
-
-            {/* Extra Unregistered Guests Option (₦10,000 per person) */}
-            <div className="guest-pass-container mb-4">
-              <div className="flex justify-between items-center mb-2">
-                <div className="flex items-center gap-1.5">
-                  <UserPlus size={15} className="text-emerald-600" />
-                  <span className="text-xs font-bold text-slate-900">Coming with Extra Guests?</span>
-                </div>
-                <span className="text-3xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
-                  ₦10,000 / guest
-                </span>
-              </div>
-              <p className="text-3xs text-slate-500 mb-3">
-                Bring unregistered friends or guest players for this fixture. Unregistered players require a matchday guest clearance pass.
-              </p>
-
-              <div className="guest-selector-row">
-                <div className="guest-counter-pill">
-                  <button
-                    type="button"
-                    className="guest-count-btn"
-                    onClick={() => setGuestCount(prev => Math.max(0, prev - 1))}
-                    disabled={guestCount === 0}
-                    title="Decrease guest count"
-                  >
-                    <Minus size={13} />
-                  </button>
-                  <div className="guest-count-display font-mono">
-                    <span className="guest-num">{guestCount}</span>
-                    <span className="guest-lbl">{guestCount === 1 ? 'Guest' : 'Guests'}</span>
-                  </div>
-                  <button
-                    type="button"
-                    className="guest-count-btn"
-                    onClick={() => setGuestCount(prev => Math.min(10, prev + 1))}
-                    title="Add another guest"
-                  >
-                    <Plus size={13} />
-                  </button>
-                </div>
-
-                <button
-                  type="button"
-                  className={`btn guest-pay-btn ${guestCount > 0 ? 'btn-primary' : 'btn-disabled'}`}
-                  disabled={guestCount === 0}
-                  onClick={handlePayForGuests}
-                >
-                  <CreditCard size={13} />
-                  <span>
-                    {guestCount > 0 ? `Pay ₦${totalGuestAmount.toLocaleString()} via Paystack` : 'Select Guest Count'}
-                  </span>
-                </button>
-              </div>
-            </div>
+        {/* Button (Item 9 requirement) */}
+        {membershipOutstanding > 0 ? (
+          <button
+            className="btn btn-primary w-full flex items-center justify-center gap-2 font-bold py-2.5"
+            onClick={() => handleOpenPayment('membership_installment', Math.min(installmentAmount, membershipOutstanding))}
+          >
+            <CreditCard size={16} />
+            <span>[PAY NEXT INSTALLMENT — ₦{Math.min(installmentAmount, membershipOutstanding).toLocaleString()}]</span>
+          </button>
+        ) : (
+          <div className="flex items-center justify-center gap-2 p-3 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-xl font-bold text-xs">
+            <CheckCircle2 size={16} className="text-emerald-600" />
+            <span>ALL MEMBERSHIP INSTALLMENTS SETTLED (PAID IN FULL)</span>
           </div>
-
-          {/* Squad Roster Live Bar */}
-          <div className="squad-response-counter pt-3 border-t border-slate-100 flex justify-between items-center text-xs text-slate-600">
-            <span>Squad Responses:</span>
-            <div className="flex gap-3 font-semibold">
-              <span className="text-emerald-700">🔵 {availability.roster.yes} Available</span>
-              <span className="text-amber-700">🟡 {availability.roster.maybe} Unsure</span>
-              <span className="text-rose-700">🔴 {availability.roster.no} Out</span>
-            </div>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* 7. RECENT PAYMENT HISTORY PREVIEW (Item 7 Requirement) */}

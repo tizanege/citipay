@@ -8,7 +8,8 @@ import { useCitiPay } from '../../contexts/CitiPayContext'
 import './IslCupModal.css'
 
 export default function IslCupModal() {
-  const { islCupModalState, setIslCupModalState, islCupTeams, registerIslCupTeam } = useCitiPay()
+  const { islCupModalState, setIslCupModalState, islCupTeams, registerIslCupTeam, currentRole } = useCitiPay()
+  const isSuperAdmin = currentRole === 'super_admin'
 
   const [activeTab, setActiveTab] = useState('overview') // 'overview' | 'register' | 'teams'
   const [formData, setFormData] = useState({
@@ -78,7 +79,7 @@ export default function IslCupModal() {
         setIsSubmitting(false)
         setSuccessMessage(`Team "${formData.teamName}" successfully registered for ISL Cup Finals 2026!`)
         setTimeout(() => {
-          setActiveTab('teams')
+          setActiveTab(isSuperAdmin ? 'teams' : 'overview')
           setSuccessMessage('')
           setFormData({
             teamName: '',
@@ -105,14 +106,16 @@ export default function IslCupModal() {
 
   return (
     <div className="isl-backdrop" onClick={handleClose}>
-      <div className="isl-modal-card" onClick={(e) => e.stopPropagation()}>
+      <div
+        className={`isl-modal-card ${activeTab === 'overview' ? 'isl-modal-minimal' : ''}`}
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Top Header Bar */}
         <div className="isl-modal-topbar">
           <div className="flex items-center gap-2">
             <span className="isl-cup-badge">
-              <Sparkles size={13} /> OFFICIAL TOURNAMENT ANNOUNCEMENT
+              <Sparkles size={13} /> ISL CUP FINALS 2026
             </span>
-            <span className="isl-cup-subbadge">2026 CHAMPIONSHIP</span>
           </div>
 
           <button
@@ -132,137 +135,69 @@ export default function IslCupModal() {
             className={`isl-tab-btn ${activeTab === 'overview' ? 'active' : ''}`}
             onClick={() => setActiveTab('overview')}
           >
-            <Trophy size={14} /> Tournament Announcement
+            <Trophy size={13} /> Flier
           </button>
           <button
             type="button"
             className={`isl-tab-btn ${activeTab === 'register' ? 'active' : ''}`}
             onClick={() => setActiveTab('register')}
           >
-            <Plus size={14} /> Register Your Team (₦300k)
+            <Plus size={13} /> Register Team
           </button>
-          <button
-            type="button"
-            className={`isl-tab-btn ${activeTab === 'teams' ? 'active' : ''}`}
-            onClick={() => setActiveTab('teams')}
-          >
-            <Users size={14} /> Registered Teams Showcase ({islCupTeams.length}/10)
-          </button>
+          {isSuperAdmin && (
+            <button
+              type="button"
+              className={`isl-tab-btn ${activeTab === 'teams' ? 'active' : ''}`}
+              onClick={() => setActiveTab('teams')}
+            >
+              <Users size={13} /> Teams ({islCupTeams.length}/10)
+            </button>
+          )}
         </div>
 
-        {/* TAB 1: OVERVIEW & POSTER */}
+        {/* TAB 1: MINIMAL FLIER & QUICK CTA */}
         {activeTab === 'overview' && (
-          <div className="isl-content-split">
-            {/* Left: Tournament Poster Visual */}
-            <div className="isl-poster-col">
-              <div className="isl-poster-wrap">
-                <img
-                  src="/isl-cup-finals-2026.jpg"
-                  alt="ISL Cup Finals 2026 Poster"
-                  className="isl-poster-img"
-                  onError={(e) => {
-                    e.currentTarget.onerror = null
-                    e.currentTarget.src = '/crests/sunday-league-fc.svg'
-                  }}
-                />
-              </div>
+          <div className="isl-minimal-overview">
+            <div className="isl-poster-wrap">
+              <img
+                src="/isl-cup-finals-2026.jpg"
+                alt="ISL Cup Finals 2026 Poster"
+                className="isl-poster-img"
+                onError={(e) => {
+                  e.currentTarget.onerror = null
+                  e.currentTarget.src = '/crests/sunday-league-fc.svg'
+                }}
+              />
             </div>
 
-            {/* Right: Rich Tournament Details */}
-            <div className="isl-details-col">
-              <div className="isl-headline-block">
-                <div className="isl-hero-pre">IKOYI SUNDAY LEAGUE PRESENTS</div>
-                <h1 className="isl-hero-title">THE ISL CUP FINALS 2026 IS HERE! ⚽🔥</h1>
-                <p className="isl-hero-sub">
-                  16 teams. 2 winners, and a <strong>₦2.8 million</strong> prize pool up for grabs!
-                </p>
-              </div>
+            <div className="isl-minimal-meta">
+              <span><MapPin size={13} /> Lagos Preparatory School, Ikoyi</span>
+              <span className="isl-meta-dot">·</span>
+              <span><Clock size={13} /> 7:20 AM</span>
+              <span className="isl-meta-dot">·</span>
+              <span>2 VIP Passes Included</span>
+            </div>
 
-              {/* Prize Pool Cards */}
-              <div className="isl-prizes-grid">
-                <div className="isl-prize-card gold">
-                  <div className="isl-prize-medal">🥇</div>
-                  <div>
-                    <div className="isl-prize-lbl">GRAND WINNER</div>
-                    <div className="isl-prize-amount font-mono">₦2,000,000</div>
-                  </div>
-                </div>
+            <div className="isl-action-bar">
+              <button
+                type="button"
+                className="isl-btn-primary"
+                onClick={() => setActiveTab('register')}
+              >
+                <span>Register Team</span>
+                <ArrowRight size={15} />
+              </button>
 
-                <div className="isl-prize-card silver">
-                  <div className="isl-prize-medal">🥈</div>
-                  <div>
-                    <div className="isl-prize-lbl">RUNNER-UP</div>
-                    <div className="isl-prize-amount font-mono">₦800,000</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Key Event Details */}
-              <div className="isl-info-card">
-                <div className="isl-info-row">
-                  <div className="isl-info-icon"><Calendar size={15} /></div>
-                  <div>
-                    <span className="isl-info-lbl">MATCH DATES</span>
-                    <strong className="isl-info-val">November 22nd & 29th, 2026</strong>
-                  </div>
-                </div>
-
-                <div className="isl-info-row">
-                  <div className="isl-info-icon"><Clock size={15} /></div>
-                  <div>
-                    <span className="isl-info-lbl">KICK-OFF TIME</span>
-                    <strong className="isl-info-val">7:20 AM (WAT)</strong>
-                  </div>
-                </div>
-
-                <div className="isl-info-row">
-                  <div className="isl-info-icon"><MapPin size={15} /></div>
-                  <div>
-                    <span className="isl-info-lbl">TOURNAMENT VENUE</span>
-                    <strong className="isl-info-val">Lagos Preparatory School, Glover Road, Ikoyi</strong>
-                  </div>
-                </div>
-
-                <div className="isl-info-row highlight">
-                  <div className="isl-info-icon"><DollarSign size={15} /></div>
-                  <div className="flex-1 flex justify-between items-center">
-                    <div>
-                      <span className="isl-info-lbl">REGISTRATION FEE</span>
-                      <strong className="isl-info-val text-emerald-700 font-mono text-base">₦300,000</strong>
-                    </div>
-                    <span className="badge badge-success text-2xs font-bold">Includes 2 VIP Spectators</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Registration Requirements Note */}
-              <div className="isl-spec-badge-box">
-                <div className="isl-spec-pill">✓ Team Name & Logo</div>
-                <div className="isl-spec-pill">✓ Coach Name</div>
-                <div className="isl-spec-pill">✓ Team Captain</div>
-                <div className="isl-spec-pill">✓ 2 VIP Spectator Badges</div>
-              </div>
-
-              {/* CTA Action Bar */}
-              <div className="isl-action-bar">
-                <button
-                  type="button"
-                  className="isl-btn-primary"
-                  onClick={() => setActiveTab('register')}
-                >
-                  <span>Register Your Team Now</span>
-                  <ArrowRight size={15} />
-                </button>
-
+              {isSuperAdmin && (
                 <button
                   type="button"
                   className="isl-btn-secondary"
                   onClick={() => setActiveTab('teams')}
                 >
                   <Users size={15} />
-                  <span>View Registered Teams ({islCupTeams.length}/10)</span>
+                  <span>Teams ({islCupTeams.length}/10)</span>
                 </button>
-              </div>
+              )}
             </div>
           </div>
         )}
@@ -426,8 +361,8 @@ export default function IslCupModal() {
           </div>
         )}
 
-        {/* TAB 3: 10-COLUMN REGISTERED TEAMS SHOWCASE */}
-        {activeTab === 'teams' && (
+        {/* TAB 3: 10-COLUMN REGISTERED TEAMS SHOWCASE (Super Admin Only) */}
+        {isSuperAdmin && activeTab === 'teams' && (
           <div className="isl-teams-wrap">
             <div className="isl-teams-header">
               <div>

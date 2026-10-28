@@ -23,13 +23,18 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 0, 0, 0.05);
   width: 100%;
-  max-width: 1100px;
+  max-width: 960px;
   max-height: calc(100vh - 2.5rem);
   margin: auto;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   animation: slideUpModal 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: max-width 0.2s ease;
+}
+
+.isl-modal-card.isl-modal-minimal {
+  max-width: 440px;
 }
 
 .isl-modal-topbar {
@@ -120,14 +125,36 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
-/* Tab 1: Overview Split Layout */
-.isl-content-split {
-  display: grid;
-  grid-template-columns: 360px 1fr;
-  gap: 1.5rem;
-  padding: 1.5rem;
+/* Tab 1: Minimal Flier Layout */
+.isl-minimal-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1rem 1.15rem 1.15rem;
   overflow-y: auto;
-  max-height: calc(100vh - 12rem);
+  max-height: calc(100vh - 10rem);
+}
+
+.isl-minimal-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #52525B;
+  text-align: center;
+}
+
+.isl-minimal-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.isl-meta-dot {
+  color: #D4D4D8;
 }
 
 .isl-poster-col {

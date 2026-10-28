@@ -13,7 +13,7 @@ export default function Sidebar() {
   const location = useLocation()
   const navigate = useNavigate()
   const [mobileOpen, setMobileOpen] = useState(false)
-  const { currentMember, currentClub, setWalletModalState } = useCitiPay()
+  const { currentMember, currentClub, setWalletModalState, logoutSession } = useCitiPay()
 
   const isClubAdmin = location.pathname.startsWith('/club')
   const isAdmin = location.pathname.startsWith('/admin')
@@ -169,7 +169,13 @@ export default function Sidebar() {
             </div>
           </div>
 
-          <button className="sidebar-logout-btn" onClick={() => navigate('/login')}>
+          <button
+            className="sidebar-logout-btn"
+            onClick={() => {
+              logoutSession()
+              navigate('/login')
+            }}
+          >
             <LogOut size={16} />
             <span>Sign Out</span>
           </button>

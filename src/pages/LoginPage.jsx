@@ -19,6 +19,7 @@ export default function LoginPage() {
     switchMember,
     members,
     setCurrentRole,
+    loginSession,
     setOtpModalState,
     setResetPassModalState,
     setIslCupModalState
@@ -29,8 +30,8 @@ export default function LoginPage() {
   // Form states (Item 1 & 2: Member ID / Phone / Email + Password / PIN)
   const defaultMember = members[0]
   const [authMode, setAuthMode] = useState('member_id') // 'member_id' | 'email' | 'phone'
-  const [memberId, setMemberId] = useState(defaultMember?.member_id || 'SL-8K4P2')
-  const [password, setPassword] = useState('••••••••')
+  const [memberId, setMemberId] = useState('')
+  const [password, setPassword] = useState('')
   const [pin, setPin] = useState('1234')
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -44,36 +45,118 @@ export default function LoginPage() {
     setTimeout(() => {
       setIsLoading(false)
       const cleanInput = memberId.trim()
+      const lowerInput = cleanInput.toLowerCase()
       const cleanNoDash = cleanInput.toUpperCase().replace(/[^A-Z0-9]/g, '')
+      const cleanPass = password.trim()
 
-      // Robust match checking member_id (random/non-serial), display_id, or email
+      // 1. Default Super Admin Credentials
+      const isSuperAdminId =
+        lowerInput === 'admin@citileague.com' ||
+        lowerInput === 'superadmin@citileague.com' ||
+        cleanNoDash === 'SUPERADMIN'
+      if (isSuperAdminId) {
+        if (cleanPass === 'Admin@2026' || cleanPass === '1234' || cleanPass === '••••••••') {
+          loginSession({
+            role: 'super_admin',
+            clubId: '11111111-1111-1111-1111-111111111111'
+          })
+          navigate('/admin/dashboard')
+          return
+        }
+        setError('Invalid Super Admin password.')
+        return
+      }
+
+      // 2. Default Ikoyi Sunday League (Club Admin) Credentials
+      const isIslAdminId =
+        lowerInput === 'isl@citileague.com' ||
+        lowerInput === 'ikoyi@citileague.com' ||
+        cleanNoDash === 'ISLADMIN' ||
+        cleanNoDash === 'ISL'
+      if (isIslAdminId) {
+        if (cleanPass === 'Isl@2026' || cleanPass === '1234' || cleanPass === '••••••••') {
+          loginSession({
+            role: 'club_admin',
+            clubId: '11111111-1111-1111-1111-111111111111'
+          })
+          navigate('/club/dashboard')
+          return
+        }
+        setError('Invalid Ikoyi Sunday League Admin password.')
+        return
+      }
+
+      // 3. Player / Member Credentials Lookup
       const found = members.find(m => {
         const mNorm = (m.member_id || '').toUpperCase().replace(/[^A-Z0-9]/g, '')
         const dNorm = (m.display_id || '').toUpperCase().replace(/[^A-Z0-9]/g, '')
         return (
           mNorm === cleanNoDash ||
           dNorm === cleanNoDash ||
-          (m.email && m.email.toLowerCase() === cleanInput.toLowerCase()) ||
+          (m.email && m.email.toLowerCase() === lowerInput) ||
           (m.phone && m.phone.replace(/[^0-9]/g, '') === cleanInput.replace(/[^0-9]/g, ''))
         )
       })
-      
+
       if (found) {
         switchMember(found.id)
-        setCurrentRole('member')
-      } else {
-        switchMember(defaultMember?.id || 'mem-001') // Default to Michael Esu
-        setCurrentRole('member')
+        loginSession({
+          role: 'member',
+          memberId: found.id,
+          clubId: found.club_id || '11111111-1111-1111-1111-111111111111'
+        })
+        navigate('/dashboard')
+        return
       }
-      navigate('/dashboard')
-    }, 600)
+
+      // Allow default player login if SL-8K4P2 is used even before Supabase finishes hydrating
+      if (cleanNoDash === 'SL8K4P2' || lowerInput === 'player@citileague.com') {
+        const fallbackId = defaultMember?.id || 'mem-001'
+        switchMember(fallbackId)
+        loginSession({
+          role: 'member',
+          memberId: fallbackId,
+          clubId: '11111111-1111-1111-1111-111111111111'
+        })
+        navigate('/dashboard')
+        return
+      }
+
+      setError('Invalid login credentials. Please use a valid Member ID, Ikoyi Sunday League Admin login, or Super Admin login.')
+    }, 400)
   }
 
-  // Quick Demo Account Switcher
-  const quickDemoLogin = (targetMemberId, role = 'member', targetRoute = '/dashboard') => {
-    switchMember(targetMemberId)
-    setCurrentRole(role)
-    navigate(targetRoute)
+  // Quick Default Login Helper
+  const handleQuickDefaultLogin = (preset) => {
+    setError('')
+    if (preset === 'isl_admin') {
+      setMemberId('isl@citileague.com')
+      setPassword('Isl@2026')
+      loginSession({
+        role: 'club_admin',
+        clubId: '11111111-1111-1111-1111-111111111111'
+      })
+      navigate('/club/dashboard')
+    } else if (preset === 'super_admin') {
+      setMemberId('admin@citileague.com')
+      setPassword('Admin@2026')
+      loginSession({
+        role: 'super_admin',
+        clubId: '11111111-1111-1111-1111-111111111111'
+      })
+      navigate('/admin/dashboard')
+    } else if (preset === 'player') {
+      const target = defaultMember || members[0]
+      setMemberId(target?.member_id || 'SL-8K4P2')
+      setPassword('1234')
+      if (target?.id) switchMember(target.id)
+      loginSession({
+        role: 'member',
+        memberId: target?.id || 'mem-001',
+        clubId: target?.club_id || '11111111-1111-1111-1111-111111111111'
+      })
+      navigate('/dashboard')
+    }
   }
 
   return (

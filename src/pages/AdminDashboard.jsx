@@ -11,7 +11,18 @@ import './AdminDashboard.css'
 
 export default function AdminDashboard() {
   const navigate = useNavigate()
-  const { clubs, members, currentClub, adminMetrics, auditLogs, setRulesConfigModalState, leagueSettings, setLeagueSettingsModalState } = useCitiPay()
+  const {
+    clubs,
+    members,
+    currentClub,
+    adminMetrics,
+    auditLogs,
+    setRulesConfigModalState,
+    leagueSettings,
+    setLeagueSettingsModalState,
+    islCupTeams,
+    setIslCupModalState
+  } = useCitiPay()
 
   return (
     <div className="admin-dashboard-wrap">
@@ -185,7 +196,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* 2-Column: Clubs Summary & Realtime Audit Trail */}
-      <div className="grid-2">
+      <div className="grid-2 mb-6">
         <div className="card">
           <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
             <div>
@@ -259,6 +270,73 @@ export default function AdminDashboard() {
             ))}
           </div>
         </div>
+      </div>
+
+      {/* Super Admin Exclusive: ISL Cup Finals 2026 Registered Teams */}
+      <div className="card mb-6">
+        <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100 flex-wrap gap-3">
+          <div>
+            <div className="flex items-center gap-2 mb-0.5">
+              <h3 className="section-title">ISL Cup Finals 2026 — Registered Teams</h3>
+              <span className="badge badge-accent text-2xs font-bold">Super Admin Only ({islCupTeams.length}/10)</span>
+            </div>
+            <p className="text-xs text-slate-500">Submitted tournament team entries, coaching staff, captains, and VIP spectators</p>
+          </div>
+          <button
+            type="button"
+            className="btn btn-secondary text-xs font-bold py-1.5 px-3 flex items-center gap-1.5"
+            onClick={() => setIslCupModalState({ isOpen: true })}
+          >
+            <Trophy size={14} className="text-amber-500" />
+            <span>Open Tournament Modal</span>
+          </button>
+        </div>
+
+        {islCupTeams.length === 0 ? (
+          <div className="py-6 text-center text-xs text-slate-500 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+            No teams have registered for ISL Cup Finals 2026 yet (0/10 slots filled).
+          </div>
+        ) : (
+          <div className="table-responsive">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Slot</th>
+                  <th>Team</th>
+                  <th>Coach</th>
+                  <th>Captain</th>
+                  <th>VIP Spectator 1</th>
+                  <th>VIP Spectator 2</th>
+                </tr>
+              </thead>
+              <tbody>
+                {islCupTeams.map((team, idx) => (
+                  <tr key={team.id || idx}>
+                    <td className="font-mono font-bold text-xs text-slate-500">#{idx + 1}</td>
+                    <td>
+                      <div className="flex items-center gap-2.5">
+                        <img
+                          src={team.logoUrl || '/crests/sunday-league-fc.svg'}
+                          alt={team.teamName}
+                          className="w-7 h-7 rounded-lg object-cover border border-slate-200"
+                          onError={(e) => {
+                            e.currentTarget.onerror = null
+                            e.currentTarget.src = '/crests/sunday-league-fc.svg'
+                          }}
+                        />
+                        <span className="font-bold text-slate-900 text-xs">{team.teamName}</span>
+                      </div>
+                    </td>
+                    <td className="text-xs font-medium text-slate-700">{team.coachName}</td>
+                    <td className="text-xs font-medium text-slate-700">{team.captainName}</td>
+                    <td className="text-xs text-slate-600">{team.vipSpectator1 || '—'}</td>
+                    <td className="text-xs text-slate-600">{team.vipSpectator2 || '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   )

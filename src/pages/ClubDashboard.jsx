@@ -168,7 +168,7 @@ export default function ClubDashboard() {
             <ArrowRight size={13} className="text-slate-300 group-hover:text-blue-600 transition-colors" />
           </div>
           <div className="font-bold text-xs text-slate-900">Squad & Clearance</div>
-          <div className="text-3xs text-slate-500 font-medium">30 Roster Players</div>
+          <div className="text-3xs text-slate-500 font-medium">{adminMetrics.totalMembers} Roster Players</div>
         </button>
 
         <button
@@ -297,7 +297,7 @@ export default function ClubDashboard() {
             <div className="fin-stat-card">
               <div className="fin-stat-header">
                 <span className="fin-stat-title">EXPECTED REVENUE:</span>
-                <span className="fin-stat-tag blue">30 Members</span>
+                <span className="fin-stat-tag blue">{adminMetrics.totalMembers} Members</span>
               </div>
               <div className="fin-stat-value expected-val">
                 ₦{(adminMetrics?.expectedRevenue || 0).toLocaleString()}
