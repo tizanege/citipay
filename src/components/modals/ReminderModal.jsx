@@ -89,7 +89,7 @@ export default function ReminderModal() {
                     onClick={() => setChannel('whatsapp')}
                   >
                     <Smartphone size={16} className="text-emerald-600" />
-                    <span>WhatsApp ({member.phone})</span>
+                    <span>WhatsApp{member.phone ? ` (${member.phone})` : ''}</span>
                   </button>
                   <button
                     type="button"
@@ -97,7 +97,7 @@ export default function ReminderModal() {
                     onClick={() => setChannel('email')}
                   >
                     <Mail size={16} className="text-blue-600" />
-                    <span>Email ({member.email})</span>
+                    <span>Email</span>
                   </button>
                 </div>
               </div>

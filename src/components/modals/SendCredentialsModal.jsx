@@ -29,7 +29,8 @@ export default function SendCredentialsModal() {
 
   useEffect(() => {
     if (sendCredentialsModalState.isOpen && member) {
-      setEmail(member.email || '')
+      const validEmail = member.email && !member.email.toLowerCase().endsWith('@sundayleaguefc.ng') ? member.email : ''
+      setEmail(validEmail)
       setTempPassword(member.temp_password || generateTempPassword())
       setAccessPin(member.pin || generateAccessPin())
       setIsSuccess(false)

@@ -528,7 +528,7 @@ export default function ClubSquadPage() {
                       </span>
                     </div>
 
-                    {/* ID & Contact Details */}
+                    {/* ID Details */}
                     <div className="flex items-center justify-between">
                       <button
                         type="button"
@@ -543,9 +543,6 @@ export default function ClubSquadPage() {
                           <Copy size={11} className="text-slate-400" />
                         )}
                       </button>
-                      <span className="text-3xs text-slate-500 font-mono">
-                        {member.email ? member.email : 'No email registered'}
-                      </span>
                     </div>
 
                     {/* Dues & Progress Box */}

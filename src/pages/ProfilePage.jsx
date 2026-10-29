@@ -52,8 +52,9 @@ export default function ProfilePage() {
 
             <div className="profile-meta-chips mt-3 flex items-center gap-4 flex-wrap text-xs text-slate-500 font-medium">
               <span className="flex items-center gap-1.5"><Calendar size={13} /> Joined {currentMember.date_joined || 'Sept 2024'}</span>
-              <span className="flex items-center gap-1.5"><Mail size={13} /> {currentMember.email}</span>
-              <span className="flex items-center gap-1.5"><Phone size={13} /> {currentMember.phone}</span>
+              {currentMember.phone && (
+                <span className="flex items-center gap-1.5"><Phone size={13} /> {currentMember.phone}</span>
+              )}
             </div>
           </div>
 
