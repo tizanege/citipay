@@ -27,10 +27,10 @@ export default function ClubSquadPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [positionFilter, setPositionFilter] = useState('all')
-  const [viewMode, setViewMode] = useState('table') // 'table' | 'cards'
+  const [viewMode, setViewMode] = useState('cards') // 'cards' | 'table'
   const [copiedId, setCopiedId] = useState(null)
   const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize, setPageSize] = useState(10)
+  const [pageSize, setPageSize] = useState(12)
 
   const handleCopyId = (id) => {
     navigator.clipboard.writeText(id).then(() => {
@@ -232,21 +232,21 @@ export default function ClubSquadPage() {
             <div className="squad-view-switcher">
               <button
                 type="button"
+                className={`squad-view-btn ${viewMode === 'cards' ? 'active' : ''}`}
+                onClick={() => setViewMode('cards')}
+                title="Grid View"
+              >
+                <LayoutGrid size={14} />
+                <span className="hidden sm:inline">Grid</span>
+              </button>
+              <button
+                type="button"
                 className={`squad-view-btn ${viewMode === 'table' ? 'active' : ''}`}
                 onClick={() => setViewMode('table')}
                 title="Table View"
               >
                 <List size={14} />
                 <span className="hidden sm:inline">Table</span>
-              </button>
-              <button
-                type="button"
-                className={`squad-view-btn ${viewMode === 'cards' ? 'active' : ''}`}
-                onClick={() => setViewMode('cards')}
-                title="Card View (Mobile Optimized)"
-              >
-                <LayoutGrid size={14} />
-                <span className="hidden sm:inline">Cards</span>
               </button>
             </div>
           </div>
@@ -278,7 +278,9 @@ export default function ClubSquadPage() {
                   </tr>
                 ) : (
                   paginatedMembers.map((member) => {
-                    const percentPaid = Math.round((member.membership_paid / (member.membership_fee || 100000)) * 100)
+                    const paidAmount = Number(member.membership_paid ?? 0)
+                    const feeAmount = Number(member.membership_fee || 100000)
+                    const percentPaid = Math.min(100, Math.round((paidAmount / feeAmount) * 100))
                     const memberIdStr = member.display_id || member.member_id
 
                     return (
@@ -303,7 +305,7 @@ export default function ClubSquadPage() {
                               <div className="squad-meta-line">
                                 <span className="squad-jersey-pill">#{member.jersey_number || '10'}</span>
                                 <span className="squad-pos-pill">{member.position || 'CAM'}</span>
-                                {member.nickname && (
+                                {member.nickname && member.nickname.trim().toLowerCase() !== (member.full_name || '').trim().toLowerCase() && (
                                   <span className="text-3xs text-slate-400 font-medium truncate max-w-[90px]">
                                     "{member.nickname}"
                                   </span>
@@ -365,7 +367,7 @@ export default function ClubSquadPage() {
                         {/* Paid to Date */}
                         <td style={{ textAlign: 'right' }}>
                           <span className="font-mono text-xs font-bold text-slate-900 block">
-                            ₦{(member.membership_paid || 100000).toLocaleString()}
+                            ₦{paidAmount.toLocaleString()} ({percentPaid}%)
                           </span>
                           <div className="w-full bg-slate-100 rounded-full h-1.5 mt-1 overflow-hidden">
                             <div
@@ -378,7 +380,7 @@ export default function ClubSquadPage() {
                         {/* Last Payment Date */}
                         <td style={{ whiteSpace: 'nowrap' }}>
                           <span className="text-xs text-slate-700 font-semibold block">
-                            {member.last_payment_date || 'Sept 28, 2026'}
+                            {paidAmount > 0 ? (member.last_payment_date || 'Settled') : 'No payment yet'}
                           </span>
                           <span className="text-3xs text-slate-400 font-mono">
                             {member.social_dues_status === 'paid' ? 'Social dues settled' : 'Social dues unpaid'}
@@ -483,7 +485,9 @@ export default function ClubSquadPage() {
               </div>
             ) : (
               paginatedMembers.map((member) => {
-                const percentPaid = Math.round((member.membership_paid / (member.membership_fee || 100000)) * 100)
+                const paidAmount = Number(member.membership_paid ?? 0)
+                const feeAmount = Number(member.membership_fee || 100000)
+                const percentPaid = Math.min(100, Math.round((paidAmount / feeAmount) * 100))
                 const memberIdStr = member.display_id || member.member_id
 
                 return (
@@ -508,7 +512,7 @@ export default function ClubSquadPage() {
                           <div className="squad-meta-line">
                             <span className="squad-jersey-pill">#{member.jersey_number || '10'}</span>
                             <span className="squad-pos-pill">{member.position || 'CAM'}</span>
-                            {member.nickname && (
+                            {member.nickname && member.nickname.trim().toLowerCase() !== (member.full_name || '').trim().toLowerCase() && (
                               <span className="text-3xs text-slate-400 font-medium truncate max-w-[100px]">
                                 "{member.nickname}"
                               </span>
@@ -556,7 +560,14 @@ export default function ClubSquadPage() {
                       <div className="squad-card-dues-row">
                         <span className="text-3xs text-slate-500 font-bold uppercase">Paid to Date</span>
                         <span className="font-mono text-xs font-bold text-slate-800">
-                          ₦{(member.membership_paid || 100000).toLocaleString()} ({percentPaid}%)
+                          ₦{paidAmount.toLocaleString()} / ₦{feeAmount.toLocaleString()} ({percentPaid}%)
+                        </span>
+                      </div>
+
+                      <div className="squad-card-dues-row">
+                        <span className="text-3xs text-slate-500 font-bold uppercase">Paid Date</span>
+                        <span className="font-mono text-3xs font-semibold text-slate-600">
+                          {paidAmount > 0 ? (member.last_payment_date || 'Settled') : 'No payment yet'}
                         </span>
                       </div>
 

@@ -158,7 +158,7 @@ export default function ClubDashboard() {
       </div>
 
       {/* Executive Quick Links */}
-      <div className="grid-5 mb-6">
+      <div className="grid-4 mb-6">
         <button
           className="card p-3 text-left hover:border-slate-300 transition-all cursor-pointer group"
           onClick={() => navigate('/club/players')}
@@ -193,18 +193,6 @@ export default function ClubDashboard() {
           </div>
           <div className="font-bold text-xs text-slate-900">Club Receipts</div>
           <div className="text-3xs text-slate-500 font-medium">Official Invoices</div>
-        </button>
-
-        <button
-          className="card p-3 text-left hover:border-slate-300 transition-all cursor-pointer group"
-          onClick={() => navigate('/club/audit')}
-        >
-          <div className="flex items-center justify-between mb-1">
-            <Shield size={18} className="text-amber-600" />
-            <ArrowRight size={13} className="text-slate-300 group-hover:text-amber-600 transition-colors" />
-          </div>
-          <div className="font-bold text-xs text-slate-900">Audit Trail</div>
-          <div className="text-3xs text-slate-500 font-medium">{auditLogs.length} Logged Actions</div>
         </button>
 
         <button
@@ -540,41 +528,6 @@ export default function ClubDashboard() {
           pageSizeOptions={[10, 20, 50]}
           itemName="members"
         />
-      </div>
-
-      {/* 6. LIVE AUDIT LOGS (Item 6 & 19 Requirement) */}
-      <div className="card">
-        <div className="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
-          <div>
-            <h3 className="section-title text-base font-extrabold text-slate-900">MANDATORY AUDIT TRAIL</h3>
-            <p className="text-xs text-slate-500">Every manual status change, offline payment, and rule update is recorded</p>
-          </div>
-          <span className="badge badge-success font-bold text-xs flex items-center gap-1">
-            <Shield size={12} /> Immutable Ledger
-          </span>
-        </div>
-
-        <div className="flex flex-col gap-3">
-          {auditLogs.map((log) => (
-            <div key={log.id} className="p-3.5 rounded-xl border border-slate-200 bg-white hover:border-slate-300 transition-colors">
-              <div className="flex justify-between items-start mb-1">
-                <div className="flex items-center gap-2">
-                  <span className="badge badge-secondary text-3xs font-mono font-bold">{log.action}</span>
-                  <strong className="text-xs text-slate-900">{log.target_name} ({log.target_member_id})</strong>
-                </div>
-                <span className="text-3xs text-slate-400 font-mono">{log.timestamp}</span>
-              </div>
-
-              <p className="text-xs text-slate-700 font-medium my-1">{log.reason}</p>
-              
-              {log.details && (
-                <div className="text-3xs text-slate-500 font-mono mt-1 bg-slate-50 p-1.5 rounded border border-slate-100">
-                  {log.details}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
       </div>
     </div>
   )

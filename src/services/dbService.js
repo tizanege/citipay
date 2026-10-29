@@ -160,15 +160,67 @@ export const dbService = {
     if (error) throw error
     if (!profiles || profiles.length === 0) return []
 
+    // Deduplicate profiles by id, member_id, email, and normalized full_name
+    const seenIds = new Set()
+    const seenMemberIds = new Set()
+    const seenEmails = new Set()
+    const seenNames = new Set()
+
+    const uniqueProfiles = profiles.filter(p => {
+      const idKey = String(p.id || '').trim()
+      const memberIdKey = String(p.member_id || '').trim().toUpperCase()
+      const emailKey = String(p.email || '').trim().toLowerCase()
+      const nameKey = String(p.full_name || '').trim().toLowerCase()
+
+      if (idKey && seenIds.has(idKey)) return false
+      if (memberIdKey && seenMemberIds.has(memberIdKey)) return false
+      if (emailKey && seenEmails.has(emailKey)) return false
+      if (nameKey && seenNames.has(nameKey)) return false
+
+      if (idKey) seenIds.add(idKey)
+      if (memberIdKey) seenMemberIds.add(memberIdKey)
+      if (emailKey) seenEmails.add(emailKey)
+      if (nameKey) seenNames.add(nameKey)
+      return true
+    })
+
     // 2. Map relational records to unified member UI model
-    return profiles.map(p => {
+    return uniqueProfiles.map(p => {
       const player = Array.isArray(p.players) ? p.players[0] : p.players
-      const plan = Array.isArray(p.payment_plans) ? p.payment_plans[0] : p.payment_plans
-      
-      const membershipFee = Number(plan?.total_amount || 100000)
-      const membershipPaid = Number(plan?.amount_paid || 0)
+      const plansList = Array.isArray(p.payment_plans)
+        ? [...p.payment_plans].sort((a, b) => new Date(b.updated_at || b.created_at || 0) - new Date(a.updated_at || a.created_at || 0))
+        : (p.payment_plans ? [p.payment_plans] : [])
+      const plan = plansList[0] || null
+
+      const baseFee = Number(plan?.total_amount || 100000)
+      const rawPaid = Number(plan?.amount_paid || 0)
+      const membershipFee = baseFee
+      const membershipPaid = Math.min(rawPaid, membershipFee)
       const membershipOutstanding = Math.max(0, membershipFee - membershipPaid)
       const walletBal = 0
+
+      // Format actual payment date from payment_plans.updated_at or profile timestamp
+      const latestPaidIso = membershipPaid > 0 ? (plan?.updated_at || plan?.created_at || p.updated_at || p.created_at) : null
+      const formattedLastPaid = latestPaidIso
+        ? new Date(latestPaidIso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+        : 'No payment yet'
+      const formattedShortPaid = latestPaidIso
+        ? new Date(latestPaidIso).toISOString().split('T')[0]
+        : null
+
+      // Compute accurate status unless manually overridden
+      const isOverridden = Boolean(p.eligibility_override_reason)
+      const resolvedStatus = isOverridden
+        ? (p.eligibility_status || 'green')
+        : membershipOutstanding === 0
+        ? 'green'
+        : membershipPaid > 0
+        ? 'yellow'
+        : (p.eligibility_status || 'red')
+
+      const cleanFullName = String(p.full_name || '').trim()
+      const cleanNick = String(p.nickname || '').trim()
+      const distinctNickname = cleanNick.toLowerCase() !== cleanFullName.toLowerCase() ? cleanNick : ''
 
       return {
         id: p.id,
@@ -176,13 +228,13 @@ export const dbService = {
         display_id: p.member_id,
         email: p.email,
         phone: p.phone,
-        full_name: p.full_name,
-        nickname: p.nickname || '',
+        full_name: cleanFullName,
+        nickname: distinctNickname,
         avatar_url: p.avatar_url || '/avatar-fallback.svg',
         role: p.role || 'member',
         club_id: p.club_id,
-        status: p.eligibility_status || 'green',
-        status_overridden: Boolean(p.eligibility_override_reason),
+        status: resolvedStatus,
+        status_overridden: isOverridden,
         override_reason: p.eligibility_override_reason || null,
         account_status: p.account_status || 'active',
         date_joined: p.date_joined,
@@ -190,18 +242,35 @@ export const dbService = {
         position: player?.primary_position || 'CAM',
         membership_fee: membershipFee,
         membership_paid: membershipPaid,
+        total_contributions: rawPaid,
         membership_outstanding: membershipOutstanding,
         membership_status: membershipOutstanding === 0 ? 'paid' : membershipPaid > 0 ? 'partial' : 'unpaid',
         social_dues_current_month: 5000,
         social_dues_paid: 5000,
         social_dues_status: 'paid',
         wallet_balance: walletBal,
-        last_payment_date: 'Recent',
+        last_payment_date: formattedLastPaid,
         next_payment_amount: membershipOutstanding > 0 ? Math.min(Math.round(membershipFee / 2), membershipOutstanding) : 0,
         next_payment_label: membershipOutstanding === 0 ? 'No payment currently due.' : `₦${membershipOutstanding.toLocaleString()} remaining`,
         installments: [
-          { id: 'inst-1', number: 1, label: 'Installment 1 (1st Half - 50%)', amount: Math.round(membershipFee / 2), status: membershipPaid >= Math.round(membershipFee / 2) ? 'paid' : 'due', paid_at: '2026-06-15', ref: 'SL00101' },
-          { id: 'inst-2', number: 2, label: 'Installment 2 (2nd Half - 50%)', amount: Math.round(membershipFee / 2), status: membershipPaid >= membershipFee ? 'paid' : 'due', paid_at: '2026-08-25', ref: 'SL00124' }
+          {
+            id: 'inst-1',
+            number: 1,
+            label: 'Installment 1 (1st Half - 50%)',
+            amount: Math.round(membershipFee / 2),
+            status: membershipPaid >= Math.round(membershipFee / 2) ? 'paid' : 'due',
+            paid_at: formattedShortPaid || 'Settled',
+            ref: p.member_id || 'SL001'
+          },
+          {
+            id: 'inst-2',
+            number: 2,
+            label: 'Installment 2 (2nd Half - 50%)',
+            amount: Math.round(membershipFee / 2),
+            status: membershipPaid >= membershipFee ? 'paid' : 'due',
+            paid_at: formattedShortPaid || 'Settled',
+            ref: p.member_id || 'SL002'
+          }
         ]
       }
     })

@@ -90,7 +90,7 @@ export default function App() {
         <Route path="/club/players" element={<RoleRoute allowedRoles={['club_admin', 'president', 'super_admin']}><ClubSquadPage /></RoleRoute>} />
         <Route path="/club/payments" element={<RoleRoute allowedRoles={['club_admin', 'president', 'super_admin']}><ClubPaymentsPage /></RoleRoute>} />
         <Route path="/club/receipts" element={<RoleRoute allowedRoles={['club_admin', 'president', 'super_admin']}><ClubReceiptsPage /></RoleRoute>} />
-        <Route path="/club/audit" element={<RoleRoute allowedRoles={['club_admin', 'president', 'super_admin']}><ClubAuditPage /></RoleRoute>} />
+        <Route path="/club/audit" element={<Navigate to="/club/dashboard" replace />} />
         <Route path="/club/profile" element={<RoleRoute allowedRoles={['club_admin', 'president', 'super_admin']}><ClubProfilePage /></RoleRoute>} />
 
         {/* ── 3. Super Admin Federation Access Level ── */}
@@ -98,7 +98,7 @@ export default function App() {
         <Route path="/admin/clubs" element={<RoleRoute allowedRoles={['super_admin']}><AdminClubsPage /></RoleRoute>} />
         <Route path="/admin/players" element={<RoleRoute allowedRoles={['super_admin']}><AdminPlayersPage /></RoleRoute>} />
         <Route path="/admin/payments" element={<RoleRoute allowedRoles={['super_admin']}><AdminPaymentsPage /></RoleRoute>} />
-        <Route path="/admin/audit" element={<RoleRoute allowedRoles={['super_admin']}><AdminAuditPage /></RoleRoute>} />
+        <Route path="/admin/audit" element={<Navigate to="/admin/dashboard" replace />} />
         <Route path="/admin/settings" element={<RoleRoute allowedRoles={['super_admin']}><AdminSettingsPage /></RoleRoute>} />
       </Route>
 

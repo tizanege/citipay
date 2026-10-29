@@ -236,11 +236,19 @@ export function CitiPayProvider({ children }) {
         if (liveClubs.status === 'fulfilled' && liveClubs.value?.length > 0) {
           setClubs(liveClubs.value)
         }
-        if (liveMembers.status === 'fulfilled' && liveMembers.value?.length > 0) {
-          setMembers(liveMembers.value.map(m => ({ ...m, wallet_balance: 0 })))
+        const fetchedTxs = liveTxs.status === 'fulfilled' && Array.isArray(liveTxs.value) ? liveTxs.value : []
+        if (fetchedTxs.length > 0) {
+          setTransactions(fetchedTxs)
         }
-        if (liveTxs.status === 'fulfilled' && liveTxs.value?.length > 0) {
-          setTransactions(liveTxs.value)
+        if (liveMembers.status === 'fulfilled' && liveMembers.value?.length > 0) {
+          setMembers(liveMembers.value.map(m => {
+            const latestTx = fetchedTxs.find(tx => tx.member_id === m.member_id || tx.member_name === m.full_name)
+            return {
+              ...m,
+              wallet_balance: 0,
+              last_payment_date: latestTx?.date_display || m.last_payment_date
+            }
+          }))
         }
         if (liveLogs.status === 'fulfilled' && liveLogs.value?.length > 0) {
           setAuditLogs(liveLogs.value)

@@ -34,7 +34,6 @@ export default function Sidebar() {
     { to: '/club/players', icon: Users, label: 'Players' },
     { to: '/club/payments', icon: CreditCard, label: 'Payments' },
     { to: '/club/receipts', icon: History, label: 'Receipts' },
-    { to: '/club/audit', icon: Shield, label: 'Audit Trail' },
     { to: '/club/profile', icon: Building2, label: 'Settings' }
   ]
 
@@ -44,7 +43,6 @@ export default function Sidebar() {
     { to: '/admin/clubs', icon: Building2, label: 'Clubs' },
     { to: '/admin/players', icon: Users, label: 'Players' },
     { to: '/admin/payments', icon: CreditCard, label: 'Revenue' },
-    { to: '/admin/audit', icon: Shield, label: 'Audit Trail' },
     { to: '/admin/settings', icon: Sliders, label: 'Settings' }
   ]
 

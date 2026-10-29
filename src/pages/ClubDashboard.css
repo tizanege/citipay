@@ -519,3 +519,175 @@
   gap: 0.35rem;
   flex-wrap: nowrap;
 }
+
+/* ── View Mode Switcher (Grid vs Table) ──────────────── */
+.squad-view-switcher {
+  display: inline-flex;
+  align-items: center;
+  background: #F4F4F5;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.15rem;
+  gap: 0.15rem;
+}
+
+.squad-view-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: calc(var(--radius-md) - 2px);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.squad-view-btn:hover {
+  color: var(--text-primary);
+}
+
+.squad-view-btn.active {
+  background: #FFFFFF;
+  color: #09090B;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* ── Squad Grid View Cards ───────────────────────────── */
+.squad-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 1rem;
+}
+
+.squad-player-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 1.15rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.85rem;
+  box-shadow: var(--shadow-subtle);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.squad-player-card:hover {
+  transform: translateY(-2px);
+  border-color: #CBD5E1;
+  box-shadow: 0 10px 24px -8px rgba(0, 0, 0, 0.08);
+}
+
+.squad-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.65rem;
+}
+
+.squad-card-player-info {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-width: 0;
+}
+
+.squad-card-id-badge {
+  font-family: ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #18181B;
+  background: #F4F4F5;
+  border: 1px solid #E4E4E7;
+  border-radius: 6px;
+  padding: 0.2rem 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.squad-card-dues-box {
+  background: #FAFAFA;
+  border: 1px solid #F1F5F9;
+  border-radius: 12px;
+  padding: 0.75rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.squad-card-dues-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.squad-card-actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.45rem;
+  padding-top: 0.25rem;
+}
+
+.squad-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border: 1px solid #E4E4E7;
+  background: #FFFFFF;
+  color: #27272A;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.squad-action-btn:hover {
+  background: #F4F4F5;
+  border-color: #D4D4D8;
+}
+
+.squad-action-btn.btn-pay {
+  background: #09090B;
+  border-color: #09090B;
+  color: #FFFFFF;
+}
+
+.squad-action-btn.btn-pay:hover {
+  background: #27272A;
+}
+
+.squad-action-btn.btn-login {
+  background: #EFF6FF;
+  border-color: #BFDBFE;
+  color: #1D4ED8;
+}
+
+.squad-action-btn.btn-login:hover {
+  background: #DBEAFE;
+}
+
+.squad-action-btn.btn-override {
+  background: #F8FAFC;
+  border-color: #E2E8F0;
+  color: #334155;
+}
+
+.squad-action-btn.btn-remind {
+  background: #FFFBEB;
+  border-color: #FDE68A;
+  color: #B45309;
+}
+
+.squad-action-btn.btn-remind:hover {
+  background: #FEF3C7;
+}

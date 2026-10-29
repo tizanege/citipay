@@ -36,7 +36,7 @@ export default function AdminDashboard() {
             <span className="badge badge-secondary text-xs font-semibold">Super Admin Authority</span>
           </div>
           <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">League Operations & Governance</h1>
-          <p className="text-xs text-slate-500 mt-1">Cross-club payment ledgers, member eligibility clearance, and automated Paystack audit trails</p>
+          <p className="text-xs text-slate-500 mt-1">Cross-club payment ledgers and member eligibility clearance</p>
         </div>
         <div className="flex gap-2.5 flex-wrap">
           <button
@@ -51,14 +51,11 @@ export default function AdminDashboard() {
           >
             <Sliders size={15} /> Configure League Rules
           </button>
-          <button className="btn btn-primary flex items-center gap-2 text-xs font-semibold" onClick={() => window.print()}>
-            <Download size={15} /> Export Audit Log
-          </button>
         </div>
       </div>
 
       {/* Quick Governance Links */}
-      <div className="grid-5 mb-6">
+      <div className="grid-4 mb-6">
         <button
           className="card p-3 text-left hover:border-slate-300 transition-all cursor-pointer group"
           onClick={() => navigate('/admin/clubs')}
@@ -93,18 +90,6 @@ export default function AdminDashboard() {
           </div>
           <div className="font-bold text-xs text-slate-900">Paystack Revenue</div>
           <div className="text-3xs text-slate-500 font-medium">₦{adminMetrics.collectedRevenue.toLocaleString()} Volume</div>
-        </button>
-
-        <button
-          className="card p-3 text-left hover:border-slate-300 transition-all cursor-pointer group"
-          onClick={() => navigate('/admin/audit')}
-        >
-          <div className="flex items-center justify-between mb-1">
-            <Shield size={18} className="text-amber-600" />
-            <ArrowRight size={13} className="text-slate-300 group-hover:text-amber-600 transition-colors" />
-          </div>
-          <div className="font-bold text-xs text-slate-900">Master Audit Log</div>
-          <div className="text-3xs text-slate-500 font-medium">{auditLogs.length} Verified Events</div>
         </button>
 
         <button
@@ -195,80 +180,47 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* 2-Column: Clubs Summary & Realtime Audit Trail */}
-      <div className="grid-2 mb-6">
-        <div className="card">
-          <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
-            <div>
-              <h3 className="section-title">Affiliated League Clubs</h3>
-              <p className="text-xs text-slate-500 mt-0.5">Active clubs licensed for 2026/27 Championship</p>
-            </div>
-            <button
-              className="text-xs font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1 cursor-pointer"
-              onClick={() => navigate('/admin/clubs')}
-            >
-              <span>View All</span>
-              <ArrowRight size={13} />
-            </button>
+      {/* Affiliated League Clubs Summary */}
+      <div className="card mb-6">
+        <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+          <div>
+            <h3 className="section-title">Affiliated League Clubs</h3>
+            <p className="text-xs text-slate-500 mt-0.5">Active clubs licensed for 2026/27 Championship</p>
           </div>
-
-          <div className="flex flex-col gap-3">
-            {clubs.map(c => (
-              <div key={c.id} className="club-overview-row">
-                <div className="flex items-center gap-3 min-w-0">
-                  <img
-                    src={c.logo_url}
-                    alt={c.name}
-                    className="club-logo-thumb"
-                    onError={(e) => {
-                      e.currentTarget.onerror = null
-                      e.currentTarget.src = '/crests/sunday-league-fc.svg'
-                    }}
-                  />
-                  <div className="min-w-0">
-                    <div className="font-bold text-slate-900 text-sm truncate">{c.name}</div>
-                    <div className="text-xs text-slate-500 truncate">{c.stadium} · {c.city}</div>
-                  </div>
-                </div>
-
-                <div className="text-right flex-shrink-0 ml-3">
-                  <div className="font-bold text-emerald-600 font-mono text-sm whitespace-nowrap">Fee: ₦{c.membership_fee.toLocaleString()}</div>
-                  <div className="text-xs text-slate-500 font-medium whitespace-nowrap">Dues: ₦{c.monthly_social_dues.toLocaleString()}/mo</div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <button
+            className="text-xs font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1 cursor-pointer"
+            onClick={() => navigate('/admin/clubs')}
+          >
+            <span>View All</span>
+            <ArrowRight size={13} />
+          </button>
         </div>
 
-        <div className="card">
-          <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
-            <div>
-              <h3 className="section-title">Live Audit Trail & System Events</h3>
-              <p className="text-xs text-slate-500 mt-0.5">Realtime Paystack transactions & compliance logs</p>
-            </div>
-            <button
-              className="text-xs font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1 cursor-pointer"
-              onClick={() => navigate('/admin/audit')}
-            >
-              <span>View All</span>
-              <ArrowRight size={13} />
-            </button>
-          </div>
-
-          <div className="flex flex-col gap-3">
-            {auditLogs.slice(0, 5).map((log) => (
-              <div key={log.id} className="audit-stream-row">
-                <div className="min-w-0 flex-1">
-                  <div className="font-bold text-slate-900 text-sm">{log.action}</div>
-                  <div className="text-xs text-slate-500 mt-0.5 truncate">{log.target_name} · {log.reason}</div>
-                </div>
-                <div className="text-right flex-shrink-0 ml-3">
-                  <span className="text-3xs text-slate-400 font-mono block">{log.timestamp}</span>
-                  <div className="text-xs font-semibold text-emerald-600 mt-0.5">{log.actor_name}</div>
+        <div className="flex flex-col gap-3">
+          {clubs.map(c => (
+            <div key={c.id} className="club-overview-row">
+              <div className="flex items-center gap-3 min-w-0">
+                <img
+                  src={c.logo_url}
+                  alt={c.name}
+                  className="club-logo-thumb"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null
+                    e.currentTarget.src = '/crests/sunday-league-fc.svg'
+                  }}
+                />
+                <div className="min-w-0">
+                  <div className="font-bold text-slate-900 text-sm truncate">{c.name}</div>
+                  <div className="text-xs text-slate-500 truncate">{c.stadium} · {c.city}</div>
                 </div>
               </div>
-            ))}
-          </div>
+
+              <div className="text-right flex-shrink-0 ml-3">
+                <div className="font-bold text-emerald-600 font-mono text-sm whitespace-nowrap">Fee: ₦{c.membership_fee.toLocaleString()}</div>
+                <div className="text-xs text-slate-500 font-medium whitespace-nowrap">Dues: ₦{c.monthly_social_dues.toLocaleString()}/mo</div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 

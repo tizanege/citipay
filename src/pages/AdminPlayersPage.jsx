@@ -210,7 +210,7 @@ export default function AdminPlayersPage() {
                         <div>
                           <h4 className="player-grid-name">{player.full_name}</h4>
                           <p className="player-grid-sub">
-                            {player.nickname ? `"${player.nickname}" · ` : ''}Jersey #{player.jersey_number || '10'}
+                            {player.nickname && player.nickname.trim().toLowerCase() !== (player.full_name || '').trim().toLowerCase() ? `"${player.nickname}" · ` : ''}Jersey #{player.jersey_number || '10'}
                           </p>
                         </div>
                       </div>
@@ -245,13 +245,13 @@ export default function AdminPlayersPage() {
                       <div className="finance-col">
                         <span className="finance-lbl">Total Settled</span>
                         <span className="finance-val text-emerald-700 font-mono">
-                          ₦{(player.membership_paid || 100000).toLocaleString()}
+                          ₦{Number(player.membership_paid ?? 0).toLocaleString()}
                         </span>
                       </div>
                       <div className="finance-col text-right">
                         <span className="finance-lbl">Outstanding</span>
                         <span className={`finance-val font-mono ${player.membership_outstanding > 0 ? 'text-rose-600' : 'text-slate-400'}`}>
-                          ₦{(player.membership_outstanding || 0).toLocaleString()}
+                          ₦{Number(player.membership_outstanding ?? 0).toLocaleString()}
                         </span>
                       </div>
                     </div>
@@ -355,7 +355,7 @@ export default function AdminPlayersPage() {
                             <div>
                               <div className="font-extrabold text-slate-900 text-xs">{player.full_name}</div>
                               <div className="text-3xs text-slate-500 font-medium">
-                                {player.nickname ? `"${player.nickname}" · ` : ''}Jersey #{player.jersey_number || '10'}
+                                {player.nickname && player.nickname.trim().toLowerCase() !== (player.full_name || '').trim().toLowerCase() ? `"${player.nickname}" · ` : ''}Jersey #{player.jersey_number || '10'}
                               </div>
                             </div>
                           </div>
@@ -390,13 +390,13 @@ export default function AdminPlayersPage() {
 
                         <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
                           <span className="font-mono text-xs font-bold text-emerald-700">
-                            ₦{(player.membership_paid || 100000).toLocaleString()}
+                            ₦{Number(player.membership_paid ?? 0).toLocaleString()}
                           </span>
                         </td>
 
                         <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
                           <span className={`font-mono text-xs font-bold ${player.membership_outstanding > 0 ? 'text-rose-600' : 'text-slate-400'}`}>
-                            ₦{(player.membership_outstanding || 0).toLocaleString()}
+                            ₦{Number(player.membership_outstanding ?? 0).toLocaleString()}
                           </span>
                         </td>
 
