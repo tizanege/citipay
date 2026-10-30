@@ -43,8 +43,10 @@ export default function PlayerDashboard() {
   const nextPaymentAmount = Number(member.next_payment_amount ?? (membershipOutstanding > 0 ? Math.min(installmentAmount, membershipOutstanding) : 0))
 
   // Recent transactions for this player
-  const memberTxs = (transactions || []).filter(
-    tx => tx?.member_id === member.member_id || tx?.member_name === member.full_name
+  const memberTxs = (transactions || []).filter(tx =>
+    (tx?.user_id && member.id && tx.user_id === member.id) ||
+    (tx?.member_id && member.member_id && tx.member_id.toLowerCase() === member.member_id.toLowerCase()) ||
+    (tx?.member_name && member.full_name && tx.member_name.toLowerCase().includes(member.full_name.toLowerCase()))
   ).slice(0, 4)
 
   // Unregistered Guests (Extra people @ ₦10,000 each)
@@ -84,7 +86,7 @@ export default function PlayerDashboard() {
   const dayOfWeek = today.getDay() // 0 = Sunday, 1 = Monday, etc.
   const daysToSunday = dayOfWeek === 0 ? 0 : (7 - dayOfWeek)
   const nextGameweek = currentClub?.current_matchday || 14
-  const seasonProgressPct = Math.min(100, Math.round(((currentClub?.current_matchday || 14) / (currentClub?.total_matchdays || 38)) * 100))
+  const seasonProgressPct = Math.min(100, Math.round(((currentClub?.current_matchday || 14) / (currentClub?.total_matchdays || 16)) * 100))
 
   return (
     <div className="portal-dashboard-wrapper">
@@ -142,7 +144,7 @@ export default function PlayerDashboard() {
       {/* TIMELINE / SEASON PROGRESS BAR */}
       <div className="superpower-timeline-card mb-4">
         <div className="sp-timeline-track">
-          <span className="sp-timeline-month">Matchday {currentClub?.current_matchday || 14} of {currentClub?.total_matchdays || 38}</span>
+          <span className="sp-timeline-month">Matchday {currentClub?.current_matchday || 14} of {currentClub?.total_matchdays || 16}</span>
           <div className="sp-timeline-dots">
             <span className="sp-tl-dot done" />
             <span className="sp-tl-dot done" />
@@ -159,7 +161,7 @@ export default function PlayerDashboard() {
         </div>
       </div>
 
-      {/* DUAL GLOWING HERO CARDS (Dynamic Clearance & Matchday Readiness) */}
+      {/* DUAL GLOWING HERO CARDS (Dynamic Clearance & Upcoming Fixture Window) */}
       <div className="superpower-hero-grid mb-6">
         {/* Card 1: Dynamic Clearance Score */}
         <div className={`sp-hero-card ${isRed ? 'sp-hero-danger' : isYellow ? 'sp-hero-warning' : 'sp-hero-green'}`}>
@@ -187,28 +189,7 @@ export default function PlayerDashboard() {
           </div>
         </div>
 
-        {/* Card 2: Matchday Readiness / Performance Age */}
-        <div className="sp-hero-card sp-hero-amber">
-          <div className="sp-hero-card-header">
-            <span className="sp-hero-label">Matchday Peak Index</span>
-          </div>
-          <div className="sp-hero-body">
-            <div className="sp-hero-big-number sp-dot-matrix">
-              {matchdayPeakIndex}
-            </div>
-            <div className="sp-hero-status-pill amber">
-              {peakIndexDesc}
-            </div>
-          </div>
-          {/* Vertical gauge ruler */}
-          <div className="sp-hero-gauge-ruler">
-            {Array.from({ length: 24 }).map((_, i) => (
-              <span key={i} className={`gauge-tick ${i === Math.round((clearanceScore / 100) * 23) ? 'active-tick' : ''}`} />
-            ))}
-          </div>
-        </div>
-
-        {/* Card 3: Dynamic Upcoming Fixture Window */}
+        {/* Card 2: Dynamic Upcoming Fixture Window */}
         <div className="sp-pending-kit-card">
           <div className="flex justify-between items-start mb-2">
             <span className="text-xs font-medium text-slate-500">Upcoming Fixture Window</span>

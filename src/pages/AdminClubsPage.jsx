@@ -2,17 +2,19 @@ import { useState } from 'react'
 import {
   Building2, ShieldCheck, Plus, Search, Filter, MapPin,
   Users, DollarSign, Award, ArrowUpRight, CheckCircle2, Sliders, ExternalLink,
-  Trash2
+  Trash2, Edit3
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
 import DeleteClubModal from '../components/modals/DeleteClubModal'
 import LicenseClubModal from '../components/modals/LicenseClubModal'
+import EditClubModal from '../components/modals/EditClubModal'
 import './AdminDashboard.css'
 
 export default function AdminClubsPage() {
-  const { clubs, members, transactions, setRulesConfigModalState, setSelectedClubId, leagueSettings, addClub, deleteClub } = useCitiPay()
+  const { clubs, members, transactions, setRulesConfigModalState, setSelectedClubId, leagueSettings, addClub, deleteClub, updateClubDetails } = useCitiPay()
   const [searchTerm, setSearchTerm] = useState('')
   const [deleteModalState, setDeleteModalState] = useState({ isOpen: false, club: null })
+  const [editModalState, setEditModalState] = useState({ isOpen: false, club: null })
   const [licenseModalOpen, setLicenseModalOpen] = useState(false)
 
   const filteredClubs = clubs.filter(c =>
@@ -30,6 +32,10 @@ export default function AdminClubsPage() {
   const handleOpenClubRules = (clubId) => {
     setSelectedClubId(clubId)
     setRulesConfigModalState({ isOpen: true })
+  }
+
+  const handleUpdateClub = async (clubId, details) => {
+    await updateClubDetails(clubId, details, 'TIZA NEGE (Super Admin)')
   }
 
   const handleDeleteClub = async (clubId) => {
@@ -197,6 +203,14 @@ export default function AdminClubsPage() {
               {/* Action Buttons */}
               <div className="club-card-actions">
                 <button
+                  className="btn btn-secondary text-xs py-2 px-2.5 font-bold flex items-center justify-center gap-1"
+                  onClick={() => setEditModalState({ isOpen: true, club })}
+                  title={`Edit details, stadium, colors and identity for ${club.name}`}
+                >
+                  <Edit3 size={12} className="text-blue-600" />
+                  <span>Edit</span>
+                </button>
+                <button
                   className="btn btn-secondary flex-1 text-xs py-2 font-bold flex items-center justify-center gap-1.5"
                   onClick={() => handleOpenClubRules(club.id)}
                   title="Configure club dues, membership fees and eligibility rules"
@@ -232,6 +246,14 @@ export default function AdminClubsPage() {
         club={deleteModalState.club}
         onClose={() => setDeleteModalState({ isOpen: false, club: null })}
         onConfirm={handleDeleteClub}
+      />
+
+      {/* Edit Club Details Modal */}
+      <EditClubModal
+        isOpen={editModalState.isOpen}
+        club={editModalState.club}
+        onClose={() => setEditModalState({ isOpen: false, club: null })}
+        onClubUpdated={handleUpdateClub}
       />
 
       {/* License New Club Modal */}

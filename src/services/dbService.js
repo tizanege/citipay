@@ -62,24 +62,23 @@ export const dbService = {
     if (error) throw error
     return (data || []).map(c => {
       const isPrimary = c.slug === 'ikoyi-sunday-league' || c.slug === 'sunday-league-fc' || c.code === 'ISL' || c.code === 'SLFC' || c.id === '11111111-1111-1111-1111-111111111111'
-      const base = {
+      return {
         ...c,
         name: isPrimary && c.name === 'Sunday League FC' ? 'Ikoyi Sunday League' : (c.name || 'Ikoyi Sunday League'),
-        code: isPrimary ? 'ISL' : c.code,
-        slug: isPrimary ? 'ikoyi-sunday-league' : c.slug,
+        code: c.code || (isPrimary ? 'ISL' : 'CLUB'),
+        slug: c.slug || (isPrimary ? 'ikoyi-sunday-league' : 'club'),
+        stadium: c.stadium || 'Campos Memorial Mini Stadium, Lagos Island',
+        city: c.city || 'Lagos',
+        country: c.country || 'Nigeria',
+        founded_year: c.founded_year || 2021,
+        primary_color: c.primary_color || (isPrimary ? '#2563EB' : '#2563EB'),
+        secondary_color: c.secondary_color || (isPrimary ? '#DC2626' : '#DC2626'),
+        accent_color: c.accent_color || '#FFFFFF',
+        logo_url: c.logo_url || '/crests/sunday-league-fc.svg',
         membership_fee: Number(c.membership_fee || 100000),
         monthly_social_dues: Number(c.monthly_social_dues || 5000),
         max_installments: Number(c.max_installments || 2)
       }
-      if (isPrimary) {
-        return {
-          ...base,
-          primary_color: '#2563EB',
-          secondary_color: '#DC2626',
-          accent_color: '#FFFFFF'
-        }
-      }
-      return base
     })
   },
 
@@ -296,6 +295,7 @@ export const dbService = {
 
     return (data || []).map(tx => ({
       id: tx.id,
+      user_id: tx.user_id,
       date: tx.paid_at,
       date_display: new Date(tx.paid_at).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
       description: tx.description,
@@ -532,6 +532,49 @@ export const dbService = {
     return data
   },
 
+  async updateClubDetails(clubId, details = {}, adminName = 'Administrator') {
+    const payload = {
+      updated_at: new Date().toISOString()
+    }
+    if (details.name !== undefined) payload.name = details.name.trim()
+    if (details.code !== undefined) payload.code = details.code.trim().toUpperCase()
+    if (details.stadium !== undefined) payload.stadium = details.stadium.trim()
+    if (details.city !== undefined) payload.city = details.city.trim()
+    if (details.country !== undefined) payload.country = details.country.trim()
+    if (details.founded_year !== undefined) payload.founded_year = Number(details.founded_year)
+    if (details.primary_color !== undefined) payload.primary_color = details.primary_color
+    if (details.secondary_color !== undefined) payload.secondary_color = details.secondary_color
+    if (details.accent_color !== undefined) payload.accent_color = details.accent_color
+    if (details.logo_url !== undefined) payload.logo_url = details.logo_url
+    if (details.membership_fee !== undefined) payload.membership_fee = Number(details.membership_fee)
+    if (details.monthly_social_dues !== undefined) payload.monthly_social_dues = Number(details.monthly_social_dues)
+    if (details.max_installments !== undefined) payload.max_installments = Number(details.max_installments)
+
+    try {
+      const { data, error } = await supabase
+        .from('clubs')
+        .update(payload)
+        .eq('id', clubId)
+        .select()
+        .maybeSingle()
+
+      if (error) console.warn('Supabase clubs update warning:', error.message)
+
+      await this.insertAuditLog({
+        actorName: adminName,
+        actorRole: 'Club Executive',
+        action: 'CLUB_DETAILS_UPDATED',
+        reason: `Club profile updated: ${payload.name || clubId}`,
+        details: payload
+      })
+
+      return data
+    } catch (e) {
+      console.warn('dbService.updateClubDetails error:', e.message)
+      return null
+    }
+  },
+
   async updateClubFees(clubId, { membership_fee, monthly_social_dues, max_installments = 2 }, adminName = 'Administrator') {
     const payload = {
       membership_fee: Number(membership_fee),
@@ -563,6 +606,201 @@ export const dbService = {
       console.warn('dbService.updateClubFees error:', e.message)
       return null
     }
+  },
+
+  /**
+   * Registers a new player in Supabase (profiles, players, payment_plans)
+   */
+  async registerPlayer({
+    id,
+    memberId,
+    fullName,
+    nickname,
+    email,
+    phone,
+    clubId,
+    jerseyNumber,
+    position,
+    membershipFee = 100000,
+    amountPaid = 0,
+    eligibilityStatus = 'green'
+  }, adminName = 'Administrator') {
+    const profilePayload = {
+      member_id: memberId,
+      full_name: fullName.trim(),
+      nickname: (nickname || fullName.split(' ')[0]).trim(),
+      email: email.trim().toLowerCase(),
+      phone: phone ? phone.trim() : null,
+      club_id: clubId,
+      role: 'member',
+      eligibility_status: eligibilityStatus,
+      account_status: 'active',
+      date_joined: new Date().toISOString().split('T')[0],
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }
+    if (id) profilePayload.id = id
+
+    // 1. Insert into public.profiles
+    const { data: newProfile, error: profError } = await supabase
+      .from('profiles')
+      .insert(profilePayload)
+      .select()
+      .single()
+
+    if (profError) {
+      console.warn('Supabase profile insertion error:', profError.message)
+      throw profError
+    }
+
+    const userId = newProfile.id
+
+    // 2. Insert into public.players dossier
+    const { error: playError } = await supabase
+      .from('players')
+      .insert({
+        user_id: userId,
+        jersey_number: parseInt(jerseyNumber, 10) || null,
+        primary_position: position || 'CAM',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+
+    if (playError) {
+      console.warn('Supabase players insertion warning:', playError.message)
+    }
+
+    // 3. Create initial payment plan
+    const total = Number(membershipFee)
+    const paid = Number(amountPaid)
+    const status = paid >= total ? 'fully_paid' : (paid > 0 ? 'partially_paid' : 'unpaid')
+
+    const { error: planError } = await supabase
+      .from('payment_plans')
+      .insert({
+        user_id: userId,
+        club_id: clubId,
+        season: '2026/2027',
+        title: '2026 Membership Subscription',
+        total_amount: total,
+        amount_paid: paid,
+        status: status,
+        next_due_date: '2026-11-30',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+
+    if (planError) {
+      console.warn('Supabase payment plan insertion warning:', planError.message)
+    }
+
+    // 4. Record audit log
+    await this.insertAuditLog({
+      actorName: adminName,
+      actorRole: 'Administrator',
+      action: 'MEMBER_REGISTERED',
+      targetUserId: userId,
+      targetMemberId: memberId,
+      targetName: fullName,
+      reason: `Registered new player ${fullName} with Member ID ${memberId}`,
+      details: { memberId, fullName, email, clubId, position, jerseyNumber }
+    })
+
+    return newProfile
+  },
+
+  /**
+   * Deletes / Removes a player from the system
+   */
+  async deletePlayer(userId, targetMemberId, targetName, adminName = 'Super Admin') {
+    // Delete profile (cascades to players, payment_plans, etc.)
+    const { error } = await supabase
+      .from('profiles')
+      .delete()
+      .eq('id', userId)
+
+    if (error) {
+      console.warn('Supabase player deletion error:', error.message)
+      throw error
+    }
+
+    // Record audit log
+    await this.insertAuditLog({
+      actorName: adminName,
+      actorRole: 'Administrator',
+      action: 'MEMBER_DELETED',
+      targetUserId: userId,
+      targetMemberId,
+      targetName,
+      reason: `Removed player ${targetName} (${targetMemberId}) from federation registry`,
+      details: { userId, targetMemberId, targetName }
+    })
+
+    return true
+  },
+
+  /**
+   * Updates an existing player's profile and tactical dossier
+   */
+  async updatePlayerProfile(userId, {
+    fullName,
+    nickname,
+    phone,
+    jerseyNumber,
+    position,
+    clubId
+  }, adminName = 'Super Admin') {
+    const profileUpdates = {
+      updated_at: new Date().toISOString()
+    }
+    if (fullName !== undefined) profileUpdates.full_name = fullName.trim()
+    if (nickname !== undefined) profileUpdates.nickname = nickname.trim()
+    if (phone !== undefined) profileUpdates.phone = phone.trim()
+    if (clubId !== undefined) profileUpdates.club_id = clubId
+
+    // 1. Update profiles table
+    const { data: updatedProfile, error: profError } = await supabase
+      .from('profiles')
+      .update(profileUpdates)
+      .eq('id', userId)
+      .select()
+      .maybeSingle()
+
+    if (profError) {
+      console.warn('Supabase profiles update warning:', profError.message)
+      throw profError
+    }
+
+    // 2. Upsert/Update players table
+    if (jerseyNumber !== undefined || position !== undefined) {
+      const playerUpdates = {
+        user_id: userId,
+        updated_at: new Date().toISOString()
+      }
+      if (jerseyNumber !== undefined) playerUpdates.jersey_number = parseInt(jerseyNumber, 10) || null
+      if (position !== undefined) playerUpdates.primary_position = position
+
+      const { error: playError } = await supabase
+        .from('players')
+        .upsert(playerUpdates, { onConflict: 'user_id' })
+
+      if (playError) {
+        console.warn('Supabase players update warning:', playError.message)
+      }
+    }
+
+    // 3. Log to audit trail
+    await this.insertAuditLog({
+      actorName: adminName,
+      actorRole: 'Administrator',
+      action: 'MEMBER_UPDATED',
+      targetUserId: userId,
+      targetName: fullName,
+      reason: `Updated player profile & tactical details: ${fullName} (Kit #${jerseyNumber || 'N/A'}, Pos: ${position || 'N/A'})`,
+      details: { fullName, nickname, phone, jerseyNumber, position, clubId }
+    })
+
+    return updatedProfile
   },
 
   // ── 7. MATCHDAY AVAILABILITY ─────────────────────────────────────────────

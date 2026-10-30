@@ -22,7 +22,7 @@ export const initialClubs = [
     monthly_social_dues: 5000,
     max_installments: 2,
     current_matchday: 14,
-    total_matchdays: 38,
+    total_matchdays: 16,
     status: 'active'
   }
 ]
@@ -30,6 +30,7 @@ export const initialClubs = [
 export const initialClubRules = {
   club_id: '11111111-1111-1111-1111-111111111111',
   current_matchday: 14,
+  total_matchdays: 16,
   green_max_balance: 0,
   yellow_max_balance: 20000,
   yellow_due_days_window: 14,
@@ -64,7 +65,7 @@ export const initialAvailability = {
 // Global League & Apparel Settings
 export const initialLeagueSettings = {
   current_matchday: 14,
-  total_matchdays: 38,
+  total_matchdays: 16,
   season_title: 'Championship 2026/27',
   competition_name: 'Citi Football Premier Championship',
   jersey_price: 18000,

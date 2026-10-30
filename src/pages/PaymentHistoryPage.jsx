@@ -8,13 +8,22 @@ import Pagination from '../components/Pagination'
 import './PaymentHistoryPage.css'
 
 export default function PaymentHistoryPage() {
-  const { transactions, currentMember, setReceiptModalState } = useCitiPay()
+  const { transactions, currentMember, currentRole, setReceiptModalState } = useCitiPay()
   const [searchTerm, setSearchTerm] = useState('')
   const [filterType, setFilterType] = useState('all')
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
 
-  const filteredTransactions = transactions.filter(tx => {
+  // For player view, scope to current player's transactions
+  const userTransactions = (currentRole === 'member' && currentMember)
+    ? transactions.filter(tx =>
+        (tx.user_id && currentMember.id && tx.user_id === currentMember.id) ||
+        (tx.member_id && currentMember.member_id && tx.member_id.toLowerCase() === currentMember.member_id.toLowerCase()) ||
+        (tx.member_name && currentMember.full_name && tx.member_name.toLowerCase().includes(currentMember.full_name.toLowerCase()))
+      )
+    : transactions
+
+  const filteredTransactions = userTransactions.filter(tx => {
     const matchesSearch =
       tx.reference.toLowerCase().includes(searchTerm.toLowerCase()) ||
       tx.description.toLowerCase().includes(searchTerm.toLowerCase()) ||

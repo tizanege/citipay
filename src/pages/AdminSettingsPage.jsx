@@ -39,14 +39,14 @@ export default function AdminSettingsPage() {
       membership_fee: Number(seasonFee),
       monthly_social_dues: Number(socialDues),
       max_installments: 2,
-      adminName: 'Chief Segun Adeleke (Super Admin)'
+      adminName: 'TIZA NEGE (Super Admin)'
     })
 
     updateLeagueSettings({
       current_matchday: Number(matchday),
       jersey_price: Number(jerseyPrice),
       bib_price: Number(bibPrice),
-      adminName: 'Chief Segun Adeleke (Super Admin)'
+      adminName: 'TIZA NEGE (Super Admin)'
     })
 
     setSavedSuccess(true)
@@ -54,7 +54,7 @@ export default function AdminSettingsPage() {
   }
 
   const stepMatchday = (delta) => {
-    setMatchday(prev => Math.max(1, Math.min(38, Number(prev) + delta)))
+    setMatchday(prev => Math.max(1, Math.min(16, Number(prev) + delta)))
   }
 
   return (
@@ -111,7 +111,7 @@ export default function AdminSettingsPage() {
               <div>
                 <span className="text-3xs font-bold uppercase tracking-wider text-slate-500 block">Active League Gameweek</span>
                 <div className="text-xl font-extrabold font-mono text-slate-900 mt-0.5">
-                  Gameweek {matchday} <span className="text-xs font-normal text-slate-400">of 38</span>
+                  Gameweek {matchday} <span className="text-xs font-normal text-slate-400">of 16</span>
                 </div>
               </div>
               <span className="badge badge-primary font-mono font-bold text-xs py-1 px-2.5 border-0">
@@ -122,7 +122,7 @@ export default function AdminSettingsPage() {
             {/* Stepper Controls */}
             <div>
               <label className="block text-2xs font-bold uppercase tracking-wider text-slate-500 mb-2">
-                SET CURRENT MATCHDAY (1 – 38)
+                SET CURRENT MATCHDAY (1 – 16)
               </label>
               <div className="flex items-center gap-2">
                 <button
@@ -140,19 +140,19 @@ export default function AdminSettingsPage() {
                   <input
                     type="number"
                     min="1"
-                    max="38"
+                    max="16"
                     value={matchday}
-                    onChange={(e) => setMatchday(Math.max(1, Math.min(38, Number(e.target.value) || 1)))}
+                    onChange={(e) => setMatchday(Math.max(1, Math.min(16, Number(e.target.value) || 1)))}
                     className="w-full bg-transparent font-mono font-extrabold text-base text-slate-900 focus:outline-none text-center"
                   />
-                  <span className="text-3xs text-slate-400 font-semibold uppercase ml-2 select-none whitespace-nowrap">/ 38</span>
+                  <span className="text-3xs text-slate-400 font-semibold uppercase ml-2 select-none whitespace-nowrap">/ 16</span>
                 </div>
 
                 <button
                   type="button"
                   className="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-700 font-bold transition-all active:scale-95 disabled:opacity-40 disabled:pointer-events-none cursor-pointer border-0"
                   onClick={() => stepMatchday(1)}
-                  disabled={matchday >= 38}
+                  disabled={matchday >= 16}
                   title="Next Gameweek"
                 >
                   <Plus size={15} />
@@ -162,7 +162,7 @@ export default function AdminSettingsPage() {
                   type="button"
                   className="btn btn-secondary text-xs font-bold py-2.5 px-3.5 rounded-xl whitespace-nowrap border-0 bg-slate-100 hover:bg-slate-200"
                   onClick={() => stepMatchday(1)}
-                  disabled={matchday >= 38}
+                  disabled={matchday >= 16}
                 >
                   Advance +1
                 </button>
@@ -171,7 +171,7 @@ export default function AdminSettingsPage() {
               {/* Quick Gameweek Selector */}
               <div className="flex items-center gap-1.5 mt-3 flex-wrap">
                 <span className="text-3xs text-slate-400 font-bold uppercase tracking-wider">Quick Jumps:</span>
-                {[1, 10, 14, 15, 19, 38].map(gw => (
+                {[1, 4, 8, 12, 14, 15, 16].map(gw => (
                   <button
                     key={gw}
                     type="button"
@@ -465,28 +465,28 @@ export default function AdminSettingsPage() {
         <div className="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
           <div>
             <h3 className="section-title text-base font-extrabold text-slate-900">FEDERATION GOVERNANCE OFFICERS</h3>
-            <p className="text-xs text-slate-500">Super Admin authorization holders</p>
+            <p className="text-xs text-slate-500">Super Admin authorization holders & Executive Leadership</p>
           </div>
           <span className="badge badge-accent font-bold text-xs">Authority Level 1</span>
         </div>
 
         <div className="grid-3">
           <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50">
-            <div className="font-extrabold text-slate-900 text-xs">Chief Segun Adeleke</div>
-            <div className="text-3xs text-emerald-700 font-semibold mb-2">Federation President</div>
-            <div className="text-3xs text-slate-500 font-mono">ID: FED-SUP-001 · Full Override Authority</div>
+            <div className="font-extrabold text-slate-900 text-xs">TIZA NEGE</div>
+            <div className="text-3xs text-emerald-700 font-semibold mb-2">Super Admin</div>
+            <div className="text-3xs text-slate-500 font-mono">ID: FED-SUP-001 · Full Override & Governance Authority</div>
           </div>
 
           <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50">
-            <div className="font-extrabold text-slate-900 text-xs">Barr. Funke Oshodi</div>
-            <div className="text-3xs text-blue-700 font-semibold mb-2">Chief Legal & Compliance Officer</div>
-            <div className="text-3xs text-slate-500 font-mono">ID: FED-LEG-002 · Audit & Rules Governance</div>
+            <div className="font-extrabold text-slate-900 text-xs">ANWAR OIZA</div>
+            <div className="text-3xs text-blue-700 font-semibold mb-2">Super Admin</div>
+            <div className="text-3xs text-slate-500 font-mono">ID: FED-SUP-002 · Full Override & League Administration</div>
           </div>
 
           <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50">
-            <div className="font-extrabold text-slate-900 text-xs">Engr. Tolu Coker</div>
-            <div className="text-3xs text-purple-700 font-semibold mb-2">Head of League Operations</div>
-            <div className="text-3xs text-slate-500 font-mono">ID: FED-OPS-003 · Matchday Clearances</div>
+            <div className="font-extrabold text-slate-900 text-xs">ATILOLA ISMAIL</div>
+            <div className="text-3xs text-purple-700 font-semibold mb-2">Club President</div>
+            <div className="text-3xs text-slate-500 font-mono">ID: SL-PRES-001 · Club Executive Clearance</div>
           </div>
         </div>
       </div>

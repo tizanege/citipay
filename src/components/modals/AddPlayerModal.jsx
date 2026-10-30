@@ -18,6 +18,7 @@ export default function AddPlayerModal() {
     setAddPlayerModalState,
     registerMember,
     currentClub,
+    clubs,
     members
   } = useCitiPay()
 
@@ -27,6 +28,7 @@ export default function AddPlayerModal() {
   const [phone, setPhone] = useState('')
   const [position, setPosition] = useState('CAM')
   const [jerseyNumber, setJerseyNumber] = useState('17')
+  const [selectedClubId, setSelectedClubId] = useState('')
   const [paymentType, setPaymentType] = useState('installment')
   const [generatedMemberId, setGeneratedMemberId] = useState('')
   const [tempPassword, setTempPassword] = useState('')
@@ -61,13 +63,14 @@ export default function AddPlayerModal() {
 
   useEffect(() => {
     if (addPlayerModalState.isOpen) {
+      setSelectedClubId(addPlayerModalState.clubId || currentClub?.id || (clubs[0]?.id || ''))
       rerollCredentials()
       setIsSuccess(false)
       setIsSubmitting(false)
       setCopied(false)
       setShowEmailPreview(false)
     }
-  }, [addPlayerModalState.isOpen, currentClub])
+  }, [addPlayerModalState.isOpen, currentClub, clubs])
 
   if (!addPlayerModalState.isOpen) return null
 
@@ -98,24 +101,30 @@ Note: Change your temporary password upon your first sign in.`
 
     setIsSubmitting(true)
 
-    setTimeout(() => {
-      registerMember({
-        fullName,
-        nickname: nickname || fullName.split(' ')[0],
-        email,
-        phone,
-        primaryPosition: position,
-        jerseyNumber,
-        paymentType,
-        memberId: generatedMemberId,
-        tempPassword,
-        pin: accessPin,
-        sendEmail
-      })
+    setTimeout(async () => {
+      try {
+        await registerMember({
+          fullName,
+          nickname: nickname || fullName.split(' ')[0],
+          email,
+          phone,
+          primaryPosition: position,
+          jerseyNumber,
+          paymentType,
+          memberId: generatedMemberId,
+          tempPassword,
+          pin: accessPin,
+          sendEmail,
+          selectedClubId
+        })
 
-      setIsSubmitting(false)
-      setIsSuccess(true)
-    }, 600)
+        setIsSubmitting(false)
+        setIsSuccess(true)
+      } catch (err) {
+        console.error('Registration error:', err)
+        setIsSubmitting(false)
+      }
+    }, 400)
   }
 
   return (
@@ -350,6 +359,22 @@ Note: Change your temporary password upon your first sign in.`
                     onChange={(e) => setPhone(e.target.value)}
                   />
                 </div>
+              </div>
+
+              {/* Club Selection */}
+              <div>
+                <label className="form-label-portal">AFFILIATED CLUB</label>
+                <select
+                  className="form-input-portal text-xs font-semibold"
+                  value={selectedClubId}
+                  onChange={(e) => setSelectedClubId(e.target.value)}
+                >
+                  {clubs.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name} ({c.code})
+                    </option>
+                  ))}
+                </select>
               </div>
 
               {/* Tactical role & Jersey */}

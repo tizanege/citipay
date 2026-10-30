@@ -15,12 +15,19 @@ export default function RuleConfigModal() {
     updateClubFees,
     updateClubMatchday,
     currentClub,
-    leagueSettings
+    clubs,
+    setSelectedClubId,
+    leagueSettings,
+    currentRole
   } = useCitiPay()
 
-  const [clubMatchday, setClubMatchday] = useState(currentClub.current_matchday || leagueSettings.current_matchday || 14)
-  const [membershipFee, setMembershipFee] = useState(currentClub.membership_fee || 100000)
-  const [monthlyDues, setMonthlyDues] = useState(currentClub.monthly_social_dues || 5000)
+  const activeClub = rulesConfigModalState.club || currentClub
+  const [selectedClubForRules, setSelectedClubForRules] = useState(activeClub.id)
+  const targetClub = clubs.find(c => c.id === selectedClubForRules) || activeClub
+
+  const [clubMatchday, setClubMatchday] = useState(targetClub.current_matchday || leagueSettings.current_matchday || 14)
+  const [membershipFee, setMembershipFee] = useState(targetClub.membership_fee || 100000)
+  const [monthlyDues, setMonthlyDues] = useState(targetClub.monthly_social_dues || 5000)
   const [greenMax, setGreenMax] = useState(clubRules.green_max_balance || 0)
   const [yellowMax, setYellowMax] = useState(clubRules.yellow_max_balance || 20000)
   const [yellowDays, setYellowDays] = useState(clubRules.yellow_due_days_window || 14)
@@ -29,12 +36,14 @@ export default function RuleConfigModal() {
   const [requireSocialDues, setRequireSocialDues] = useState(clubRules.require_social_dues_current ?? true)
   const [isSaving, setIsSaving] = useState(false)
 
-  // Keep state synced when modal opens
+  // Keep state synced when modal opens or selected club changes
   useEffect(() => {
     if (rulesConfigModalState.isOpen) {
-      setClubMatchday(currentClub.current_matchday || leagueSettings.current_matchday || 14)
-      setMembershipFee(currentClub.membership_fee || 100000)
-      setMonthlyDues(currentClub.monthly_social_dues || 5000)
+      const c = rulesConfigModalState.club || targetClub || currentClub
+      setSelectedClubForRules(c.id)
+      setClubMatchday(c.current_matchday || leagueSettings.current_matchday || 14)
+      setMembershipFee(c.membership_fee || 100000)
+      setMonthlyDues(c.monthly_social_dues || 5000)
       setGreenMax(clubRules.green_max_balance || 0)
       setYellowMax(clubRules.yellow_max_balance || 20000)
       setYellowDays(clubRules.yellow_due_days_window || 14)
@@ -42,16 +51,27 @@ export default function RuleConfigModal() {
       setRedDays(clubRules.red_overdue_days_threshold || 14)
       setRequireSocialDues(clubRules.require_social_dues_current ?? true)
     }
-  }, [rulesConfigModalState.isOpen, currentClub, clubRules, leagueSettings])
+  }, [rulesConfigModalState.isOpen, rulesConfigModalState.club, currentClub, clubRules, leagueSettings])
+
+  const handleClubChange = (clubId) => {
+    setSelectedClubForRules(clubId)
+    setSelectedClubId(clubId)
+    const newTarget = clubs.find(c => c.id === clubId)
+    if (newTarget) {
+      setClubMatchday(newTarget.current_matchday || leagueSettings.current_matchday || 14)
+      setMembershipFee(newTarget.membership_fee || 100000)
+      setMonthlyDues(newTarget.monthly_social_dues || 5000)
+    }
+  }
 
   if (!rulesConfigModalState.isOpen) return null
 
   const handleClose = () => {
-    setRulesConfigModalState({ isOpen: false })
+    setRulesConfigModalState({ isOpen: false, club: null })
   }
 
   const stepMatchday = (delta) => {
-    setClubMatchday(prev => Math.max(1, Math.min(38, Number(prev) + delta)))
+    setClubMatchday(prev => Math.max(1, Math.min(16, Number(prev) + delta)))
   }
 
   const handleSave = (e) => {
@@ -59,12 +79,14 @@ export default function RuleConfigModal() {
     setIsSaving(true)
 
     setTimeout(() => {
+      const actorName = currentRole === 'super_admin' ? 'TIZA NEGE (Super Admin)' : 'ATILOLA ISMAIL (Club President)'
       updateClubFees({
-        clubId: currentClub.id,
+        clubId: targetClub.id,
         membership_fee: Number(membershipFee),
         monthly_social_dues: Number(monthlyDues),
         max_installments: 2,
-        current_matchday: Number(clubMatchday)
+        current_matchday: Number(clubMatchday),
+        adminName: actorName
       })
       updateClubRules({
         current_matchday: Number(clubMatchday),
@@ -76,7 +98,7 @@ export default function RuleConfigModal() {
         require_social_dues_current: requireSocialDues
       })
       if (updateClubMatchday) {
-        updateClubMatchday(currentClub.id, Number(clubMatchday), 'Club Administrator')
+        updateClubMatchday(targetClub.id, Number(clubMatchday), actorName)
       }
       setIsSaving(false)
       handleClose()
@@ -93,10 +115,15 @@ export default function RuleConfigModal() {
               <span className="badge badge-primary text-xs font-bold flex items-center gap-1">
                 <Sliders size={12} /> Club Governance Engine
               </span>
+              {currentRole === 'super_admin' && (
+                <span className="badge badge-accent text-3xs font-bold font-mono">
+                  Super Admin
+                </span>
+              )}
             </div>
             <h2 className="modal-title-portal">Configure Eligibility Thresholds</h2>
             <p className="text-xs text-slate-500">
-              Customize financial rules and threshold cutoffs for <strong>{currentClub.name}</strong>
+              Customize financial rules and threshold cutoffs for <strong>{targetClub.name}</strong>
             </p>
           </div>
           <button className="modal-close-btn" onClick={handleClose}>
@@ -106,6 +133,24 @@ export default function RuleConfigModal() {
 
         {/* Form (Item 5 Requirement) */}
         <form onSubmit={handleSave} className="modal-body-portal flex flex-col gap-4">
+          {/* Super Admin Club Selector */}
+          {currentRole === 'super_admin' && clubs.length > 1 && (
+            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <label className="form-label-portal">SELECT CLUB FOR RULES CONFIGURATION</label>
+              <select
+                className="form-input-portal font-bold text-xs"
+                value={selectedClubForRules}
+                onChange={(e) => handleClubChange(e.target.value)}
+              >
+                {clubs.map(c => (
+                  <option key={c.id} value={c.id}>
+                    {c.name} ({c.code}) · Active GW {c.current_matchday || 14}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
           {/* Club Active Gameweek / Matchday Configuration */}
           <div className="rule-config-block" style={{ background: '#f0fdf4', borderColor: '#86efac' }}>
             <div className="rule-config-header">
@@ -116,7 +161,7 @@ export default function RuleConfigModal() {
                 </strong>
               </div>
               <span className="badge badge-success text-3xs font-black font-mono">
-                GW {clubMatchday} of 38
+                GW {clubMatchday} of 16
               </span>
             </div>
 
@@ -124,7 +169,7 @@ export default function RuleConfigModal() {
               <div className="flex items-center justify-between text-xs">
                 <div>
                   <span className="text-slate-800 font-bold block">Tournament Gameweek / Round:</span>
-                  <span className="text-3xs text-slate-500">Sets the active fixture round for {currentClub.name} clearance</span>
+                  <span className="text-3xs text-slate-500">Sets the active fixture round for {targetClub.name} clearance</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <button
@@ -140,10 +185,10 @@ export default function RuleConfigModal() {
                     <input
                       type="number"
                       min="1"
-                      max="38"
+                      max="16"
                       className="rule-input-field font-mono font-extrabold text-center text-xs py-1 px-2 w-14"
                       value={clubMatchday}
-                      onChange={(e) => setClubMatchday(Math.max(1, Math.min(38, Number(e.target.value) || 1)))}
+                      onChange={(e) => setClubMatchday(Math.max(1, Math.min(16, Number(e.target.value) || 1)))}
                       required
                     />
                   </div>
@@ -151,7 +196,7 @@ export default function RuleConfigModal() {
                     type="button"
                     className="w-7 h-7 rounded border border-slate-300 bg-white hover:bg-slate-100 flex items-center justify-center text-slate-700 font-bold transition-colors cursor-pointer"
                     onClick={() => stepMatchday(1)}
-                    disabled={clubMatchday >= 38}
+                    disabled={clubMatchday >= 16}
                   >
                     <Plus size={13} />
                   </button>
@@ -161,7 +206,7 @@ export default function RuleConfigModal() {
               {/* Quick Jump Pills */}
               <div className="flex items-center gap-1.5 pt-1.5 border-t border-emerald-200/60 flex-wrap">
                 <span className="text-3xs text-emerald-800 font-bold uppercase tracking-wider">Quick Select:</span>
-                {[1, 5, 10, 14, 15, 16, 20, 38].map(gw => (
+                {[1, 4, 8, 12, 14, 15, 16].map(gw => (
                   <button
                     key={gw}
                     type="button"

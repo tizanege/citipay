@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   X, Landmark, Calendar, User, DollarSign, FileText,
   ShieldCheck, CheckCircle2, ArrowRight
@@ -21,21 +21,37 @@ export default function ManualPaymentModal() {
   const [selectedMemberId, setSelectedMemberId] = useState(defaultMember?.id || 'mem-001')
   const [amount, setAmount] = useState(String(defaultInst))
   const [paymentType, setPaymentType] = useState('membership_installment')
-  const [reference, setReference] = useState('BANK-12345')
-  const [paymentDate, setPaymentDate] = useState('September 28, 2026')
-  const [notes, setNotes] = useState('Direct bank transfer verified by President')
+  const [reference, setReference] = useState(`BANK-${Math.floor(10000 + Math.random() * 90000)}`)
+  const [paymentDate, setPaymentDate] = useState(new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }))
+  const [notes, setNotes] = useState('Direct bank transfer verified by Admin')
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Keep selection in sync when modal opens with a specific member
+  useEffect(() => {
+    if (manualPaymentModalState.isOpen) {
+      const activeMember = manualPaymentModalState.member || members[0]
+      if (activeMember) {
+        setSelectedMemberId(activeMember.id)
+        const inst = activeMember.membership_outstanding > 0
+          ? Math.min(Math.round((activeMember.membership_fee || 100000) / 2), activeMember.membership_outstanding)
+          : Math.round((activeMember.membership_fee || 100000) / 2)
+        setAmount(String(inst || 50000))
+        setReference(`BANK-${Math.floor(10000 + Math.random() * 90000)}`)
+        setPaymentDate(new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }))
+      }
+    }
+  }, [manualPaymentModalState.isOpen, manualPaymentModalState.member, members])
 
   if (!manualPaymentModalState.isOpen) return null
 
   const targetMember = members.find(m => m.id === selectedMemberId) || defaultMember
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setIsSubmitting(true)
 
-    setTimeout(() => {
-      const tx = recordManualPayment({
+    try {
+      const tx = await recordManualPayment({
         memberId: selectedMemberId,
         amount: Number(amount),
         paymentType,
@@ -50,7 +66,11 @@ export default function ManualPaymentModal() {
       if (tx) {
         setReceiptModalState({ isOpen: true, transaction: tx })
       }
-    }, 800)
+    } catch (err) {
+      console.error('Error submitting manual payment:', err)
+      setIsSubmitting(false)
+      setManualPaymentModalState({ isOpen: false, member: null })
+    }
   }
 
   const handleClose = () => {

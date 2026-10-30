@@ -1,14 +1,24 @@
 import { useState } from 'react'
 import {
   Users, Search, Filter, ShieldCheck, Download, Award,
-  CheckCircle2, AlertTriangle, Shield, Check, Eye, UserPlus, KeyRound
+  CheckCircle2, AlertTriangle, Shield, Check, Eye, UserPlus, KeyRound, Edit3, Trash2, Landmark
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
 import Pagination from '../components/Pagination'
 import './AdminDashboard.css'
 
 export default function AdminPlayersPage() {
-  const { members, clubs, setReceiptModalState, setStatusOverrideModalState, setAddPlayerModalState, setSendCredentialsModalState } = useCitiPay()
+  const {
+    members,
+    clubs,
+    setReceiptModalState,
+    setStatusOverrideModalState,
+    setAddPlayerModalState,
+    setSendCredentialsModalState,
+    setEditPlayerModalState,
+    setDeletePlayerModalState,
+    setManualPaymentModalState
+  } = useCitiPay()
   const [searchTerm, setSearchTerm] = useState('')
   const [clubFilter, setClubFilter] = useState('all')
   const [statusFilter, setStatusFilter] = useState('all')
@@ -259,6 +269,22 @@ export default function AdminPlayersPage() {
                     {/* Actions Bottom Bar */}
                     <div className="player-grid-actions">
                       <button
+                        className="btn btn-secondary text-3xs py-1.5 px-2.5 font-bold rounded-full text-indigo-700 bg-indigo-50 border-indigo-200 hover:bg-indigo-100"
+                        title="Record Offline Manual Payment"
+                        onClick={() => setManualPaymentModalState({ isOpen: true, member: player })}
+                      >
+                        <Landmark size={11} className="inline mr-1 text-indigo-600" />
+                        + Pay
+                      </button>
+                      <button
+                        className="btn btn-secondary text-3xs py-1.5 px-2.5 font-bold rounded-full"
+                        title="Edit Player Details"
+                        onClick={() => setEditPlayerModalState({ isOpen: true, member: player })}
+                      >
+                        <Edit3 size={11} className="inline mr-1 text-blue-600" />
+                        Edit
+                      </button>
+                      <button
                         className="btn btn-secondary text-3xs py-1.5 px-2.5 font-bold text-emerald-800 bg-emerald-50 border-emerald-200 rounded-full"
                         title="Dispatch Login Credentials via Email"
                         onClick={() => setSendCredentialsModalState({ isOpen: true, member: player })}
@@ -272,6 +298,14 @@ export default function AdminPlayersPage() {
                         onClick={() => setStatusOverrideModalState({ isOpen: true, member: player })}
                       >
                         Override
+                      </button>
+                      <button
+                        className="btn btn-secondary text-3xs py-1.5 px-2.5 font-bold rounded-full text-rose-700 bg-rose-50 border-rose-200 hover:bg-rose-100"
+                        title="Remove Player from Registry"
+                        onClick={() => setDeletePlayerModalState({ isOpen: true, member: player })}
+                      >
+                        <Trash2 size={11} className="inline mr-1 text-rose-600" />
+                        Delete
                       </button>
                       <button
                         className="btn btn-primary text-3xs py-1.5 px-3 font-bold rounded-full ml-auto"
@@ -403,6 +437,22 @@ export default function AdminPlayersPage() {
                         <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
                           <div className="flex items-center justify-end gap-1">
                             <button
+                              className="btn btn-secondary text-3xs py-1 px-2 font-bold text-indigo-700 bg-indigo-50 border-indigo-200 hover:bg-indigo-100"
+                              title="Record Offline Manual Payment"
+                              onClick={() => setManualPaymentModalState({ isOpen: true, member: player })}
+                            >
+                              <Landmark size={10} className="inline mr-0.5 text-indigo-600" />
+                              + Pay
+                            </button>
+                            <button
+                              className="btn btn-secondary text-3xs py-1 px-2 font-bold"
+                              title="Edit Player Details"
+                              onClick={() => setEditPlayerModalState({ isOpen: true, member: player })}
+                            >
+                              <Edit3 size={10} className="inline mr-0.5 text-blue-600" />
+                              Edit
+                            </button>
+                            <button
                               className="btn btn-secondary text-3xs py-1 px-2 font-bold text-emerald-800 bg-emerald-50 border-emerald-200"
                               title="Dispatch Login Credentials via Email"
                               onClick={() => setSendCredentialsModalState({ isOpen: true, member: player })}
@@ -416,6 +466,14 @@ export default function AdminPlayersPage() {
                               onClick={() => setStatusOverrideModalState({ isOpen: true, member: player })}
                             >
                               Override
+                            </button>
+                            <button
+                              className="btn btn-secondary text-3xs py-1 px-2 font-bold text-rose-700 bg-rose-50 border-rose-200 hover:bg-rose-100"
+                              title="Remove Player from Registry"
+                              onClick={() => setDeletePlayerModalState({ isOpen: true, member: player })}
+                            >
+                              <Trash2 size={10} className="inline mr-0.5 text-rose-600" />
+                              Delete
                             </button>
                             <button
                               className="btn btn-primary text-3xs py-1 px-2 font-bold"

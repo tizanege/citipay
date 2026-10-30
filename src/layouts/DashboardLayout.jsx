@@ -10,6 +10,8 @@ import ReminderModal from '../components/modals/ReminderModal'
 import OtpVerificationModal from '../components/modals/OtpVerificationModal'
 import PasswordResetModal from '../components/modals/PasswordResetModal'
 import AddPlayerModal from '../components/modals/AddPlayerModal'
+import EditPlayerModal from '../components/modals/EditPlayerModal'
+import DeletePlayerModal from '../components/modals/DeletePlayerModal'
 import SendCredentialsModal from '../components/modals/SendCredentialsModal'
 import EditLeagueSettingsModal from '../components/modals/EditLeagueSettingsModal'
 import IslCupModal from '../components/modals/IslCupModal'
@@ -38,6 +40,8 @@ export default function DashboardLayout() {
       <OtpVerificationModal />
       <PasswordResetModal />
       <AddPlayerModal />
+      <EditPlayerModal />
+      <DeletePlayerModal />
       <SendCredentialsModal />
       <EditLeagueSettingsModal />
       <IslCupModal />

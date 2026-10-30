@@ -121,6 +121,8 @@ export function CitiPayProvider({ children }) {
   const [otpModalState, setOtpModalState] = useState({ isOpen: false, memberId: '' })
   const [resetPassModalState, setResetPassModalState] = useState({ isOpen: false })
   const [addPlayerModalState, setAddPlayerModalState] = useState({ isOpen: false })
+  const [editPlayerModalState, setEditPlayerModalState] = useState({ isOpen: false, member: null })
+  const [deletePlayerModalState, setDeletePlayerModalState] = useState({ isOpen: false, member: null })
   const [sendCredentialsModalState, setSendCredentialsModalState] = useState({ isOpen: false, member: null })
   const [leagueSettingsModalState, setLeagueSettingsModalState] = useState({ isOpen: false })
 
@@ -199,7 +201,7 @@ export function CitiPayProvider({ children }) {
       monthly_social_dues: 5000,
       max_installments: 2,
       current_matchday: 14,
-      total_matchdays: 38
+      total_matchdays: 16
     }
   }, [clubs, selectedClubId])
 
@@ -866,6 +868,8 @@ export function CitiPayProvider({ children }) {
 
     const newTx = {
       id: `tx-man-${Date.now()}`,
+      user_id: target.id,
+      club_id: target.club_id || currentClub.id,
       date: new Date(date || Date.now()).toISOString(),
       date_display: date || new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
       description: typeDesc,
@@ -1021,7 +1025,7 @@ export function CitiPayProvider({ children }) {
   // Action: Admin Update Club Matchday / Gameweek
   const updateClubMatchday = useCallback(async (clubId, newMatchday, adminName = 'Club Administrator') => {
     const targetClubId = clubId || currentClub.id
-    const gwNumber = Math.max(1, Math.min(38, Number(newMatchday) || 1))
+    const gwNumber = Math.max(1, Math.min(16, Number(newMatchday) || 1))
 
     // 1. Update clubs list
     setClubs(prev => prev.map(c => {
@@ -1064,7 +1068,7 @@ export function CitiPayProvider({ children }) {
       old_value: `GW ${currentClub.current_matchday || leagueSettings.current_matchday || 14}`,
       new_value: `GW ${gwNumber}`,
       reason: `Club Administrator adjusted active gameweek to Round ${gwNumber}.`,
-      details: `Active club gameweek shifted to Gameweek ${gwNumber}. Squad clearance and team sheets synchronized.`
+      details: `Active club gameweek shifted to Gameweek ${gwNumber} of 16. Squad clearance and team sheets synchronized.`
     }
     setAuditLogs(prev => [newLog, ...prev])
 
@@ -1081,7 +1085,7 @@ export function CitiPayProvider({ children }) {
     }))
 
     if (newRules.current_matchday !== undefined) {
-      const gwNumber = Math.max(1, Math.min(38, Number(newRules.current_matchday) || 1))
+      const gwNumber = Math.max(1, Math.min(16, Number(newRules.current_matchday) || 1))
       setClubs(prev => prev.map(c => {
         if (c.id === currentClub.id || c.slug === currentClub.id || c.code === currentClub.id) {
           return { ...c, current_matchday: gwNumber }
@@ -1122,7 +1126,7 @@ export function CitiPayProvider({ children }) {
     const newFee = Number(membership_fee || currentClub.membership_fee || 100000)
     const newDues = Number(monthly_social_dues || currentClub.monthly_social_dues || 5000)
     const newMaxInst = Number(max_installments || 2)
-    const newGw = current_matchday !== undefined ? Math.max(1, Math.min(38, Number(current_matchday) || 1)) : undefined
+    const newGw = current_matchday !== undefined ? Math.max(1, Math.min(16, Number(current_matchday) || 1)) : undefined
 
     // 1. Update clubs list
     setClubs(prev => prev.map(c => {
@@ -1216,6 +1220,61 @@ export function CitiPayProvider({ children }) {
     return true
   }, [currentClub])
 
+  // Action: Admin Update Full Club Details (Name, Code, Stadium, City, Country, Founded Year, Brand Colors, etc.)
+  const updateClubDetails = useCallback(async (clubId, details = {}, adminName = 'Administrator') => {
+    const targetClubId = clubId || currentClub.id
+
+    // Update in-memory clubs
+    setClubs(prev => prev.map(c => {
+      if (c.id === targetClubId || c.slug === targetClubId || c.code === targetClubId) {
+        return {
+          ...c,
+          ...details,
+          name: details.name !== undefined ? details.name.trim() : c.name,
+          code: details.code !== undefined ? details.code.trim().toUpperCase() : c.code,
+          stadium: details.stadium !== undefined ? details.stadium.trim() : c.stadium,
+          city: details.city !== undefined ? details.city.trim() : c.city,
+          country: details.country !== undefined ? details.country.trim() : c.country,
+          founded_year: details.founded_year !== undefined ? Number(details.founded_year) : c.founded_year,
+          tagline: details.tagline !== undefined ? details.tagline.trim() : c.tagline,
+          primary_color: details.primary_color || c.primary_color,
+          secondary_color: details.secondary_color || c.secondary_color,
+          accent_color: details.accent_color || c.accent_color,
+          logo_url: details.logo_url || c.logo_url,
+          membership_fee: details.membership_fee !== undefined ? Number(details.membership_fee) : c.membership_fee,
+          monthly_social_dues: details.monthly_social_dues !== undefined ? Number(details.monthly_social_dues) : c.monthly_social_dues,
+          max_installments: details.max_installments !== undefined ? Number(details.max_installments) : c.max_installments
+        }
+      }
+      return c
+    }))
+
+    // Add Audit Log
+    const newLog = {
+      id: `log-${Date.now()}`,
+      timestamp: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + ' · Club Identity Update',
+      actor_name: adminName,
+      actor_role: 'Club Administrator',
+      action: 'CLUB_DETAILS_UPDATED',
+      target_member_id: details.code || 'CLUB',
+      target_name: details.name || currentClub.name,
+      old_value: `${currentClub.name} (${currentClub.stadium})`,
+      new_value: `${details.name || currentClub.name} (${details.stadium || currentClub.stadium})`,
+      reason: `Administrator updated club details & specifications.`,
+      details: JSON.stringify(details)
+    }
+    setAuditLogs(prev => [newLog, ...prev])
+
+    // Background Supabase sync
+    try {
+      await dbService.updateClubDetails(targetClubId, details, adminName)
+    } catch (e) {
+      console.warn('Supabase updateClubDetails sync error:', e)
+    }
+
+    return true
+  }, [currentClub])
+
   // Action: Super Admin License / Register New Club
   const addClub = useCallback(async (clubData, adminName = 'Super Admin') => {
     const slug = (clubData.slug || clubData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''))
@@ -1237,7 +1296,7 @@ export function CitiPayProvider({ children }) {
       monthly_social_dues: Number(clubData.monthly_social_dues) || 5000,
       max_installments: Number(clubData.max_installments) || 2,
       current_matchday: Number(leagueSettings?.current_matchday || 14),
-      total_matchdays: 38,
+      total_matchdays: 16,
       status: 'active'
     }
 
@@ -1317,15 +1376,16 @@ export function CitiPayProvider({ children }) {
   }, [clubs, selectedClubId])
 
   // Action: Super Admin update League Parameters (Matchday, Jersey price, Bib price)
-  const updateLeagueSettings = useCallback(({ current_matchday, jersey_price, bib_price, season_title, competition_name, adminName = 'Chief Segun Adeleke (Super Admin)' }) => {
+  const updateLeagueSettings = useCallback(({ current_matchday, jersey_price, bib_price, season_title, competition_name, adminName = 'TIZA NEGE (Super Admin)' }) => {
     setLeagueSettings(prev => {
-      const nextMatchday = current_matchday !== undefined && current_matchday !== '' ? Math.max(1, Math.min(38, Number(current_matchday))) : prev.current_matchday
+      const nextMatchday = current_matchday !== undefined && current_matchday !== '' ? Math.max(1, Math.min(16, Number(current_matchday))) : prev.current_matchday
       const nextJerseyPrice = jersey_price !== undefined && jersey_price !== '' ? Math.max(0, Number(jersey_price)) : prev.jersey_price
       const nextBibPrice = bib_price !== undefined && bib_price !== '' ? Math.max(0, Number(bib_price)) : prev.bib_price
 
       const updated = {
         ...prev,
         current_matchday: nextMatchday,
+        total_matchdays: 16,
         jersey_price: nextJerseyPrice,
         bib_price: nextBibPrice,
         season_title: season_title || prev.season_title,
@@ -1351,8 +1411,8 @@ export function CitiPayProvider({ children }) {
         target_name: 'League & Apparel Parameters',
         old_value: `GW${prev.current_matchday} · Jersey ₦${prev.jersey_price.toLocaleString()} · Bib ₦${prev.bib_price.toLocaleString()}`,
         new_value: `GW${updated.current_matchday} · Jersey ₦${updated.jersey_price.toLocaleString()} · Bib ₦${updated.bib_price.toLocaleString()}`,
-        reason: `Matchday set to Gameweek ${updated.current_matchday}. Official Jersey set to ₦${updated.jersey_price.toLocaleString()}, Training Bib set to ₦${updated.bib_price.toLocaleString()}.`,
-        details: `Updated by ${adminName}. Matchday ${updated.current_matchday} of ${updated.total_matchdays}. Live player store prices synced.`
+        reason: `Matchday set to Gameweek ${updated.current_matchday} of 16. Official Jersey set to ₦${updated.jersey_price.toLocaleString()}, Training Bib set to ₦${updated.bib_price.toLocaleString()}.`,
+        details: `Updated by ${adminName}. Matchday ${updated.current_matchday} of 16. Live player store prices synced.`
       }
       setAuditLogs(logs => [newLog, ...logs])
 
@@ -1400,9 +1460,10 @@ export function CitiPayProvider({ children }) {
   }, [members])
 
   // Action: Register New Member with Random Unique Non-Serial Member ID & Login Credentials
-  const registerMember = useCallback((memberData) => {
+  const registerMember = useCallback(async (memberData) => {
     const existingIds = members.map(m => m.member_id)
-    const clubCode = currentClub?.code || 'SL'
+    const assignedClub = clubs.find(c => c.id === memberData.selectedClubId) || currentClub
+    const clubCode = assignedClub?.code || 'SL'
     // Generate random non-serial unique member ID
     const uniqueMemberId = memberData.memberId || generateRandomMemberId({
       prefix: clubCode,
@@ -1413,10 +1474,11 @@ export function CitiPayProvider({ children }) {
     const tempPassword = memberData.tempPassword || generateTempPassword()
     const pin = memberData.pin || generateAccessPin()
 
-    const fee = currentClub?.membership_fee || 100000
+    const fee = assignedClub?.membership_fee || 100000
     const isPaid = memberData.paymentType === 'full'
     const paidAmount = isPaid ? fee : (memberData.initialPayment || 0)
     const outAmount = Math.max(0, fee - paidAmount)
+    const status = outAmount === 0 ? 'green' : outAmount <= 20000 ? 'yellow' : 'red'
 
     const newMember = {
       id: `mem-${Date.now()}`,
@@ -1428,7 +1490,7 @@ export function CitiPayProvider({ children }) {
       phone: memberData.phone || '+234 800 000 0000',
       avatar_url: memberData.avatarUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=256&auto=format&fit=crop&q=80',
       role: memberData.role || 'member',
-      club_id: memberData.selectedClubId || currentClub.id,
+      club_id: memberData.selectedClubId || assignedClub.id,
       jersey_number: parseInt(memberData.jerseyNumber, 10) || (Math.floor(Math.random() * 88) + 12),
       position: memberData.primaryPosition || memberData.position || 'CAM',
       temp_password: tempPassword,
@@ -1436,12 +1498,12 @@ export function CitiPayProvider({ children }) {
       credentials_sent_at: memberData.sendEmail ? new Date().toISOString() : null,
       date_joined: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
       rating: 76,
-      status: outAmount === 0 ? 'green' : outAmount <= 20000 ? 'yellow' : 'red',
+      status: status,
       membership_fee: fee,
       membership_paid: paidAmount,
       membership_outstanding: outAmount,
       membership_status: outAmount === 0 ? 'paid' : paidAmount > 0 ? 'partial' : 'unpaid',
-      social_dues_current_month: currentClub?.monthly_social_dues || 5000,
+      social_dues_current_month: assignedClub?.monthly_social_dues || 5000,
       social_dues_paid: 5000,
       social_dues_status: 'paid',
       next_payment_label: outAmount === 0 ? 'No payment currently due.' : `₦${outAmount.toLocaleString()} outstanding due soon`,
@@ -1457,6 +1519,30 @@ export function CitiPayProvider({ children }) {
     setCurrentMemberId(newMember.id)
     if (!isAuthenticated) {
       loginSession({ role: 'member', memberId: newMember.id, clubId: newMember.club_id })
+    }
+
+    // Live sync to Supabase backend
+    try {
+      const adminName = currentRole === 'super_admin' ? 'Super Admin' : 'Club Administrator'
+      const createdProfile = await dbService.registerPlayer({
+        memberId: uniqueMemberId,
+        fullName: newMember.full_name,
+        nickname: newMember.nickname,
+        email: newMember.email,
+        phone: newMember.phone,
+        clubId: newMember.club_id,
+        jerseyNumber: newMember.jersey_number,
+        position: newMember.position,
+        membershipFee: fee,
+        amountPaid: paidAmount,
+        eligibilityStatus: status
+      }, adminName)
+
+      if (createdProfile?.id) {
+        setMembers(prev => prev.map(m => m.id === newMember.id ? { ...m, id: createdProfile.id } : m))
+      }
+    } catch (dbErr) {
+      console.warn('Supabase player registration sync note:', dbErr.message)
     }
 
     // Add Audit Log for Registration
@@ -1496,6 +1582,69 @@ export function CitiPayProvider({ children }) {
 
     return newMember
   }, [members, currentClub, currentRole])
+
+  // Action: Remove / Delete Player
+  const removeMember = useCallback(async (memberId, targetMemberId, targetName) => {
+    const adminName = currentRole === 'super_admin' ? 'Super Admin' : 'Club Administrator'
+
+    // 1. Remove from local state
+    setMembers(prev => prev.filter(m => m.id !== memberId && m.member_id !== targetMemberId))
+
+    // 2. Sync deletion to Supabase
+    try {
+      await dbService.deletePlayer(memberId, targetMemberId, targetName, adminName)
+    } catch (e) {
+      console.warn('Supabase deletePlayer warning:', e.message)
+    }
+
+    // 3. Add to audit trail
+    const newLog = {
+      id: `log-del-${Date.now()}`,
+      timestamp: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' · Player Removed',
+      actor_name: adminName,
+      actor_role: currentRole === 'super_admin' ? 'Super Admin' : 'Club Administrator',
+      action: 'MEMBER_DELETED',
+      target_member_id: targetMemberId,
+      target_name: targetName,
+      old_value: 'Active Roster',
+      new_value: 'Deleted',
+      reason: `Permanently removed ${targetName} (${targetMemberId}) from federation registry.`,
+      details: `Player records purged by ${adminName}.`
+    }
+    setAuditLogs(prev => [newLog, ...prev])
+
+    return true
+  }, [currentRole])
+
+  // Action: Update Existing Member Profile Details
+  const updateMemberProfile = useCallback(async (memberId, updateData) => {
+    const adminName = currentRole === 'super_admin' ? 'Super Admin' : 'Club Administrator'
+
+    // Update in local state
+    setMembers(prev => prev.map(m => {
+      if (m.id === memberId || isMemberIdMatch(m.member_id, memberId)) {
+        return {
+          ...m,
+          full_name: updateData.fullName !== undefined ? updateData.fullName : m.full_name,
+          nickname: updateData.nickname !== undefined ? updateData.nickname : m.nickname,
+          phone: updateData.phone !== undefined ? updateData.phone : m.phone,
+          position: updateData.position !== undefined ? updateData.position : m.position,
+          jersey_number: updateData.jerseyNumber !== undefined ? String(updateData.jerseyNumber) : m.jersey_number,
+          club_id: updateData.clubId !== undefined ? updateData.clubId : m.club_id
+        }
+      }
+      return m
+    }))
+
+    // Sync to Supabase
+    try {
+      await dbService.updatePlayerProfile(memberId, updateData, adminName)
+    } catch (e) {
+      console.warn('Supabase updatePlayerProfile warning:', e.message)
+    }
+
+    return true
+  }, [currentRole])
 
   // Action: Send / Re-send Login Credentials via Email
   const sendMemberCredentials = useCallback(async ({ memberId, email, tempPassword, pin }) => {
@@ -1670,6 +1819,7 @@ export function CitiPayProvider({ children }) {
     overrideMemberStatus,
     updateClubRules,
     updateClubFees,
+    updateClubDetails,
     updateClubMatchday,
     addClub,
     deleteClub,
@@ -1677,6 +1827,8 @@ export function CitiPayProvider({ children }) {
     setMemberAvailability,
     sendReminder,
     registerMember,
+    updateMemberProfile,
+    removeMember,
     sendMemberCredentials,
     resetMemberPassword,
     
@@ -1701,6 +1853,10 @@ export function CitiPayProvider({ children }) {
     setResetPassModalState,
     addPlayerModalState,
     setAddPlayerModalState,
+    editPlayerModalState,
+    setEditPlayerModalState,
+    deletePlayerModalState,
+    setDeletePlayerModalState,
     sendCredentialsModalState,
     setSendCredentialsModalState,
     leagueSettingsModalState,

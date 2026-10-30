@@ -53,11 +53,37 @@ export default function LoginPage() {
       const isSuperAdminId =
         lowerInput === 'admin@citileague.com' ||
         lowerInput === 'superadmin@citileague.com' ||
-        cleanNoDash === 'SUPERADMIN'
+        lowerInput === 'tiza@citileague.com' ||
+        lowerInput === 'tiza@citileague.ng' ||
+        lowerInput === 'tiza' ||
+        lowerInput === 'tizanege' ||
+        lowerInput === 'anwar@citileague.com' ||
+        lowerInput === 'anwar@citileague.ng' ||
+        lowerInput === 'anwar' ||
+        lowerInput === 'anwaroiza' ||
+        cleanNoDash === 'SUPERADMIN' ||
+        cleanNoDash === 'TIZA' ||
+        cleanNoDash === 'TIZANEGE' ||
+        cleanNoDash === 'ANWAR' ||
+        cleanNoDash === 'ANWAROIZA'
+
       if (isSuperAdminId) {
-        if (cleanPass === 'Admin@2026' || cleanPass === '1234' || cleanPass === '••••••••') {
+        if (
+          cleanPass === 'Admin@2026' ||
+          cleanPass === '1234' ||
+          cleanPass === '••••••••' ||
+          cleanPass.toLowerCase() === 'admin' ||
+          cleanPass.toLowerCase() === 'admin123'
+        ) {
+          const adminName = (lowerInput.includes('tiza') || cleanNoDash.includes('TIZA'))
+            ? 'TIZA NEGE'
+            : (lowerInput.includes('anwar') || cleanNoDash.includes('ANWAR'))
+              ? 'ANWAR OIZA'
+              : 'Super Admin'
+
           loginSession({
             role: 'super_admin',
+            userName: adminName,
             clubId: '11111111-1111-1111-1111-111111111111'
           })
           navigate('/admin/dashboard')
@@ -67,7 +93,36 @@ export default function LoginPage() {
         return
       }
 
-      // 2. Default Ikoyi Sunday League (Club Admin) Credentials
+      // 2. Default Ikoyi Sunday League & Club President Credentials
+      const isPresidentId =
+        lowerInput === 'hollowman@sundayleaguefc.ng' ||
+        lowerInput === 'atilola' ||
+        lowerInput === 'atilolaismail' ||
+        lowerInput === 'president@sundayleaguefc.ng' ||
+        cleanNoDash === 'SLHOLLO' ||
+        cleanNoDash === 'HOLLOMAN' ||
+        cleanNoDash === 'PRESIDENT'
+
+      if (isPresidentId) {
+        if (
+          cleanPass === 'Isl@2026' ||
+          cleanPass === '1234' ||
+          cleanPass === '••••••••' ||
+          cleanPass.toLowerCase() === 'pres123' ||
+          cleanPass.toLowerCase() === 'admin'
+        ) {
+          loginSession({
+            role: 'president',
+            userName: 'ATILOLA ISMAIL',
+            clubId: '11111111-1111-1111-1111-111111111111'
+          })
+          navigate('/club/dashboard')
+          return
+        }
+        setError('Invalid Club President password.')
+        return
+      }
+
       const isIslAdminId =
         lowerInput === 'isl@citileague.com' ||
         lowerInput === 'ikoyi@citileague.com' ||

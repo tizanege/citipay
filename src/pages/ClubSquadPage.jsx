@@ -3,7 +3,7 @@ import {
   Users, Search, Filter, ShieldCheck, Download, Sliders,
   Landmark, Send, Shield, AlertTriangle, CheckCircle2, FileText,
   DollarSign, Check, ChevronDown, Printer, UserPlus, KeyRound,
-  LayoutGrid, List, Copy, Sparkles
+  LayoutGrid, List, Copy, Sparkles, Edit3, Trash2
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
 import Pagination from '../components/Pagination'
@@ -14,6 +14,7 @@ export default function ClubSquadPage() {
     currentClub,
     members,
     adminMetrics,
+    currentRole,
     setManualPaymentModalState,
     setStatusOverrideModalState,
     setRulesConfigModalState,
@@ -21,6 +22,8 @@ export default function ClubSquadPage() {
     setReceiptModalState,
     setAddPlayerModalState,
     setSendCredentialsModalState,
+    setEditPlayerModalState,
+    setDeletePlayerModalState,
     leagueSettings
   } = useCitiPay()
 
@@ -392,6 +395,16 @@ export default function ClubSquadPage() {
                           <div className="squad-actions-wrap">
                             <button
                               type="button"
+                              className="squad-action-btn"
+                              title="Edit Player Details"
+                              onClick={() => setEditPlayerModalState({ isOpen: true, member })}
+                            >
+                              <Edit3 size={11} className="text-blue-600" />
+                              <span>Edit</span>
+                            </button>
+
+                            <button
+                              type="button"
                               className="squad-action-btn btn-login"
                               title="Dispatch or Email Login Credentials"
                               onClick={() => setSendCredentialsModalState({ isOpen: true, member })}
@@ -429,6 +442,19 @@ export default function ClubSquadPage() {
                               >
                                 <Send size={11} />
                                 <span>Remind</span>
+                              </button>
+                            )}
+
+                            {currentRole === 'super_admin' && (
+                              <button
+                                type="button"
+                                className="squad-action-btn"
+                                style={{ color: '#E11D48', background: '#FFF1F2', borderColor: '#FECDD3' }}
+                                title="Remove Player from System"
+                                onClick={() => setDeletePlayerModalState({ isOpen: true, member })}
+                              >
+                                <Trash2 size={11} className="text-rose-600" />
+                                <span>Delete</span>
                               </button>
                             )}
 
@@ -580,6 +606,16 @@ export default function ClubSquadPage() {
                     <div className="squad-card-actions">
                       <button
                         type="button"
+                        className="squad-action-btn"
+                        title="Edit Player Details"
+                        onClick={() => setEditPlayerModalState({ isOpen: true, member })}
+                      >
+                        <Edit3 size={12} className="text-blue-600" />
+                        <span>Edit</span>
+                      </button>
+
+                      <button
+                        type="button"
                         className="squad-action-btn btn-login"
                         onClick={() => setSendCredentialsModalState({ isOpen: true, member })}
                       >
@@ -604,6 +640,19 @@ export default function ClubSquadPage() {
                         <Sliders size={12} />
                         <span>Override</span>
                       </button>
+
+                      {currentRole === 'super_admin' && (
+                        <button
+                          type="button"
+                          className="squad-action-btn"
+                          style={{ color: '#E11D48', background: '#FFF1F2', borderColor: '#FECDD3' }}
+                          title="Remove Player from System"
+                          onClick={() => setDeletePlayerModalState({ isOpen: true, member })}
+                        >
+                          <Trash2 size={12} className="text-rose-600" />
+                          <span>Delete</span>
+                        </button>
+                      )}
 
                       {member.status !== 'green' ? (
                         <button

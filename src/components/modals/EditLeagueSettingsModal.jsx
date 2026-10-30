@@ -46,7 +46,7 @@ export default function EditLeagueSettingsModal() {
         current_matchday: Number(matchday),
         jersey_price: Number(jerseyPrice),
         bib_price: Number(bibPrice),
-        adminName: 'Chief Segun Adeleke (Super Admin)'
+        adminName: 'TIZA NEGE (Super Admin)'
       })
       setIsSaving(false)
       setSuccess(true)
@@ -57,7 +57,7 @@ export default function EditLeagueSettingsModal() {
   }
 
   const stepMatchday = (delta) => {
-    setMatchday(prev => Math.max(1, Math.min(38, Number(prev) + delta)))
+    setMatchday(prev => Math.max(1, Math.min(16, Number(prev) + delta)))
   }
 
   return (
@@ -103,7 +103,7 @@ export default function EditLeagueSettingsModal() {
                     <Calendar size={14} className="text-blue-600" /> Current Matchday / Gameweek
                   </label>
                   <span className="text-xs font-mono font-bold text-blue-700 bg-blue-100 px-2.5 py-0.5 rounded-full">
-                    GW {matchday} of 38
+                    GW {matchday} of 16
                   </span>
                 </div>
                 <p className="text-xs text-slate-500 mb-3">
@@ -125,9 +125,9 @@ export default function EditLeagueSettingsModal() {
                     <input
                       type="number"
                       min="1"
-                      max="38"
+                      max="16"
                       value={matchday}
-                      onChange={(e) => setMatchday(Math.max(1, Math.min(38, Number(e.target.value) || 1)))}
+                      onChange={(e) => setMatchday(Math.max(1, Math.min(16, Number(e.target.value) || 1)))}
                       className="form-input-portal text-center font-mono font-extrabold text-lg py-2 pl-9 pr-3 w-full"
                     />
                   </div>
@@ -136,14 +136,14 @@ export default function EditLeagueSettingsModal() {
                     type="button"
                     className="w-10 h-10 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 flex items-center justify-center text-slate-700 font-bold transition-colors cursor-pointer"
                     onClick={() => stepMatchday(1)}
-                    disabled={matchday >= 38}
+                    disabled={matchday >= 16}
                   >
                     <Plus size={16} />
                   </button>
                 </div>
 
                 <div className="flex gap-2 mt-2.5">
-                  {[12, 13, 14, 15, 16].map(gw => (
+                  {[1, 4, 8, 12, 14, 15, 16].map(gw => (
                     <button
                       key={gw}
                       type="button"
@@ -161,6 +161,7 @@ export default function EditLeagueSettingsModal() {
                     type="button"
                     className="text-2xs font-bold px-2 py-1 rounded bg-blue-50 text-blue-700 ml-auto hover:bg-blue-100 cursor-pointer border-0"
                     onClick={() => stepMatchday(1)}
+                    disabled={matchday >= 16}
                   >
                     Next Round +1
                   </button>

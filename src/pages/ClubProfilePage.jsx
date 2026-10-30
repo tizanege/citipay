@@ -5,21 +5,78 @@ import {
   CreditCard, Edit3, Save, Sparkles, Award
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
+import EditClubModal from '../components/modals/EditClubModal'
 import './ClubDashboard.css'
 
 export default function ClubProfilePage() {
-  const { currentClub, clubRules, setRulesConfigModalState, adminMetrics, updateClubFees, updateClubMatchday, leagueSettings } = useCitiPay()
+  const {
+    currentClub,
+    clubRules,
+    members,
+    setRulesConfigModalState,
+    adminMetrics,
+    updateClubFees,
+    updateClubMatchday,
+    updateClubDetails,
+    leagueSettings
+  } = useCitiPay()
+
   const [isEditingFees, setIsEditingFees] = useState(false)
   const [membershipFee, setMembershipFee] = useState(currentClub.membership_fee || 100000)
   const [monthlyDues, setMonthlyDues] = useState(currentClub.monthly_social_dues || 5000)
   const [clubMatchday, setClubMatchday] = useState(currentClub.current_matchday || leagueSettings.current_matchday || 14)
   const [saveSuccess, setSaveSuccess] = useState(false)
+  const [editClubModalOpen, setEditClubModalOpen] = useState(false)
+
+  // Dynamic Bank Account State synced with localStorage
+  const [bankAccount, setBankAccount] = useState(() => {
+    try {
+      const saved = localStorage.getItem(`citipay_bank_account_${currentClub.id}`)
+      if (saved) return JSON.parse(saved)
+    } catch (e) {}
+    return {
+      bankName: 'Access Bank',
+      accountName: 'Oxsa int’l Nig Ltd.',
+      accountNumber: '0092042084',
+      sortCode: '044-152062'
+    }
+  })
+  const [isEditingBank, setIsEditingBank] = useState(false)
+  const [bankForm, setBankForm] = useState(bankAccount)
+  const [bankSuccess, setBankSuccess] = useState(false)
 
   useEffect(() => {
     setMembershipFee(currentClub.membership_fee || 100000)
     setMonthlyDues(currentClub.monthly_social_dues || 5000)
     setClubMatchday(currentClub.current_matchday || leagueSettings.current_matchday || 14)
-  }, [currentClub.membership_fee, currentClub.monthly_social_dues, currentClub.current_matchday, leagueSettings.current_matchday])
+    try {
+      const saved = localStorage.getItem(`citipay_bank_account_${currentClub.id}`)
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        setBankAccount(parsed)
+        setBankForm(parsed)
+      } else {
+        const defaultBank = {
+          bankName: 'Access Bank',
+          accountName: `${currentClub.name} / Oxsa int’l Nig Ltd.`,
+          accountNumber: '0092042084',
+          sortCode: '044-152062'
+        }
+        setBankAccount(defaultBank)
+        setBankForm(defaultBank)
+      }
+    } catch (e) {}
+  }, [currentClub.id, currentClub.name, currentClub.membership_fee, currentClub.monthly_social_dues, currentClub.current_matchday, leagueSettings.current_matchday])
+
+  const handleSaveBank = () => {
+    setBankAccount(bankForm)
+    try {
+      localStorage.setItem(`citipay_bank_account_${currentClub.id}`, JSON.stringify(bankForm))
+    } catch (e) {}
+    setIsEditingBank(false)
+    setBankSuccess(true)
+    setTimeout(() => setBankSuccess(false), 3500)
+  }
 
   const handleSaveFees = () => {
     updateClubFees({
@@ -37,12 +94,9 @@ export default function ClubProfilePage() {
     setTimeout(() => setSaveSuccess(false), 3500)
   }
 
-  const [bankAccount, setBankAccount] = useState({
-    bankName: 'Guaranty Trust Bank (GTBank)',
-    accountName: `${currentClub.name} Association Ltd`,
-    accountNumber: '0123456789',
-    sortCode: '058-152062'
-  })
+  // Real member count for this club
+  const clubMembers = members.filter(m => m.club_id === currentClub.id || (!m.club_id && currentClub.slug === 'ikoyi-sunday-league'))
+  const squadSize = clubMembers.length || 30
 
   return (
     <div className="club-dashboard-wrapper">
@@ -74,6 +128,13 @@ export default function ClubProfilePage() {
 
         <div className="club-header-right flex items-center gap-2 flex-wrap">
           <button
+            className="btn btn-secondary flex items-center gap-1.5 text-xs font-bold py-2.5 px-4"
+            onClick={() => setEditClubModalOpen(true)}
+          >
+            <Edit3 size={14} className="text-blue-600" />
+            <span>Edit Club Details</span>
+          </button>
+          <button
             className="btn btn-primary flex items-center gap-1.5 text-xs font-bold py-2.5 px-4"
             onClick={() => setRulesConfigModalState({ isOpen: true })}
           >
@@ -91,7 +152,15 @@ export default function ClubProfilePage() {
               <h3 className="section-title text-base font-extrabold text-slate-900">CLUB IDENTITY & VENUE</h3>
               <p className="text-xs text-slate-500">Official club licensing details registered with Citi Football</p>
             </div>
-            <span className="badge badge-success font-bold text-xs">Licensed Active</span>
+            <div className="flex items-center gap-2">
+              <button
+                className="btn btn-secondary text-xs py-1 px-2.5 font-bold flex items-center gap-1"
+                onClick={() => setEditClubModalOpen(true)}
+              >
+                <Edit3 size={11} className="text-blue-600" /> Edit
+              </button>
+              <span className="badge badge-success font-bold text-xs">Licensed Active</span>
+            </div>
           </div>
 
           <div className="flex flex-col gap-3 text-xs">
@@ -241,15 +310,15 @@ export default function ClubProfilePage() {
                     type="number"
                     className="form-input-portal font-mono font-bold text-xs py-1 px-2 w-20 text-center"
                     value={clubMatchday}
-                    onChange={(e) => setClubMatchday(Math.max(1, Math.min(38, Number(e.target.value) || 1)))}
+                    onChange={(e) => setClubMatchday(Math.max(1, Math.min(16, Number(e.target.value) || 1)))}
                     step="1"
                     min="1"
-                    max="38"
+                    max="16"
                   />
                 </div>
               ) : (
                 <span className="badge badge-accent font-bold font-mono text-xs">
-                  GW {currentClub.current_matchday || leagueSettings.current_matchday || 14} of 38
+                  GW {currentClub.current_matchday || leagueSettings.current_matchday || 14} of 16
                 </span>
               )}
             </div>
@@ -276,29 +345,114 @@ export default function ClubProfilePage() {
               <h3 className="section-title text-base font-extrabold text-slate-900">OFFICIAL BANK DETAILS</h3>
               <p className="text-xs text-slate-500">Destination account for player manual direct transfers</p>
             </div>
-            <Landmark size={18} className="text-emerald-600" />
+            <div className="flex items-center gap-2">
+              {isEditingBank ? (
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    className="btn btn-secondary text-xs py-1 px-3 font-semibold"
+                    onClick={() => {
+                      setBankForm(bankAccount)
+                      setIsEditingBank(false)
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-primary text-xs py-1 px-3 font-bold flex items-center gap-1"
+                    onClick={handleSaveBank}
+                  >
+                    <Save size={13} /> Save Bank
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  className="btn btn-secondary text-xs py-1.5 px-3 font-bold flex items-center gap-1"
+                  onClick={() => setIsEditingBank(true)}
+                >
+                  <Edit3 size={13} /> Edit Bank
+                </button>
+              )}
+            </div>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 mb-4">
-            <div className="text-xs text-slate-500 font-semibold uppercase tracking-wider mb-1">Financial Institution</div>
-            <div className="text-base font-bold text-slate-900">{bankAccount.bankName}</div>
+          {bankSuccess && (
+            <div className="p-2.5 mb-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-1.5">
+              <CheckCircle2 size={15} /> Club bank details updated successfully!
+            </div>
+          )}
 
-            <div className="mt-3 flex justify-between">
+          {isEditingBank ? (
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 mb-4 flex flex-col gap-3">
               <div>
-                <span className="text-3xs text-slate-500 uppercase font-semibold">Account Number</span>
-                <div className="text-lg font-mono font-extrabold text-emerald-700 tracking-wider">{bankAccount.accountNumber}</div>
+                <label className="form-label-portal">FINANCIAL INSTITUTION (BANK)</label>
+                <input
+                  type="text"
+                  value={bankForm.bankName}
+                  onChange={(e) => setBankForm({ ...bankForm, bankName: e.target.value })}
+                  placeholder="e.g. Access Bank"
+                  className="form-input-portal text-xs font-bold"
+                />
               </div>
-              <div className="text-right">
-                <span className="text-3xs text-slate-500 uppercase font-semibold">Sort Code</span>
-                <div className="text-xs font-mono font-bold text-slate-700">{bankAccount.sortCode}</div>
-              </div>
-            </div>
 
-            <div className="mt-3 pt-3 border-t border-slate-200">
-              <span className="text-3xs text-slate-500 uppercase font-semibold">Account Beneficiary</span>
-              <div className="text-xs font-semibold text-slate-800">{bankAccount.accountName}</div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="form-label-portal">ACCOUNT NUMBER</label>
+                  <input
+                    type="text"
+                    value={bankForm.accountNumber}
+                    onChange={(e) => setBankForm({ ...bankForm, accountNumber: e.target.value })}
+                    placeholder="0092042084"
+                    className="form-input-portal font-mono text-sm font-extrabold text-emerald-700"
+                  />
+                </div>
+                <div>
+                  <label className="form-label-portal">SORT CODE</label>
+                  <input
+                    type="text"
+                    value={bankForm.sortCode}
+                    onChange={(e) => setBankForm({ ...bankForm, sortCode: e.target.value })}
+                    placeholder="044-152062"
+                    className="form-input-portal font-mono text-xs font-bold"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="form-label-portal">ACCOUNT BENEFICIARY NAME</label>
+                <input
+                  type="text"
+                  value={bankForm.accountName}
+                  onChange={(e) => setBankForm({ ...bankForm, accountName: e.target.value })}
+                  placeholder="e.g. Oxsa int'l Nig Ltd."
+                  className="form-input-portal text-xs font-semibold"
+                />
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 mb-4">
+              <div className="text-xs text-slate-500 font-semibold uppercase tracking-wider mb-1">Financial Institution</div>
+              <div className="text-base font-bold text-slate-900">{bankAccount.bankName}</div>
+
+              <div className="mt-3 flex justify-between">
+                <div>
+                  <span className="text-3xs text-slate-500 uppercase font-semibold">Account Number</span>
+                  <div className="text-lg font-mono font-extrabold text-emerald-700 tracking-wider">{bankAccount.accountNumber}</div>
+                </div>
+                <div className="text-right">
+                  <span className="text-3xs text-slate-500 uppercase font-semibold">Sort Code</span>
+                  <div className="text-xs font-mono font-bold text-slate-700">{bankAccount.sortCode}</div>
+                </div>
+              </div>
+
+              <div className="mt-3 pt-3 border-t border-slate-200">
+                <span className="text-3xs text-slate-500 uppercase font-semibold">Account Beneficiary</span>
+                <div className="text-xs font-semibold text-slate-800">{bankAccount.accountName}</div>
+              </div>
+            </div>
+          )}
 
           <div className="text-xs text-slate-500 bg-emerald-50 p-3 rounded-lg border border-emerald-100 text-emerald-800 font-medium">
             💡 <strong>Offline Payment Process:</strong> When members pay into this account, use <strong>+ Record Payment</strong> in the Collections Ledger to log the reference and credit the player's account.
@@ -367,44 +521,52 @@ export default function ClubProfilePage() {
             <div className="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-slate-50">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-full bg-emerald-600 text-white font-bold flex items-center justify-center text-xs">
-                  CP
+                  AI
                 </div>
                 <div>
-                  <div className="font-bold text-slate-900 text-xs">Dr. Babatunde Alabi</div>
-                  <div className="text-3xs text-emerald-700 font-semibold">Club President & Founder</div>
+                  <div className="font-bold text-slate-900 text-xs">ATILOLA ISMAIL</div>
+                  <div className="text-3xs text-emerald-700 font-semibold">Club President</div>
                 </div>
               </div>
-              <span className="badge badge-secondary text-3xs font-mono font-bold">Admin Authority</span>
+              <span className="badge badge-secondary text-3xs font-mono font-bold">President Authority</span>
             </div>
 
             <div className="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-slate-50">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-xs">
-                  CT
+                  TN
                 </div>
                 <div>
-                  <div className="font-bold text-slate-900 text-xs">Chinedu Okeke, FCA</div>
-                  <div className="text-3xs text-blue-700 font-semibold">Club Treasurer & Financial Officer</div>
+                  <div className="font-bold text-slate-900 text-xs">TIZA NEGE</div>
+                  <div className="text-3xs text-blue-700 font-semibold">Super Admin / League HQ</div>
                 </div>
               </div>
-              <span className="badge badge-secondary text-3xs font-mono font-bold">Finance Admin</span>
+              <span className="badge badge-accent text-3xs font-mono font-bold">Super Admin</span>
             </div>
 
             <div className="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-slate-50">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-full bg-purple-600 text-white font-bold flex items-center justify-center text-xs">
-                  TM
+                  AO
                 </div>
                 <div>
-                  <div className="font-bold text-slate-900 text-xs">Coach Fatai Williams</div>
-                  <div className="text-3xs text-purple-700 font-semibold">Team Manager & Head Coach</div>
+                  <div className="font-bold text-slate-900 text-xs">ANWAR OIZA</div>
+                  <div className="text-3xs text-purple-700 font-semibold">Super Admin / League HQ</div>
                 </div>
               </div>
-              <span className="badge badge-secondary text-3xs font-mono font-bold">Squad Roster</span>
+              <span className="badge badge-accent text-3xs font-mono font-bold">Super Admin</span>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Edit Club Modal */}
+      <EditClubModal
+        isOpen={editClubModalOpen}
+        club={currentClub}
+        onClose={() => setEditClubModalOpen(false)}
+        onClubUpdated={(clubId, details) => updateClubDetails(clubId, details, 'Club Executive')}
+      />
     </div>
   )
 }
