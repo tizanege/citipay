@@ -135,6 +135,7 @@ export default function AdminPaymentsPage() {
               className="text-xs font-semibold"
             >
               <option value="all">All Payment Types</option>
+              <option value="isl_cup_entry">🏆 ISL Cup 2026 Entry</option>
               <option value="membership">Membership</option>
               <option value="membership_installment">Installments</option>
               <option value="social_dues">Social Dues</option>

@@ -144,9 +144,17 @@ export function CitiPayProvider({ children }) {
     if (islCupTeams.length >= 10) {
       throw new Error('All 10 tournament registration slots are filled.')
     }
+    const paymentStatus = teamPayload.paymentStatus || (teamPayload.paymentMethod === 'bank_transfer' ? 'Pending' : 'Paid')
+    const refNum = teamPayload.reference || `ISL-CUP-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`
+    const receiptNum = `REC-ISL-${Math.floor(100000 + Math.random() * 900000)}`
+
     const newTeam = {
       id: `isl-team-${Date.now()}`,
       ...teamPayload,
+      reference: refNum,
+      receipt_no: receiptNum,
+      paymentStatus,
+      amount: 300000,
       registeredAt: new Date().toISOString()
     }
     setIslCupTeams(prev => {
@@ -157,8 +165,28 @@ export function CitiPayProvider({ children }) {
       return next
     })
 
+    // Create a transaction record into the Federation Payments Ledger
+    const newTx = {
+      id: `tx-isl-${Date.now()}`,
+      reference: refNum,
+      date: new Date().toISOString(),
+      date_display: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      member_name: teamPayload.teamName,
+      member_id: `TEAM-${teamPayload.captainName ? teamPayload.captainName.substring(0, 5).toUpperCase() : 'ISL'}`,
+      club: 'Ikoyi Sunday League',
+      payment_type: 'isl_cup_entry',
+      description: `ISL Cup Finals 2026 Team Entry (${teamPayload.teamName})`,
+      amount: 300000,
+      method: teamPayload.paymentMethod === 'bank_transfer' ? 'Bank Transfer' : 'Paystack',
+      status: paymentStatus,
+      receipt_no: receiptNum,
+      notes: `Coach: ${teamPayload.coachName} · Captain: ${teamPayload.captainName} · VIPs: ${teamPayload.vipSpectator1 || 'N/A'}, ${teamPayload.vipSpectator2 || 'N/A'}`
+    }
+
+    setTransactions(prev => [newTx, ...prev])
+
     // Log to Audit trail & persist to Supabase
-    const logDetailsText = `Coach: ${teamPayload.coachName} · Captain: ${teamPayload.captainName} · VIP 1: ${teamPayload.vipSpectator1 || 'N/A'} · VIP 2: ${teamPayload.vipSpectator2 || 'N/A'}`
+    const logDetailsText = `Coach: ${teamPayload.coachName} · Captain: ${teamPayload.captainName} · VIP 1: ${teamPayload.vipSpectator1 || 'N/A'} · VIP 2: ${teamPayload.vipSpectator2 || 'N/A'} · Status: ${paymentStatus}`
     const newLog = {
       id: `log-isl-${Date.now()}`,
       timestamp: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + ' · ISL Cup Entry',
@@ -168,7 +196,7 @@ export function CitiPayProvider({ children }) {
       target_member_id: teamPayload.teamName,
       target_name: `ISL Cup 2026: ${teamPayload.teamName}`,
       old_value: 'N/A',
-      new_value: '₦300,000 Entry Paid',
+      new_value: `₦300,000 (${paymentStatus})`,
       reason: `Registered "${teamPayload.teamName}" for ISL Cup Finals 2026 with 2 VIP Spectator badges.`,
       details: logDetailsText,
       raw_details: newTeam
@@ -182,7 +210,7 @@ export function CitiPayProvider({ children }) {
       targetMemberId: teamPayload.teamName,
       targetName: `ISL Cup 2026: ${teamPayload.teamName}`,
       oldValue: 'N/A',
-      newValue: '₦300,000 Entry Paid',
+      newValue: `₦300,000 (${paymentStatus})`,
       reason: `Registered "${teamPayload.teamName}" for ISL Cup Finals 2026 with 2 VIP Spectator badges.`,
       details: newTeam
     }).catch(err => console.warn('Supabase ISL Cup sync warning:', err?.message))
