@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react'
 import {
   Sliders, ShieldCheck, Activity, Key, Globe, Database,
   Lock, Save, CheckCircle2, Shield, AlertCircle, RefreshCw,
-  Shirt, Tag, Calendar, Plus, Minus, Sparkles
+  Shirt, Tag, Calendar, Plus, Minus, Sparkles, Mail, Send, Server, Check
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
+import { getMailerConfig, saveMailerConfig, sendTestEmail } from '../services/emailService'
 import './AdminDashboard.css'
 
 export default function AdminSettingsPage() {
@@ -33,6 +34,43 @@ export default function AdminSettingsPage() {
 
   const [savedSuccess, setSavedSuccess] = useState(false)
 
+  // Outbound Email Notification Configuration (Resend vs SMTP Dual Engine)
+  const [emailProvider, setEmailProvider] = useState('resend') // 'resend' | 'smtp'
+  const [resendApiKey, setResendApiKey] = useState('')
+  const [fromEmail, setFromEmail] = useState('CitiPay Portal <onboarding@resend.dev>')
+  const [smtpConfig, setSmtpConfig] = useState({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    user: '',
+    pass: '',
+    fromName: 'CitiLeague Football Administration'
+  })
+  const [notifToggles, setNotifToggles] = useState({
+    notifyOnRegistration: true,
+    notifyOnPaymentReceipt: true,
+    notifyOnPaymentReminder: true,
+    notifyOnPasswordReset: true,
+    notifyOnIslCupEntry: true,
+    adminAlertEmail: 'admin@citileague.ng'
+  })
+  const [testEmailRecipient, setTestEmailRecipient] = useState('wigglemeddle@gmail.com')
+  const [isSendingTest, setIsSendingTest] = useState(false)
+  const [testResult, setTestResult] = useState(null)
+
+  // Load existing mailer config from backend
+  useEffect(() => {
+    getMailerConfig().then(cfg => {
+      if (cfg) {
+        if (cfg.provider) setEmailProvider(cfg.provider)
+        if (cfg.fromEmail) setFromEmail(cfg.fromEmail)
+        if (cfg.resendApiKey) setResendApiKey(cfg.resendApiKey)
+        if (cfg.smtp) setSmtpConfig(prev => ({ ...prev, ...cfg.smtp }))
+        if (cfg.notificationOptions) setNotifToggles(prev => ({ ...prev, ...cfg.notificationOptions }))
+      }
+    })
+  }, [])
+
   const handleSave = () => {
     updateClubFees({
       clubId: currentClub.id,
@@ -49,8 +87,29 @@ export default function AdminSettingsPage() {
       adminName: 'TIZA NEGE (Super Admin)'
     })
 
+    // Save mailer config
+    saveMailerConfig({
+      provider: emailProvider,
+      resendApiKey,
+      fromEmail,
+      smtp: smtpConfig,
+      notificationOptions: notifToggles
+    })
+
     setSavedSuccess(true)
     setTimeout(() => setSavedSuccess(false), 3500)
+  }
+
+  const handleRunEmailTest = async () => {
+    setIsSendingTest(true)
+    setTestResult(null)
+    const res = await sendTestEmail({
+      recipientEmail: testEmailRecipient,
+      providerOverride: emailProvider
+    })
+    setIsSendingTest(false)
+    setTestResult(res)
+    setTimeout(() => setTestResult(null), 6000)
   }
 
   const stepMatchday = (delta) => {
@@ -457,6 +516,277 @@ export default function AdminSettingsPage() {
             <span className="text-slate-500 font-medium">Automated Digital Receipts: </span>
             <strong className="text-emerald-700 font-bold">Enabled (Paystack & In-App)</strong>
           </div>
+        </div>
+      </div>
+
+      {/* Outbound Email & Notification System (Resend + Custom SMTP) */}
+      <div className="card p-5 mb-6">
+        <div className="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <h3 className="section-title text-base font-extrabold text-slate-900 flex items-center gap-1.5">
+                <Mail size={17} className="text-emerald-600" />
+                OUTBOUND EMAIL NOTIFICATION ENGINE
+              </h3>
+              <span className={`badge ${emailProvider === 'smtp' ? 'badge-primary' : 'badge-success'} font-bold text-2xs`}>
+                Active: {emailProvider === 'smtp' ? 'Custom SMTP' : 'Resend API'}
+              </span>
+            </div>
+            <p className="text-xs text-slate-500">
+              Configure credentials dispatch, payment receipts, matchday balance reminders, and password resets via Resend or your own SMTP mail server
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className={`btn text-xs font-bold py-1.5 px-3 rounded-lg ${emailProvider === 'resend' ? 'btn-primary' : 'btn-secondary'}`}
+              onClick={() => setEmailProvider('resend')}
+            >
+              Resend (Cloud)
+            </button>
+            <button
+              type="button"
+              className={`btn text-xs font-bold py-1.5 px-3 rounded-lg ${emailProvider === 'smtp' ? 'btn-primary' : 'btn-secondary'}`}
+              onClick={() => setEmailProvider('smtp')}
+            >
+              Custom SMTP
+            </button>
+          </div>
+        </div>
+
+        {/* Provider Specific Configuration Form */}
+        {emailProvider === 'resend' ? (
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 mb-5">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                <Key size={14} className="text-emerald-600" /> Resend Cloud API Configuration
+              </span>
+              <a href="https://resend.com/api-keys" target="_blank" rel="noreferrer" className="text-3xs text-emerald-700 font-bold hover:underline">
+                Get Resend API Key &rarr;
+              </a>
+            </div>
+
+            <div className="grid-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Resend API Key</label>
+                <input
+                  type="password"
+                  placeholder="re_xxxxxxxxxxxxxxxxxxxx"
+                  value={resendApiKey}
+                  onChange={(e) => setResendApiKey(e.target.value)}
+                  className="w-full text-xs font-mono p-2.5 rounded-lg border border-slate-200 bg-white text-slate-800"
+                />
+                <span className="text-3xs text-slate-400 mt-1 block">Provides 3,000 free emails/month with instant delivery.</span>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Sender Email / Name</label>
+                <input
+                  type="text"
+                  placeholder="CitiPay Portal <onboarding@resend.dev>"
+                  value={fromEmail}
+                  onChange={(e) => setFromEmail(e.target.value)}
+                  className="w-full text-xs font-mono p-2.5 rounded-lg border border-slate-200 bg-white text-slate-800"
+                />
+                <span className="text-3xs text-slate-400 mt-1 block">Sender header visible in player inboxes.</span>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 mb-5">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                <Server size={14} className="text-blue-600" /> Custom SMTP Mail Server Details
+              </span>
+              <span className="text-3xs text-slate-500 font-mono">Standard RFC 5321 (Gmail, Outlook, Hostinger, cPanel, AWS SES)</span>
+            </div>
+
+            <div className="grid-3 gap-3 mb-3">
+              <div>
+                <label className="block text-2xs font-bold text-slate-700 mb-1">SMTP Host</label>
+                <input
+                  type="text"
+                  placeholder="smtp.gmail.com / mail.yourdomain.com"
+                  value={smtpConfig.host}
+                  onChange={(e) => setSmtpConfig({ ...smtpConfig, host: e.target.value })}
+                  className="w-full text-xs font-mono p-2 rounded-lg border border-slate-200 bg-white text-slate-800"
+                />
+              </div>
+
+              <div>
+                <label className="block text-2xs font-bold text-slate-700 mb-1">Port</label>
+                <input
+                  type="number"
+                  placeholder="465 or 587"
+                  value={smtpConfig.port}
+                  onChange={(e) => setSmtpConfig({ ...smtpConfig, port: Number(e.target.value) })}
+                  className="w-full text-xs font-mono p-2 rounded-lg border border-slate-200 bg-white text-slate-800"
+                />
+              </div>
+
+              <div>
+                <label className="block text-2xs font-bold text-slate-700 mb-1">Encryption / SSL</label>
+                <select
+                  value={smtpConfig.port === 465 ? 'ssl' : 'tls'}
+                  onChange={(e) => {
+                    const isSSL = e.target.value === 'ssl'
+                    setSmtpConfig({ ...smtpConfig, port: isSSL ? 465 : 587, secure: isSSL })
+                  }}
+                  className="w-full text-xs font-semibold p-2 rounded-lg border border-slate-200 bg-white text-slate-800"
+                >
+                  <option value="ssl">SSL / TLS (Port 465)</option>
+                  <option value="tls">STARTTLS (Port 587)</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid-3 gap-3">
+              <div>
+                <label className="block text-2xs font-bold text-slate-700 mb-1">SMTP Username / Email</label>
+                <input
+                  type="text"
+                  placeholder="admin@citileague.ng"
+                  value={smtpConfig.user}
+                  onChange={(e) => setSmtpConfig({ ...smtpConfig, user: e.target.value })}
+                  className="w-full text-xs font-mono p-2 rounded-lg border border-slate-200 bg-white text-slate-800"
+                />
+              </div>
+
+              <div>
+                <label className="block text-2xs font-bold text-slate-700 mb-1">SMTP Password / App Password</label>
+                <input
+                  type="password"
+                  placeholder="••••••••••••••••"
+                  value={smtpConfig.pass}
+                  onChange={(e) => setSmtpConfig({ ...smtpConfig, pass: e.target.value })}
+                  className="w-full text-xs font-mono p-2 rounded-lg border border-slate-200 bg-white text-slate-800"
+                />
+              </div>
+
+              <div>
+                <label className="block text-2xs font-bold text-slate-700 mb-1">Sender Display Name</label>
+                <input
+                  type="text"
+                  placeholder="CitiLeague Administration"
+                  value={smtpConfig.fromName}
+                  onChange={(e) => setSmtpConfig({ ...smtpConfig, fromName: e.target.value })}
+                  className="w-full text-xs font-medium p-2 rounded-lg border border-slate-200 bg-white text-slate-800"
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Notification Event Options */}
+        <div className="mb-5">
+          <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">Automated Notification Triggers</h4>
+          <div className="grid-2 md:grid-cols-3 gap-3">
+            <label className="flex items-center gap-2 p-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={notifToggles.notifyOnRegistration}
+                onChange={(e) => setNotifToggles({ ...notifToggles, notifyOnRegistration: e.target.checked })}
+                className="rounded"
+              />
+              <div>
+                <strong className="text-xs text-slate-900 block">Player Login Dispatch</strong>
+                <span className="text-3xs text-slate-500">Member ID, Temp Password, PIN</span>
+              </div>
+            </label>
+
+            <label className="flex items-center gap-2 p-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={notifToggles.notifyOnPaymentReceipt}
+                onChange={(e) => setNotifToggles({ ...notifToggles, notifyOnPaymentReceipt: e.target.checked })}
+                className="rounded"
+              />
+              <div>
+                <strong className="text-xs text-slate-900 block">Payment Receipts</strong>
+                <span className="text-3xs text-slate-500">Automated digital receipt on settlement</span>
+              </div>
+            </label>
+
+            <label className="flex items-center gap-2 p-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={notifToggles.notifyOnPaymentReminder}
+                onChange={(e) => setNotifToggles({ ...notifToggles, notifyOnPaymentReminder: e.target.checked })}
+                className="rounded"
+              />
+              <div>
+                <strong className="text-xs text-slate-900 block">Matchday Clearance Dues</strong>
+                <span className="text-3xs text-slate-500">Starting XI eligibility warning emails</span>
+              </div>
+            </label>
+
+            <label className="flex items-center gap-2 p-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={notifToggles.notifyOnPasswordReset}
+                onChange={(e) => setNotifToggles({ ...notifToggles, notifyOnPasswordReset: e.target.checked })}
+                className="rounded"
+              />
+              <div>
+                <strong className="text-xs text-slate-900 block">Security & Password OTP</strong>
+                <span className="text-3xs text-slate-500">6-digit recovery codes</span>
+              </div>
+            </label>
+
+            <label className="flex items-center gap-2 p-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={notifToggles.notifyOnIslCupEntry}
+                onChange={(e) => setNotifToggles({ ...notifToggles, notifyOnIslCupEntry: e.target.checked })}
+                className="rounded"
+              />
+              <div>
+                <strong className="text-xs text-slate-900 block">ISL Cup Finals 2026</strong>
+                <span className="text-3xs text-slate-500">₦300,000 team entry & 2 VIP passes</span>
+              </div>
+            </label>
+
+            <div className="p-3 rounded-xl border border-slate-200 bg-white">
+              <label className="block text-3xs font-bold uppercase text-slate-600 mb-1">Super Admin Copy Email</label>
+              <input
+                type="email"
+                value={notifToggles.adminAlertEmail}
+                onChange={(e) => setNotifToggles({ ...notifToggles, adminAlertEmail: e.target.value })}
+                className="w-full text-xs font-mono p-1.5 border border-slate-200 rounded-lg bg-slate-50"
+                placeholder="admin@citileague.ng"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Live Email Test Bar */}
+        <div className="pt-3 border-t border-slate-100 flex items-center justify-between flex-wrap gap-3">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-slate-700">Test Dispatch:</span>
+            <input
+              type="email"
+              value={testEmailRecipient}
+              onChange={(e) => setTestEmailRecipient(e.target.value)}
+              placeholder="Enter your email"
+              className="text-xs font-mono py-1 px-2.5 rounded-lg border border-slate-200 w-52"
+            />
+            <button
+              type="button"
+              disabled={isSendingTest}
+              onClick={handleRunEmailTest}
+              className="btn btn-secondary text-xs font-bold py-1 px-3 flex items-center gap-1.5"
+            >
+              <Send size={12} />
+              <span>{isSendingTest ? 'Sending...' : `Send Test via ${emailProvider.toUpperCase()}`}</span>
+            </button>
+          </div>
+
+          {testResult && (
+            <div className={`text-xs font-semibold px-3 py-1 rounded-lg ${testResult.success ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200'}`}>
+              {testResult.success ? testResult.message : testResult.error}
+            </div>
+          )}
         </div>
       </div>
 

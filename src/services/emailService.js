@@ -1,13 +1,13 @@
 /**
- * CitiPay Email Notification Service (Powered by Resend)
+ * CitiPay Email Notification Service (Resend + SMTP Dual Engine)
  */
 
 const API_BASE = import.meta.env.VITE_API_URL || (typeof window !== 'undefined' ? window.location.origin : '')
 
 /**
- * Dispatch an email through the CitiPay Resend Mailer service
+ * Dispatch an email through the CitiPay Mailer service (supports Resend or SMTP based on admin settings)
  */
-export async function sendEmailNotification({ to, subject, html, text, fromName }) {
+export async function sendEmailNotification({ to, subject, html, text, fromName, provider }) {
   try {
     const res = await fetch(`${API_BASE}/api/send-email`, {
       method: 'POST',
@@ -19,7 +19,8 @@ export async function sendEmailNotification({ to, subject, html, text, fromName 
         subject,
         html,
         text,
-        fromName
+        fromName,
+        provider
       })
     })
 
@@ -38,7 +39,52 @@ export async function sendEmailNotification({ to, subject, html, text, fromName 
 }
 
 /**
- * Format and send official Player Login Credentials Email
+ * Fetch Mailer Configuration from Server
+ */
+export async function getMailerConfig() {
+  try {
+    const res = await fetch(`${API_BASE}/api/mail-config`)
+    if (res.ok) return await res.json()
+  } catch (err) {
+    console.warn('Could not fetch mailer config:', err.message)
+  }
+  return null
+}
+
+/**
+ * Update Mailer Configuration (Provider, SMTP credentials, Resend key, notification toggles)
+ */
+export async function saveMailerConfig(configPayload) {
+  try {
+    const res = await fetch(`${API_BASE}/api/mail-config`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(configPayload)
+    })
+    return await res.json()
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+}
+
+/**
+ * Send a Test Email to verify SMTP or Resend
+ */
+export async function sendTestEmail({ recipientEmail, providerOverride }) {
+  try {
+    const res = await fetch(`${API_BASE}/api/send-test-email`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ recipientEmail, providerOverride })
+    })
+    return await res.json()
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+}
+
+/**
+ * 1. Player Login Credentials Email
  */
 export async function sendPlayerCredentialsEmail({ player, tempPassword, pin, clubName, portalUrl }) {
   const origin = portalUrl || (typeof window !== 'undefined' ? window.location.origin : 'https://citifootypay.club')
@@ -124,7 +170,142 @@ export async function sendPlayerCredentialsEmail({ player, tempPassword, pin, cl
 }
 
 /**
- * Format and send ISL Cup Finals 2026 Team Entry Confirmation Email
+ * 2. Payment Receipt Email
+ */
+export async function sendPaymentReceiptEmail({ recipientEmail, memberName, amount, reference, description, receiptNo, paymentMethod, clubName }) {
+  const club = clubName || 'Ikoyi Sunday League'
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f8fafc; margin: 0; padding: 24px; color: #1e293b; }
+        .card { max-width: 520px; margin: 0 auto; background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; }
+        .header { background: #059669; padding: 24px 32px; color: white; text-align: center; }
+        .amount { font-size: 28px; font-weight: 900; margin: 8px 0; font-family: monospace; }
+        .body-content { padding: 32px; }
+        .receipt-box { background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; padding: 18px; margin: 20px 0; }
+        .receipt-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; }
+      </style>
+    </head>
+    <body>
+      <div class="card">
+        <div class="header">
+          <div style="font-size: 11px; text-transform: uppercase; font-weight: 700; letter-spacing: 1px;">Official Settlement Receipt</div>
+          <div class="amount">₦${Number(amount).toLocaleString()}</div>
+          <div style="font-size: 12px; opacity: 0.9;">Payment Verified & Settled</div>
+        </div>
+        <div class="body-content">
+          <h3 style="margin: 0 0 8px 0;">Received from ${memberName}</h3>
+          <p style="font-size: 13px; color: #64748b; margin: 0 0 16px 0;">Thank you for your payment to <strong>${club}</strong>. Details of this transaction:</p>
+
+          <div class="receipt-box">
+            <div class="receipt-row"><span>Receipt No:</span><strong>${receiptNo || 'REC-VERIFIED'}</strong></div>
+            <div class="receipt-row"><span>Reference:</span><strong style="font-family: monospace;">${reference}</strong></div>
+            <div class="receipt-row"><span>Category:</span><span>${description}</span></div>
+            <div class="receipt-row"><span>Channel:</span><span>${paymentMethod || 'Paystack'}</span></div>
+            <div class="receipt-row"><span>Date:</span><span>${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span></div>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `
+
+  return sendEmailNotification({
+    to: recipientEmail,
+    subject: `🧾 Payment Receipt (₦${Number(amount).toLocaleString()}) - ${club}`,
+    html,
+    text: `Payment Receipt of ₦${Number(amount).toLocaleString()} confirmed for ${memberName}. Receipt: ${receiptNo}. Ref: ${reference}.`
+  })
+}
+
+/**
+ * 3. Payment Reminder Email
+ */
+export async function sendPaymentReminderEmail({ player, amountDue, dueDate, reminderType, clubName }) {
+  const club = clubName || 'Ikoyi Sunday League'
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f8fafc; margin: 0; padding: 24px; color: #1e293b; }
+        .card { max-width: 520px; margin: 0 auto; background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; }
+        .header { background: #d97706; padding: 20px 28px; color: white; }
+        .body-content { padding: 28px; }
+        .cta-btn { display: inline-block; background: #059669; color: #ffffff !important; text-decoration: none; font-weight: 700; font-size: 13px; padding: 12px 24px; border-radius: 8px; margin-top: 16px; }
+      </style>
+    </head>
+    <body>
+      <div class="card">
+        <div class="header">
+          <h3 style="margin: 0; font-size: 18px;">Matchday Clearance Notice</h3>
+          <span style="font-size: 11px; opacity: 0.9;">${reminderType || 'Outstanding Balance Reminder'}</span>
+        </div>
+        <div class="body-content">
+          <p style="font-size: 14px; margin: 0 0 12px 0;">Dear <strong>${player.full_name}</strong>,</p>
+          <p style="font-size: 13px; color: #475569; line-height: 1.5;">
+            This is a friendly reminder that you have an outstanding balance of <strong style="color: #b45309;">₦${Number(amountDue).toLocaleString()}</strong> for your <strong>${club}</strong> membership dues.
+          </p>
+          <p style="font-size: 12px; color: #64748b;">
+            To maintain your <strong>Matchday Starting XI Clearance</strong> status and avoid due flags, please settle your payment before the upcoming matchday.
+          </p>
+          <div style="text-align: center;">
+            <a href="https://citifootypay.club/login" class="cta-btn" target="_blank">Settle Dues Online &rarr;</a>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `
+
+  return sendEmailNotification({
+    to: player.email,
+    subject: `⚽ Matchday Eligibility Reminder (₦${Number(amountDue).toLocaleString()}) - ${club}`,
+    html,
+    text: `Reminder: You have an outstanding balance of ₦${Number(amountDue).toLocaleString()} for ${club}. Please settle your balance to maintain matchday clearance.`
+  })
+}
+
+/**
+ * 4. Password / PIN Recovery OTP Email
+ */
+export async function sendPasswordResetOtpEmail({ recipientEmail, otpCode, memberName }) {
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f8fafc; margin: 0; padding: 24px; color: #1e293b; }
+        .card { max-width: 480px; margin: 0 auto; background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; padding: 32px; text-align: center; }
+        .otp { font-size: 32px; font-weight: 900; letter-spacing: 6px; font-family: monospace; color: #059669; background: #f0fdf4; border: 1px dashed #86efac; border-radius: 12px; padding: 16px; margin: 24px 0; }
+      </style>
+    </head>
+    <body>
+      <div class="card">
+        <h2 style="margin: 0 0 10px 0; color: #0f172a;">Password Recovery Code</h2>
+        <p style="font-size: 13px; color: #475569; margin: 0;">Use the 6-digit verification code below to reset your CitiPay portal password:</p>
+        <div class="otp">${otpCode}</div>
+        <p style="font-size: 11px; color: #94a3b8; margin: 0;">This passcode expires in 15 minutes. If you did not request this, please contact your club administrator.</p>
+      </div>
+    </body>
+    </html>
+  `
+
+  return sendEmailNotification({
+    to: recipientEmail,
+    subject: `🔒 CitiPay Password Recovery Code: ${otpCode}`,
+    html,
+    text: `Your CitiPay password recovery code is ${otpCode}. It expires in 15 minutes.`
+  })
+}
+
+/**
+ * 5. ISL Cup Finals Team Entry Confirmation Email
  */
 export async function sendIslCupEntryEmail({ team, recipientEmail }) {
   const email = recipientEmail || `${team.captainName.toLowerCase().replace(/[^a-z0-9]/g, '')}@citileague.ng`
