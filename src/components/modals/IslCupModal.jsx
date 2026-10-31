@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import {
   X, Trophy, Calendar, MapPin, Clock, DollarSign,
   Upload, Users, Shield, CheckCircle2, AlertCircle, Plus,
@@ -11,7 +11,18 @@ export default function IslCupModal() {
   const { islCupModalState, setIslCupModalState, islCupTeams, registerIslCupTeam, currentRole } = useCitiPay()
   const isSuperAdmin = currentRole === 'super_admin'
 
-  const [activeTab, setActiveTab] = useState('overview') // 'overview' | 'register' | 'payment' | 'teams'
+  const [activeTab, setActiveTab] = useState(islCupModalState?.initialTab || 'overview') // 'overview' | 'register' | 'payment' | 'teams'
+
+  // Sync activeTab whenever modal opens with a specific tab request (e.g. from Buy Ticket button)
+  useEffect(() => {
+    if (islCupModalState?.isOpen) {
+      if (islCupModalState?.initialTab) {
+        setActiveTab(islCupModalState.initialTab)
+      } else {
+        setActiveTab('overview')
+      }
+    }
+  }, [islCupModalState?.isOpen, islCupModalState?.initialTab])
   const [formData, setFormData] = useState({
     teamName: '',
     coachName: '',

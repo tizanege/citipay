@@ -411,10 +411,10 @@ export default function LoginPage() {
                 className="isl-login-advert-btn"
                 onClick={(e) => {
                   e.stopPropagation()
-                  setIslCupModalState({ isOpen: true })
+                  setIslCupModalState({ isOpen: true, initialTab: 'register' })
                 }}
               >
-                <span>View & Register</span>
+                <span>Buy Ticket / Register</span>
                 <ArrowRight size={13} />
               </button>
             </div>
