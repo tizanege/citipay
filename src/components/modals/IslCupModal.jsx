@@ -42,8 +42,10 @@ export default function IslCupModal() {
   // Payment checkout states for ISL Cup (₦300,000)
   const [paymentMethod, setPaymentMethod] = useState('paystack') // 'paystack' | 'manual_bank'
   const [bankRef, setBankRef] = useState('')
+  const [paymentReceiptFile, setPaymentReceiptFile] = useState(null)
   const [copiedBank, setCopiedBank] = useState(false)
   const [registeredPendingTeam, setRegisteredPendingTeam] = useState(null)
+  const receiptFileInputRef = useRef(null)
 
   if (!islCupModalState?.isOpen) return null
 
@@ -171,7 +173,8 @@ export default function IslCupModal() {
         logoUrl: formData.logoUrl || '/crests/sunday-league-fc.svg',
         paymentMethod: method,
         reference: ref,
-        paymentStatus: status
+        paymentStatus: status,
+        paymentProofUrl: paymentReceiptFile || null
       })
 
       setIsSubmitting(false)
@@ -196,6 +199,7 @@ export default function IslCupModal() {
           logoUrl: '/crests/sunday-league-fc.svg'
         })
         setUploadedLogo(null)
+        setPaymentReceiptFile(null)
       }, 3000)
     } catch (err) {
       setIsSubmitting(false)
@@ -637,12 +641,65 @@ export default function IslCupModal() {
                     <input
                       type="text"
                       placeholder="e.g. 09026724103009204208"
-                      className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono text-xs focus:outline-none focus:border-emerald-500"
+                      className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono text-xs focus:outline-none focus:border-emerald-500 mb-3"
                       value={bankRef}
                       onChange={(e) => setBankRef(e.target.value)}
                     />
-                    <span className="text-4xs text-slate-400 mt-1 block">
-                      Admins will verify this transfer in the Federation Payment Ledger.
+
+                    {/* Upload Payment Receipt / Proof */}
+                    <label className="text-3xs text-slate-300 uppercase tracking-wider font-bold block mb-1">
+                      Attach Bank Transfer Receipt / Screenshot
+                    </label>
+                    <input
+                      type="file"
+                      ref={receiptFileInputRef}
+                      accept="image/*,.pdf"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) {
+                          const reader = new FileReader()
+                          reader.onload = () => setPaymentReceiptFile(reader.result)
+                          reader.readAsDataURL(file)
+                        }
+                      }}
+                    />
+
+                    {paymentReceiptFile ? (
+                      <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-800 border border-emerald-500/50">
+                        <div className="flex items-center gap-2 overflow-hidden">
+                          <img
+                            src={paymentReceiptFile}
+                            alt="Receipt Preview"
+                            className="w-9 h-9 rounded-lg object-cover border border-slate-700 shrink-0"
+                          />
+                          <div className="min-w-0">
+                            <span className="text-xs font-bold text-emerald-400 block truncate">Receipt Attached</span>
+                            <span className="text-4xs text-slate-400 block">Click to replace file</span>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setPaymentReceiptFile(null)}
+                          className="text-xs text-rose-400 hover:text-rose-300 p-1"
+                          title="Remove receipt"
+                        >
+                          <X size={15} />
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => receiptFileInputRef.current?.click()}
+                        className="w-full py-2.5 px-3 border border-dashed border-slate-700 hover:border-emerald-500/80 rounded-xl bg-slate-800/60 text-slate-300 hover:text-white flex items-center justify-center gap-2 text-xs font-semibold transition-colors"
+                      >
+                        <Upload size={14} className="text-emerald-400" />
+                        <span>Upload Payment Receipt Screenshot</span>
+                      </button>
+                    )}
+
+                    <span className="text-4xs text-slate-400 mt-2 block">
+                      Super Admin will inspect your uploaded proof to verify and approve the team entry.
                     </span>
                   </div>
                 </div>

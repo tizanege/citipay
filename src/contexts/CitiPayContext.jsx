@@ -182,6 +182,7 @@ export function CitiPayProvider({ children }) {
       method: teamPayload.paymentMethod === 'bank_transfer' ? 'Bank Transfer' : 'Paystack',
       status: paymentStatus,
       receipt_no: receiptNum,
+      paymentProofUrl: teamPayload.paymentProofUrl || null,
       notes: `Coach: ${teamPayload.coachName} · Captain: ${teamPayload.captainName} · VIPs: ${teamPayload.vipSpectator1 || 'N/A'}, ${teamPayload.vipSpectator2 || 'N/A'}`
     }
 

@@ -4,7 +4,7 @@ import {
   Trophy, Users, CreditCard, Building2, TrendingUp,
   Shield, CheckCircle2, AlertTriangle, Download, ArrowUpRight,
   ShieldCheck, Activity, DollarSign, Sliders, Landmark, ArrowRight,
-  Shirt, Calendar, Edit3, Trash2
+  Shirt, Calendar, Edit3, Trash2, FileText, ExternalLink, X, Eye
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
 import './AdminDashboard.css'
@@ -25,6 +25,8 @@ export default function AdminDashboard() {
     deleteIslCupTeam,
     confirmIslCupTeamPayment
   } = useCitiPay()
+
+  const [viewingReceiptTeam, setViewingReceiptTeam] = useState(null)
 
   return (
     <div className="admin-dashboard-wrap">
@@ -255,13 +257,14 @@ export default function AdminDashboard() {
             <table className="data-table">
               <thead>
                 <tr>
-                  <th style={{ width: '60px' }}>Slot</th>
-                  <th style={{ width: '220px' }}>Team</th>
+                  <th style={{ width: '50px' }}>Slot</th>
+                  <th style={{ width: '200px' }}>Team</th>
                   <th>Coach</th>
                   <th>Captain</th>
                   <th>VIP Spectators</th>
+                  <th style={{ textAlign: 'center' }}>Receipt Proof</th>
                   <th style={{ textAlign: 'center' }}>Status</th>
-                  <th style={{ textAlign: 'right', width: '80px' }}>Action</th>
+                  <th style={{ textAlign: 'right', width: '130px' }}>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -295,6 +298,22 @@ export default function AdminDashboard() {
                     <td className="text-xs text-slate-600">
                       <div className="text-3xs text-slate-700">1. {team.vipSpectator1 || '—'}</div>
                       <div className="text-3xs text-slate-700">2. {team.vipSpectator2 || '—'}</div>
+                    </td>
+                    <td style={{ textAlign: 'center' }}>
+                      {team.paymentProofUrl ? (
+                        <button
+                          type="button"
+                          onClick={() => setViewingReceiptTeam(team)}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-3xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-colors"
+                          title="View uploaded payment receipt"
+                        >
+                          <Eye size={12} /> View Receipt
+                        </button>
+                      ) : (
+                        <span className="text-3xs text-slate-400 font-mono italic">
+                          {team.paymentMethod === 'paystack' ? 'Paystack Auto' : 'None Attached'}
+                        </span>
+                      )}
                     </td>
                     <td style={{ textAlign: 'center' }}>
                       <span className={`badge text-3xs font-extrabold ${team.paymentStatus === 'Paid' ? 'badge-success' : 'badge-warning'}`}>
@@ -338,6 +357,98 @@ export default function AdminDashboard() {
           </div>
         )}
       </div>
+
+      {/* Proof / Receipt Modal Viewer */}
+      {viewingReceiptTeam && (
+        <div className="modal-backdrop-portal" onClick={() => setViewingReceiptTeam(null)}>
+          <div
+            className="modal-content-portal max-w-lg"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-header-portal">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-blue-500/10 text-blue-600">
+                  <FileText size={18} />
+                </div>
+                <div>
+                  <h3 className="modal-title-portal">Payment Proof & Receipt</h3>
+                  <p className="modal-desc-portal">
+                    Uploaded transfer confirmation for <strong>{viewingReceiptTeam.teamName}</strong>
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="modal-close-btn"
+                onClick={() => setViewingReceiptTeam(null)}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="modal-body-portal p-5 space-y-4">
+              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl grid grid-cols-2 gap-3 text-xs">
+                <div>
+                  <span className="text-slate-400 block text-3xs font-semibold">TEAM NAME</span>
+                  <strong className="text-slate-800">{viewingReceiptTeam.teamName}</strong>
+                </div>
+                <div>
+                  <span className="text-slate-400 block text-3xs font-semibold">CAPTAIN / SENDER</span>
+                  <strong className="text-slate-800">{viewingReceiptTeam.captainName}</strong>
+                </div>
+                <div>
+                  <span className="text-slate-400 block text-3xs font-semibold">REGISTERED EMAIL</span>
+                  <span className="text-slate-700 font-mono text-3xs">{viewingReceiptTeam.email || '—'}</span>
+                </div>
+                <div>
+                  <span className="text-slate-400 block text-3xs font-semibold">ENTRY AMOUNT</span>
+                  <strong className="text-emerald-700 font-mono text-sm">₦300,000</strong>
+                </div>
+                {viewingReceiptTeam.reference && (
+                  <div className="col-span-2">
+                    <span className="text-slate-400 block text-3xs font-semibold">BANK TRANSFER REFERENCE</span>
+                    <span className="text-slate-800 font-mono font-bold text-xs">{viewingReceiptTeam.reference}</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="border border-slate-200 rounded-2xl overflow-hidden bg-slate-900 text-center p-2">
+                <img
+                  src={viewingReceiptTeam.paymentProofUrl}
+                  alt={`Receipt proof for ${viewingReceiptTeam.teamName}`}
+                  className="max-h-96 w-auto mx-auto object-contain rounded-xl"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+                <a
+                  href={viewingReceiptTeam.paymentProofUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  download={`Receipt-${viewingReceiptTeam.teamName}.png`}
+                  className="btn btn-secondary text-xs flex items-center gap-1.5"
+                >
+                  <Download size={14} /> Open Full Size / Download
+                </a>
+                {viewingReceiptTeam.paymentStatus !== 'Paid' && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (window.confirm(`Approve payment of ₦300,000 for "${viewingReceiptTeam.teamName}"?`)) {
+                        confirmIslCupTeamPayment(viewingReceiptTeam.id)
+                        setViewingReceiptTeam(null)
+                      }
+                    }}
+                    className="btn btn-primary text-xs font-bold"
+                  >
+                    ✓ Approve Payment Now
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
