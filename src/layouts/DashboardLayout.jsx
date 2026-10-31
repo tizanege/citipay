@@ -16,6 +16,7 @@ import SendCredentialsModal from '../components/modals/SendCredentialsModal'
 import EditLeagueSettingsModal from '../components/modals/EditLeagueSettingsModal'
 import IslCupModal from '../components/modals/IslCupModal'
 import WalletModal from '../components/modals/WalletModal'
+import SubmitPaymentProofModal from '../components/modals/SubmitPaymentProofModal'
 import './DashboardLayout.css'
 
 export default function DashboardLayout() {
@@ -31,6 +32,7 @@ export default function DashboardLayout() {
 
       {/* Global Modals for Interactive CitiPay Flows */}
       <MakePaymentModal />
+      <SubmitPaymentProofModal />
       <WalletModal />
       <ReceiptModal />
       <ManualPaymentModal />

@@ -1,14 +1,14 @@
 import { useState } from 'react'
 import {
   History, Download, Search, Filter, CheckCircle2,
-  FileText, Calendar, ArrowUpRight, ShieldCheck, Printer
+  FileText, Calendar, ArrowUpRight, ShieldCheck, Printer, Landmark
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
 import Pagination from '../components/Pagination'
 import './PaymentHistoryPage.css'
 
 export default function PaymentHistoryPage() {
-  const { transactions, currentMember, currentRole, setReceiptModalState } = useCitiPay()
+  const { transactions, currentMember, currentRole, setReceiptModalState, setSubmitProofModalState } = useCitiPay()
   const [searchTerm, setSearchTerm] = useState('')
   const [filterType, setFilterType] = useState('all')
   const [currentPage, setCurrentPage] = useState(1)
@@ -53,8 +53,16 @@ export default function PaymentHistoryPage() {
           </p>
         </div>
 
-        <div className="flex gap-2">
-          <button className="btn btn-secondary flex items-center gap-2 text-xs font-semibold" onClick={() => window.print()}>
+        <div className="flex gap-2 items-center">
+          <button
+            className="btn btn-primary flex items-center gap-2 text-xs font-bold py-2 px-3.5"
+            onClick={() => setSubmitProofModalState({ isOpen: true })}
+            title="Submit offline bank transfer receipt for admin verification"
+          >
+            <Landmark size={14} />
+            <span>Send Bank Confirmation</span>
+          </button>
+          <button className="btn btn-secondary flex items-center gap-2 text-xs font-semibold py-2 px-3.5" onClick={() => window.print()}>
             <Printer size={15} /> Print Statement
           </button>
         </div>

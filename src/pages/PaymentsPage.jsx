@@ -8,7 +8,14 @@ import { useCitiPay } from '../contexts/CitiPayContext'
 import './PaymentsPage.css'
 
 export default function PaymentsPage() {
-  const { currentMember, currentClub, setPaymentModalState, setReceiptModalState, leagueSettings } = useCitiPay()
+  const {
+    currentMember,
+    currentClub,
+    setPaymentModalState,
+    setReceiptModalState,
+    setSubmitProofModalState,
+    leagueSettings
+  } = useCitiPay()
 
   const paidPercent = Math.round((currentMember.membership_paid / currentMember.membership_fee) * 100)
   const installmentAmount = Math.round((currentMember.membership_fee || 100000) / 2)
@@ -37,13 +44,24 @@ export default function PaymentsPage() {
           </p>
         </div>
 
-        <button
-          className="btn btn-primary flex items-center gap-2 font-bold py-2.5 px-5"
-          onClick={() => handleOpenPayment('membership_installment', nextInstallmentDue || installmentAmount)}
-        >
-          <CreditCard size={17} />
-          <span>[MAKE PAYMENT]</span>
-        </button>
+        <div className="flex items-center gap-2.5">
+          <button
+            className="btn btn-secondary flex items-center gap-2 font-bold py-2.5 px-4"
+            onClick={() => setSubmitProofModalState({ isOpen: true })}
+            title="Submit offline bank transfer receipt for admin verification"
+          >
+            <Landmark size={16} className="text-amber-600" />
+            <span>Send Bank Confirmation</span>
+          </button>
+
+          <button
+            className="btn btn-primary flex items-center gap-2 font-bold py-2.5 px-5"
+            onClick={() => handleOpenPayment('membership_installment', nextInstallmentDue || installmentAmount)}
+          >
+            <CreditCard size={17} />
+            <span>[MAKE PAYMENT]</span>
+          </button>
+        </div>
       </div>
 
       {/* Top Row: Virtual Player Card + 3 Metric Cards */}

@@ -126,6 +126,7 @@ export function CitiPayProvider({ children }) {
   const [deletePlayerModalState, setDeletePlayerModalState] = useState({ isOpen: false, member: null })
   const [sendCredentialsModalState, setSendCredentialsModalState] = useState({ isOpen: false, member: null })
   const [leagueSettingsModalState, setLeagueSettingsModalState] = useState({ isOpen: false })
+  const [submitProofModalState, setSubmitProofModalState] = useState({ isOpen: false })
 
   // ISL Cup Finals 2026 Announcement & 10-Team Registration Matrix State
   const [islCupModalState, setIslCupModalState] = useState({
@@ -1903,6 +1904,8 @@ export function CitiPayProvider({ children }) {
     setSendCredentialsModalState,
     leagueSettingsModalState,
     setLeagueSettingsModalState,
+    submitProofModalState,
+    setSubmitProofModalState,
     
     // ISL Cup Finals 2026
     islCupModalState,
