@@ -315,7 +315,7 @@
 /* ── Superpower Players Grid Layout ─────────────────────── */
 .admin-players-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
   gap: 1.25rem;
 }
 
@@ -437,7 +437,13 @@
 .player-grid-actions {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
-  padding-top: 0.45rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.04);
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.player-grid-actions .btn {
+  white-space: nowrap;
+  flex-shrink: 0;
 }

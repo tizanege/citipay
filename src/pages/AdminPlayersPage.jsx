@@ -269,7 +269,7 @@ export default function AdminPlayersPage() {
                     {/* Actions Bottom Bar */}
                     <div className="player-grid-actions">
                       <button
-                        className="btn btn-secondary text-3xs py-1.5 px-2.5 font-bold rounded-full text-indigo-700 bg-indigo-50 border-indigo-200 hover:bg-indigo-100"
+                        className="btn btn-secondary text-3xs py-1 px-2 font-bold rounded-lg text-indigo-700 bg-indigo-50 border-indigo-200 hover:bg-indigo-100"
                         title="Record Offline Manual Payment"
                         onClick={() => setManualPaymentModalState({ isOpen: true, member: player })}
                       >
@@ -277,7 +277,7 @@ export default function AdminPlayersPage() {
                         + Pay
                       </button>
                       <button
-                        className="btn btn-secondary text-3xs py-1.5 px-2.5 font-bold rounded-full"
+                        className="btn btn-secondary text-3xs py-1 px-2 font-bold rounded-lg"
                         title="Edit Player Details"
                         onClick={() => setEditPlayerModalState({ isOpen: true, member: player })}
                       >
@@ -285,7 +285,7 @@ export default function AdminPlayersPage() {
                         Edit
                       </button>
                       <button
-                        className="btn btn-secondary text-3xs py-1.5 px-2.5 font-bold text-emerald-800 bg-emerald-50 border-emerald-200 rounded-full"
+                        className="btn btn-secondary text-3xs py-1 px-2 font-bold text-emerald-800 bg-emerald-50 border-emerald-200 rounded-lg"
                         title="Dispatch Login Credentials via Email"
                         onClick={() => setSendCredentialsModalState({ isOpen: true, member: player })}
                       >
@@ -293,14 +293,14 @@ export default function AdminPlayersPage() {
                         Login
                       </button>
                       <button
-                        className="btn btn-secondary text-3xs py-1.5 px-2.5 font-bold rounded-full"
+                        className="btn btn-secondary text-3xs py-1 px-2 font-bold rounded-lg"
                         title="Override Player Eligibility Clearance"
                         onClick={() => setStatusOverrideModalState({ isOpen: true, member: player })}
                       >
                         Override
                       </button>
                       <button
-                        className="btn btn-secondary text-3xs py-1.5 px-2.5 font-bold rounded-full text-rose-700 bg-rose-50 border-rose-200 hover:bg-rose-100"
+                        className="btn btn-secondary text-3xs py-1 px-2 font-bold rounded-lg text-rose-700 bg-rose-50 border-rose-200 hover:bg-rose-100"
                         title="Remove Player from Registry"
                         onClick={() => setDeletePlayerModalState({ isOpen: true, member: player })}
                       >
@@ -308,7 +308,7 @@ export default function AdminPlayersPage() {
                         Delete
                       </button>
                       <button
-                        className="btn btn-primary text-3xs py-1.5 px-3 font-bold rounded-full ml-auto"
+                        className="btn btn-primary text-3xs py-1 px-2.5 font-bold rounded-lg"
                         title="View Verified Receipt"
                         onClick={() => setReceiptModalState({
                           isOpen: true,
