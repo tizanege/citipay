@@ -16,6 +16,7 @@ import {
   generateTempPassword,
   generateAccessPin
 } from '../lib/memberIdGenerator'
+import { sendPlayerCredentialsEmail, sendIslCupEntryEmail } from '../services/emailService'
 
 const CitiPayContext = createContext(null)
 
@@ -214,6 +215,11 @@ export function CitiPayProvider({ children }) {
       reason: `Registered "${teamPayload.teamName}" for ISL Cup Finals 2026 with 2 VIP Spectator badges.`,
       details: newTeam
     }).catch(err => console.warn('Supabase ISL Cup sync warning:', err?.message))
+
+    // Dispatch confirmation email to team
+    sendIslCupEntryEmail({
+      team: newTeam
+    }).catch(err => console.warn('Resend ISL Cup email notice:', err?.message))
 
     return newTeam
   }, [islCupTeams])
@@ -1710,6 +1716,14 @@ export function CitiPayProvider({ children }) {
       details: `Member ID: ${target.member_id} · Temp Password: ${pwd} · PIN: ${accessPin} · Direct Portal Link included.`
     }
     setAuditLogs(prev => [newLog, ...prev])
+
+    // Trigger Resend email service dispatch
+    sendPlayerCredentialsEmail({
+      player: { ...target, email: targetEmail },
+      tempPassword: pwd,
+      pin: accessPin,
+      clubName: currentClub?.name
+    }).catch(err => console.warn('Resend mailer notice:', err?.message))
 
     return {
       member: target,
