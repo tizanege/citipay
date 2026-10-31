@@ -16,7 +16,7 @@ import {
   generateTempPassword,
   generateAccessPin
 } from '../lib/memberIdGenerator'
-import { sendPlayerCredentialsEmail, sendIslCupEntryEmail } from '../services/emailService'
+import { sendPlayerCredentialsEmail, sendIslCupEntryEmail, sendPaymentReceiptEmail } from '../services/emailService'
 
 const CitiPayContext = createContext(null)
 
@@ -219,7 +219,8 @@ export function CitiPayProvider({ children }) {
 
     // Dispatch confirmation email to team
     sendIslCupEntryEmail({
-      team: newTeam
+      team: newTeam,
+      recipientEmail: teamPayload.email
     }).catch(err => console.warn('Resend ISL Cup email notice:', err?.message))
 
     return newTeam
@@ -882,6 +883,20 @@ export function CitiPayProvider({ children }) {
         details: `Offline bank transfer approved and cleared into active federation ledger.`
       }
       setAuditLogs(prev => [auditLog, ...prev])
+
+      // 4. Send Confirmation / Receipt Email to Player upon Admin Approval
+      if (target.email) {
+        sendPaymentReceiptEmail({
+          recipientEmail: target.email,
+          memberName: target.full_name,
+          amount: Number(tx.amount),
+          reference: tx.reference,
+          description: tx.description,
+          receiptNo: officialReceiptNo,
+          paymentMethod: 'Direct Bank Transfer (Admin Confirmed)',
+          clubName: currentClub?.name
+        }).catch(err => console.warn('Payment approval email notice:', err?.message))
+      }
     }
 
     return true

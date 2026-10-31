@@ -27,6 +27,8 @@ export default function IslCupModal() {
     teamName: '',
     coachName: '',
     captainName: '',
+    email: '',
+    phone: '',
     vipSpectator1: '',
     vipSpectator2: '',
     logoUrl: '/crests/sunday-league-fc.svg'
@@ -79,6 +81,10 @@ export default function IslCupModal() {
       setError('Please provide your Team Captain Name.')
       return
     }
+    if (!formData.email.trim() || !formData.email.includes('@')) {
+      setError('Please provide a valid official email address to receive your confirmation receipt & VIP credentials.')
+      return
+    }
 
     setBankRef(`ISL-TRANS-${Date.now().toString().slice(-6)}`)
     setActiveTab('payment')
@@ -95,7 +101,7 @@ export default function IslCupModal() {
 
     if (paymentMethod === 'paystack') {
       const generatedRef = `ISL-CUP-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`
-      const captainEmail = `${formData.captainName.toLowerCase().replace(/[^a-z0-9]/g, '')}@citileague.ng`
+      const captainEmail = formData.email.trim() || `${formData.captainName.toLowerCase().replace(/[^a-z0-9]/g, '')}@citileague.ng`
 
       if (typeof window !== 'undefined' && window.PaystackPop && isLiveKey) {
         const handler = window.PaystackPop.setup({
@@ -158,6 +164,8 @@ export default function IslCupModal() {
         teamName: formData.teamName.trim(),
         coachName: formData.coachName.trim(),
         captainName: formData.captainName.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
         vipSpectator1: formData.vipSpectator1.trim(),
         vipSpectator2: formData.vipSpectator2.trim(),
         logoUrl: formData.logoUrl || '/crests/sunday-league-fc.svg',
@@ -170,8 +178,8 @@ export default function IslCupModal() {
       setRegisteredPendingTeam(created)
       setSuccessMessage(
         status === 'Paid'
-          ? `🎉 Team "${formData.teamName}" registered and ₦300,000 payment confirmed!`
-          : `✓ Team "${formData.teamName}" registered. Transfer reference logged for Admin verification.`
+          ? `🎉 Team "${formData.teamName}" registered! Official confirmation has been emailed to ${formData.email}.`
+          : `✓ Team "${formData.teamName}" registered. Confirmation and receipt pending admin approval emailed to ${formData.email}.`
       )
 
       setTimeout(() => {
@@ -181,12 +189,14 @@ export default function IslCupModal() {
           teamName: '',
           coachName: '',
           captainName: '',
+          email: '',
+          phone: '',
           vipSpectator1: '',
           vipSpectator2: '',
           logoUrl: '/crests/sunday-league-fc.svg'
         })
         setUploadedLogo(null)
-      }, 2500)
+      }, 3000)
     } catch (err) {
       setIsSubmitting(false)
       setError(err.message || 'Registration failed. Maximum slots may be filled.')
@@ -391,6 +401,33 @@ export default function IslCupModal() {
                       className="isl-input"
                       value={formData.captainName}
                       onChange={(e) => setFormData(prev => ({ ...prev, captainName: e.target.value }))}
+                    />
+                  </div>
+                </div>
+
+                {/* Email Address & Contact Phone for Digital Receipt & Ticket Delivery */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="isl-input-lbl">Official Email Address *</label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="captain@team.com"
+                      className="isl-input"
+                      value={formData.email}
+                      onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                    />
+                    <span className="text-4xs text-slate-400 block mt-0.5">Receipt & VIP passes delivered here.</span>
+                  </div>
+
+                  <div>
+                    <label className="isl-input-lbl">Phone Number (WhatsApp)</label>
+                    <input
+                      type="tel"
+                      placeholder="+234 800 000 0000"
+                      className="isl-input"
+                      value={formData.phone}
+                      onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                     />
                   </div>
                 </div>
