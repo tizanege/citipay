@@ -236,6 +236,35 @@ export function CitiPayProvider({ children }) {
     })
   }, [])
 
+  const confirmIslCupTeamPayment = useCallback((teamId) => {
+    setIslCupTeams(prev => {
+      const next = prev.map(t => {
+        if (t.id === teamId) {
+          return {
+            ...t,
+            paymentStatus: 'Paid'
+          }
+        }
+        return t
+      })
+      try {
+        localStorage.setItem('isl_cup_registered_teams_2026', JSON.stringify(next))
+      } catch (e) {}
+      return next
+    })
+
+    // Also update any matching transaction in ledger
+    setTransactions(prev => prev.map(tx => {
+      if (tx.id === `tx-isl-${teamId}` || tx.payment_type === 'isl_cup_entry') {
+        return {
+          ...tx,
+          status: 'Paid'
+        }
+      }
+      return tx
+    }))
+  }, [])
+
   // Active Club Object
   const currentClub = useMemo(() => {
     return clubs.find(c => c.id === selectedClubId || c.slug === selectedClubId || c.code === selectedClubId) || clubs[0] || initialClubs[0] || {
@@ -1937,7 +1966,8 @@ export function CitiPayProvider({ children }) {
     setIslCupModalState,
     islCupTeams,
     registerIslCupTeam,
-    deleteIslCupTeam
+    deleteIslCupTeam,
+    confirmIslCupTeamPayment
   }
 
   return (

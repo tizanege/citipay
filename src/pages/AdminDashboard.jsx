@@ -22,7 +22,8 @@ export default function AdminDashboard() {
     setLeagueSettingsModalState,
     islCupTeams,
     setIslCupModalState,
-    deleteIslCupTeam
+    deleteIslCupTeam,
+    confirmIslCupTeamPayment
   } = useCitiPay()
 
   return (
@@ -301,18 +302,34 @@ export default function AdminDashboard() {
                       </span>
                     </td>
                     <td style={{ textAlign: 'right' }}>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (window.confirm(`Remove team "${team.teamName}" from ISL Cup Finals?`)) {
-                            deleteIslCupTeam(team.id)
-                          }
-                        }}
-                        className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
-                        title="Remove Team Entry"
-                      >
-                        <Trash2 size={14} />
-                      </button>
+                      <div className="flex items-center justify-end gap-1.5">
+                        {team.paymentStatus !== 'Paid' && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (window.confirm(`Confirm and approve payment of ₦300,000 for "${team.teamName}"?`)) {
+                                confirmIslCupTeamPayment(team.id)
+                              }
+                            }}
+                            className="px-2 py-1 rounded-md text-3xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-colors"
+                            title="Confirm Payment"
+                          >
+                            ✓ Approve
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (window.confirm(`Remove team "${team.teamName}" from ISL Cup Finals?`)) {
+                              deleteIslCupTeam(team.id)
+                            }
+                          }}
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                          title="Remove Team Entry"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
