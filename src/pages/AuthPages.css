@@ -256,7 +256,7 @@
   box-shadow: 0 0 0 3px rgba(9, 9, 11, 0.06) !important;
 }
 
-.form-input-portal {
+.auth-split-wrapper .form-input-portal {
   border-radius: 9999px !important;
   padding: 0.65rem 1.15rem !important;
   border: 1px solid rgba(0, 0, 0, 0.06) !important;
@@ -265,7 +265,7 @@
   font-size: 0.875rem;
 }
 
-.form-input-portal:focus {
+.auth-split-wrapper .form-input-portal:focus {
   background: #FFFFFF !important;
   border-color: #09090B !important;
 }

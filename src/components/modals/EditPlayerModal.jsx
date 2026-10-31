@@ -84,19 +84,21 @@ export default function EditPlayerModal() {
   return (
     <div className="modal-backdrop-portal" onClick={handleClose}>
       <div
-        className="modal-container-portal max-w-lg"
+        className="modal-content-portal max-w-lg"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="modal-header-portal">
-          <div className="modal-icon-badge">
-            <UserCheck size={20} className="text-blue-600" />
-          </div>
-          <div className="flex-1">
-            <h3 className="modal-title-portal">Edit Player Profile</h3>
-            <p className="modal-desc-portal">
-              Update legal roster identity, tactical specs, and club allocation
-            </p>
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-xl bg-blue-500/10 text-blue-600">
+              <UserCheck size={20} />
+            </div>
+            <div>
+              <h3 className="modal-title-portal">Edit Player Profile</h3>
+              <p className="modal-desc-portal">
+                Update legal roster identity, tactical specs, and club allocation
+              </p>
+            </div>
           </div>
           <button
             type="button"
@@ -119,119 +121,122 @@ export default function EditPlayerModal() {
             </p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="p-6 space-y-4">
-            {errorMessage && (
-              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs flex items-center gap-2">
-                <AlertCircle size={15} />
-                <span>{errorMessage}</span>
-              </div>
-            )}
+          <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden" style={{ minHeight: 0 }}>
+            {/* Scrollable Body */}
+            <div className="modal-body-portal flex-1 overflow-y-auto p-5 flex flex-col gap-3.5">
+              {errorMessage && (
+                <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs flex items-center gap-2">
+                  <AlertCircle size={15} />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
 
-            {/* Readonly Member ID badge */}
-            <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
-              <div className="text-xs">
-                <span className="text-slate-400 font-medium block">Unique Member ID</span>
-                <span className="font-mono font-bold text-slate-800 text-sm">{member.display_id || member.member_id}</span>
+              {/* Readonly Member ID badge */}
+              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
+                <div className="text-xs">
+                  <span className="text-slate-400 font-medium block">Unique Member ID</span>
+                  <span className="font-mono font-bold text-slate-800 text-sm">{member.display_id || member.member_id}</span>
+                </div>
+                <span className={`squad-clearance-pill ${member.status} text-3xs`}>
+                  {member.status === 'green' && '🟢 Cleared'}
+                  {member.status === 'yellow' && '🟡 Due Soon'}
+                  {member.status === 'red' && '🔴 Ineligible'}
+                </span>
               </div>
-              <span className={`squad-clearance-pill ${member.status} text-3xs`}>
-                {member.status === 'green' && '🟢 Cleared'}
-                {member.status === 'yellow' && '🟡 Due Soon'}
-                {member.status === 'red' && '🔴 Ineligible'}
-              </span>
-            </div>
 
-            {/* Name & Nickname */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="form-label-portal">FULL NAME *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Victor Osimhen"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  className="form-input-portal text-xs"
-                />
-              </div>
-              <div>
-                <label className="form-label-portal">NICKNAME (OPTIONAL)</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Star Boy"
-                  value={nickname}
-                  onChange={(e) => setNickname(e.target.value)}
-                  className="form-input-portal text-xs"
-                />
-              </div>
-            </div>
-
-            {/* Phone & Club Affiliation */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="form-label-portal">PHONE NUMBER</label>
-                <div className="relative">
-                  <Phone size={14} className="absolute left-3 top-3 text-slate-400" />
+              {/* Name & Nickname */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="form-label-portal">FULL NAME *</label>
                   <input
-                    type="tel"
-                    placeholder="e.g. +234 801 234 5678"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="form-input-portal text-xs pl-8"
+                    type="text"
+                    required
+                    placeholder="e.g. Victor Osimhen"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    className="form-input-portal text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="form-label-portal">NICKNAME (OPTIONAL)</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Star Boy"
+                    value={nickname}
+                    onChange={(e) => setNickname(e.target.value)}
+                    className="form-input-portal text-xs"
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="form-label-portal">AFFILIATED CLUB</label>
-                <select
-                  value={selectedClubId}
-                  onChange={(e) => setSelectedClubId(e.target.value)}
-                  className="form-input-portal text-xs"
-                >
-                  {clubs.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name} ({c.code})
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
+              {/* Phone & Club Affiliation */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="form-label-portal">PHONE NUMBER</label>
+                  <div className="relative">
+                    <Phone size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <input
+                      type="tel"
+                      placeholder="e.g. +234 801 234 5678"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      className="form-input-portal text-xs pl-8"
+                    />
+                  </div>
+                </div>
 
-            {/* Tactical Specs: Position & Jersey Number */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="form-label-portal">PRIMARY POSITION</label>
-                <select
-                  value={position}
-                  onChange={(e) => setPosition(e.target.value)}
-                  className="form-input-portal text-xs font-semibold"
-                >
-                  {POSITIONS.map((pos) => (
-                    <option key={pos} value={pos}>
-                      {pos}
-                    </option>
-                  ))}
-                </select>
+                <div>
+                  <label className="form-label-portal">AFFILIATED CLUB</label>
+                  <select
+                    value={selectedClubId}
+                    onChange={(e) => setSelectedClubId(e.target.value)}
+                    className="form-input-portal text-xs"
+                  >
+                    {clubs.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name} ({c.code})
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
-              <div>
-                <label className="form-label-portal">JERSEY NUMBER</label>
-                <div className="relative">
-                  <Shirt size={14} className="absolute left-3 top-3 text-slate-400" />
-                  <input
-                    type="number"
-                    min="1"
-                    max="99"
-                    value={jerseyNumber}
-                    onChange={(e) => setJerseyNumber(e.target.value)}
-                    className="form-input-portal text-xs pl-8 font-mono font-bold"
-                  />
+              {/* Tactical Specs: Position & Jersey Number */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="form-label-portal">PRIMARY POSITION</label>
+                  <select
+                    value={position}
+                    onChange={(e) => setPosition(e.target.value)}
+                    className="form-input-portal text-xs font-semibold"
+                  >
+                    {POSITIONS.map((pos) => (
+                      <option key={pos} value={pos}>
+                        {pos}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="form-label-portal">JERSEY NUMBER</label>
+                  <div className="relative">
+                    <Shirt size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <input
+                      type="number"
+                      min="1"
+                      max="99"
+                      value={jerseyNumber}
+                      onChange={(e) => setJerseyNumber(e.target.value)}
+                      className="form-input-portal text-xs pl-8 font-mono font-bold"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Footer Buttons */}
-            <div className="flex gap-2 pt-3 border-t border-slate-100">
+            {/* Fixed Footer Buttons */}
+            <div className="flex gap-2 p-4 border-t border-slate-100 bg-slate-50/50">
               <button
                 type="button"
                 className="btn btn-secondary flex-1 py-2 text-xs font-semibold"
