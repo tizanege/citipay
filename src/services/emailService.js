@@ -179,36 +179,76 @@ export async function sendPaymentReceiptEmail({ recipientEmail, memberName, amou
     <html>
     <head>
       <meta charset="utf-8">
-      <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f8fafc; margin: 0; padding: 24px; color: #1e293b; }
-        .card { max-width: 520px; margin: 0 auto; background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; }
-        .header { background: #059669; padding: 24px 32px; color: white; text-align: center; }
-        .amount { font-size: 28px; font-weight: 900; margin: 8px 0; font-family: monospace; }
-        .body-content { padding: 32px; }
-        .receipt-box { background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; padding: 18px; margin: 20px 0; }
-        .receipt-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; }
-      </style>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
-    <body>
-      <div class="card">
-        <div class="header">
-          <div style="font-size: 11px; text-transform: uppercase; font-weight: 700; letter-spacing: 1px;">Official Settlement Receipt</div>
-          <div class="amount">₦${Number(amount).toLocaleString()}</div>
-          <div style="font-size: 12px; opacity: 0.9;">Payment Verified & Settled</div>
-        </div>
-        <div class="body-content">
-          <h3 style="margin: 0 0 8px 0;">Received from ${memberName}</h3>
-          <p style="font-size: 13px; color: #64748b; margin: 0 0 16px 0;">Thank you for your payment to <strong>${club}</strong>. Details of this transaction:</p>
+    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f1f5f9; margin: 0; padding: 32px 16px; color: #1e293b;">
+      <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 560px; margin: 0 auto; background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);">
+        <!-- Header Banner -->
+        <tr>
+          <td style="background: linear-gradient(135deg, #059669 0%, #047857 100%); padding: 32px 28px; text-align: center; color: #ffffff;">
+            <div style="font-size: 11px; text-transform: uppercase; font-weight: 800; letter-spacing: 1.5px; opacity: 0.9; margin-bottom: 6px;">CitiPay Official Settlement Receipt</div>
+            <div style="font-size: 36px; font-weight: 900; font-family: monospace; letter-spacing: -1px; margin: 6px 0;">₦${Number(amount).toLocaleString()}</div>
+            <span style="display: inline-block; background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.35); padding: 4px 14px; border-radius: 9999px; font-size: 12px; font-weight: 700;">✓ Payment Verified & Settled</span>
+          </td>
+        </tr>
 
-          <div class="receipt-box">
-            <div class="receipt-row"><span>Receipt No:</span><strong>${receiptNo || 'REC-VERIFIED'}</strong></div>
-            <div class="receipt-row"><span>Reference:</span><strong style="font-family: monospace;">${reference}</strong></div>
-            <div class="receipt-row"><span>Category:</span><span>${description}</span></div>
-            <div class="receipt-row"><span>Channel:</span><span>${paymentMethod || 'Paystack'}</span></div>
-            <div class="receipt-row"><span>Date:</span><span>${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span></div>
-          </div>
-        </div>
-      </div>
+        <!-- Body -->
+        <tr>
+          <td style="padding: 32px 28px;">
+            <h3 style="margin: 0 0 6px 0; font-size: 18px; font-weight: 800; color: #0f172a;">Received from ${memberName}</h3>
+            <p style="font-size: 13px; color: #64748b; margin: 0 0 24px 0; line-height: 1.5;">
+              Thank you for your payment to <strong>${club}</strong>. Your dues balance and matchday clearance have been updated across the federation roster.
+            </p>
+
+            <!-- Receipt Breakdown Table -->
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 24px;">
+              <tr>
+                <td style="padding: 16px 20px;">
+                  <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="font-size: 12px; color: #64748b; padding: 7px 0; border-bottom: 1px solid #f1f5f9;">Receipt Number:</td>
+                      <td align="right" style="font-size: 12px; font-weight: 800; font-family: monospace; color: #0f172a; padding: 7px 0; border-bottom: 1px solid #f1f5f9;">${receiptNo || 'REC-VERIFIED'}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-size: 12px; color: #64748b; padding: 7px 0; border-bottom: 1px solid #f1f5f9;">Reference / Tx ID:</td>
+                      <td align="right" style="font-size: 12px; font-weight: 700; font-family: monospace; color: #0f172a; padding: 7px 0; border-bottom: 1px solid #f1f5f9;">${reference}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-size: 12px; color: #64748b; padding: 7px 0; border-bottom: 1px solid #f1f5f9;">Payment Category:</td>
+                      <td align="right" style="font-size: 12px; font-weight: 700; color: #0f172a; padding: 7px 0; border-bottom: 1px solid #f1f5f9;">${description}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-size: 12px; color: #64748b; padding: 7px 0; border-bottom: 1px solid #f1f5f9;">Settlement Channel:</td>
+                      <td align="right" style="font-size: 12px; font-weight: 600; color: #047857; padding: 7px 0; border-bottom: 1px solid #f1f5f9;">${paymentMethod || 'Direct Bank Transfer'}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-size: 12px; color: #64748b; padding: 7px 0;">Settlement Date:</td>
+                      <td align="right" style="font-size: 12px; font-weight: 600; color: #0f172a; padding: 7px 0;">${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <div style="text-align: center; margin-bottom: 24px;">
+              <a href="https://citifootypay.club/history" target="_blank" style="display: inline-block; background: #0f172a; color: #ffffff; text-decoration: none; font-weight: 700; font-size: 13px; padding: 12px 28px; border-radius: 10px;">
+                View Official Ledger & History &rarr;
+              </a>
+            </div>
+
+            <p style="font-size: 11px; color: #94a3b8; line-height: 1.5; margin: 0; text-align: center;">
+              This is an automated legal transaction receipt issued under the authority of Citi Football Federation HQ.
+            </p>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="background: #f8fafc; padding: 20px 28px; font-size: 11px; color: #94a3b8; text-align: center; border-top: 1px solid #e2e8f0;">
+            &copy; ${new Date().getFullYear()} ${club} · Powered by CitiPay
+          </td>
+        </tr>
+      </table>
     </body>
     </html>
   `
@@ -309,48 +349,111 @@ export async function sendPasswordResetOtpEmail({ recipientEmail, otpCode, membe
  */
 export async function sendIslCupEntryEmail({ team, recipientEmail }) {
   const email = recipientEmail || `${team.captainName.toLowerCase().replace(/[^a-z0-9]/g, '')}@citileague.ng`
+  const isPaid = team.paymentStatus === 'Paid'
   const html = `
     <!DOCTYPE html>
     <html>
     <head>
       <meta charset="utf-8">
-      <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; margin: 0; padding: 24px; color: #1e293b; }
-        .card { max-width: 540px; margin: 0 auto; background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; }
-        .header { background: #09090b; padding: 24px 32px; border-bottom: 2px solid #f59e0b; }
-        .logo-title { color: #ffffff; font-size: 20px; font-weight: 800; margin: 0; }
-        .badge { display: inline-block; background: #fef3c7; color: #b45309; font-weight: 800; font-size: 10px; padding: 3px 8px; border-radius: 9999px; text-transform: uppercase; margin-top: 6px; }
-        .body-content { padding: 32px; }
-        .cred-box { background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; padding: 18px; margin: 20px 0; }
-        .cred-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; }
-      </style>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
-    <body>
-      <div class="card">
-        <div class="header">
-          <div class="logo-title">ISL CUP FINALS 2026</div>
-          <span class="badge">Team Registration Confirmed</span>
-        </div>
-        <div class="body-content">
-          <h2 style="margin: 0 0 10px 0; color: #0f172a;">Registration Received: ${team.teamName}</h2>
-          <p style="font-size: 13px; color: #475569; margin: 0 0 16px 0;">
-            Your team slot has been registered for the <strong>ISL Cup Finals 2026 (₦2.8M Prize Pool)</strong> at Lagos Preparatory School, Ikoyi.
-          </p>
+    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f1f5f9; margin: 0; padding: 32px 16px; color: #1e293b;">
+      <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 580px; margin: 0 auto; background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);">
+        <!-- Header Banner -->
+        <tr>
+          <td style="background: linear-gradient(135deg, #09090b 0%, #1c1917 100%); padding: 32px 28px; border-bottom: 3px solid #f59e0b;">
+            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td>
+                  <div style="font-size: 21px; font-weight: 900; color: #ffffff; letter-spacing: -0.5px;">🏆 ISL CUP FINALS 2026</div>
+                  <div style="font-size: 11px; font-weight: 700; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px;">₦2,800,000 Grand Championship Prize Pool</div>
+                </td>
+                <td align="right">
+                  <span style="background: ${isPaid ? '#065f46' : '#78350f'}; border: 1px solid ${isPaid ? '#10b981' : '#f59e0b'}; color: #ffffff; font-size: 11px; font-weight: 800; padding: 5px 12px; border-radius: 9999px; text-transform: uppercase;">
+                    ${isPaid ? '✓ SETTLED' : '⏳ PENDING APPROVAL'}
+                  </span>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
 
-          <div class="cred-box">
-            <div class="cred-row"><span>Team Name:</span><strong>${team.teamName}</strong></div>
-            <div class="cred-row"><span>Coach:</span><strong>${team.coachName}</strong></div>
-            <div class="cred-row"><span>Captain:</span><strong>${team.captainName}</strong></div>
-            <div class="cred-row"><span>VIP Spectators:</span><strong>${team.vipSpectator1 || 'N/A'}, ${team.vipSpectator2 || 'N/A'}</strong></div>
-            <div class="cred-row"><span>Fee:</span><strong style="color: #059669;">₦300,000 (${team.paymentStatus || 'Settled'})</strong></div>
-            <div class="cred-row"><span>Reference:</span><strong style="font-family: monospace;">${team.reference || 'ISL-CONFIRMED'}</strong></div>
-          </div>
+        <!-- Body Content -->
+        <tr>
+          <td style="padding: 32px 28px;">
+            <h2 style="margin: 0 0 8px 0; font-size: 20px; font-weight: 800; color: #0f172a; letter-spacing: -0.3px;">
+              Team Entry: ${team.teamName}
+            </h2>
+            <p style="font-size: 13px; color: #475569; margin: 0 0 24px 0; line-height: 1.6;">
+              Your squad has officially claimed a registration slot in the <strong>ISL Cup Finals 2026</strong>. Review your team dossier, coach allocation, and VIP passes below:
+            </p>
 
-          <p style="font-size: 12px; color: #64748b; line-height: 1.5;">
-            VIP passes and credentials will be distributed at check-in on matchday (Nov 22 & 29, 7:20 AM).
-          </p>
-        </div>
-      </div>
+            <!-- Specification Card -->
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 24px;">
+              <tr>
+                <td style="padding: 16px 20px;">
+                  <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="font-size: 12px; color: #64748b; padding: 7px 0; border-bottom: 1px solid #f1f5f9;">Registered Team:</td>
+                      <td align="right" style="font-size: 13px; font-weight: 800; color: #0f172a; padding: 7px 0; border-bottom: 1px solid #f1f5f9;">${team.teamName}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-size: 12px; color: #64748b; padding: 7px 0; border-bottom: 1px solid #f1f5f9;">Head Coach:</td>
+                      <td align="right" style="font-size: 12px; font-weight: 700; color: #0f172a; padding: 7px 0; border-bottom: 1px solid #f1f5f9;">${team.coachName}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-size: 12px; color: #64748b; padding: 7px 0; border-bottom: 1px solid #f1f5f9;">Team Captain:</td>
+                      <td align="right" style="font-size: 12px; font-weight: 700; color: #0f172a; padding: 7px 0; border-bottom: 1px solid #f1f5f9;">${team.captainName}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-size: 12px; color: #64748b; padding: 7px 0; border-bottom: 1px solid #f1f5f9;">VIP Spectators:</td>
+                      <td align="right" style="font-size: 12px; font-weight: 600; color: #0f172a; padding: 7px 0; border-bottom: 1px solid #f1f5f9;">
+                        1. ${team.vipSpectator1 || 'Designated VIP 1'}<br/>
+                        2. ${team.vipSpectator2 || 'Designated VIP 2'}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="font-size: 12px; color: #64748b; padding: 7px 0; border-bottom: 1px solid #f1f5f9;">Entry Settlement:</td>
+                      <td align="right" style="font-size: 14px; font-weight: 900; font-family: monospace; color: #059669; padding: 7px 0; border-bottom: 1px solid #f1f5f9;">₦300,000</td>
+                    </tr>
+                    <tr>
+                      <td style="font-size: 12px; color: #64748b; padding: 7px 0;">Official Registration ID:</td>
+                      <td align="right" style="font-size: 12px; font-weight: 700; font-family: monospace; color: #64748b; padding: 7px 0;">${team.reference || team.receipt_no || 'ISL-CONFIRMED'}</td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Venue & Schedule Note -->
+            <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 14px 18px; margin-bottom: 24px;">
+              <div style="font-size: 12px; font-weight: 700; color: #b45309; margin-bottom: 4px;">📍 Matchday & Venue Logistics</div>
+              <p style="font-size: 12px; color: #78350f; margin: 0; line-height: 1.5;">
+                <strong>Venue:</strong> Lagos Preparatory School, Glover Road, Ikoyi.<br/>
+                <strong>Dates:</strong> Matchday 1 (Nov 22, 2026) & Grand Finale (Nov 29, 2026) · Kickoff 7:20 AM.<br/>
+                VIP credentials and team kits will be accredited at the media center at 6:45 AM.
+              </p>
+            </div>
+
+            <div style="text-align: center; margin-bottom: 20px;">
+              <a href="https://citifootypay.club/login" target="_blank" style="display: inline-block; background: #0f172a; color: #ffffff; text-decoration: none; font-weight: 700; font-size: 13px; padding: 12px 28px; border-radius: 10px;">
+                View Tournament Bracket & Schedule &rarr;
+              </a>
+            </div>
+
+            <p style="font-size: 11px; color: #94a3b8; line-height: 1.5; margin: 0; text-align: center;">
+              Citi Football Federation · Tournament Operations & Competition Committee
+            </p>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="background: #f8fafc; padding: 20px 28px; font-size: 11px; color: #94a3b8; text-align: center; border-top: 1px solid #e2e8f0;">
+            &copy; ${new Date().getFullYear()} ISL Cup Finals 2026 · Powered by CitiPay
+          </td>
+        </tr>
+      </table>
     </body>
     </html>
   `

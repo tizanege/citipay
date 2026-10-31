@@ -149,23 +149,96 @@ app.post('/api/mail-config', (req, res) => {
 // 4. Send Test Email
 app.post('/api/send-test-email', async (req, res) => {
   const { recipientEmail, providerOverride } = req.body
-  const target = recipientEmail || 'wigglemeddle@gmail.com'
+  const target = recipientEmail || 'support@citifootypay.club'
 
   const testPayload = {
     to: target,
-    subject: `⚽ CitiPay Mailer Test (${(providerOverride || 'Current Provider').toUpperCase()})`,
+    subject: `⚽ CitiPay Mailer Test (${(providerOverride || 'SMTP').toUpperCase()}) — Verification Confirmed`,
     html: `
-      <div style="font-family: sans-serif; padding: 20px; border-radius: 12px; border: 1px solid #10b981; max-width: 500px;">
-        <h2 style="color: #0f172a; margin-top: 0;">CitiPay Mailer Test Successful!</h2>
-        <p style="color: #475569; font-size: 13px;">This test confirms that your outbound email integration is operational.</p>
-        <div style="background: #f1f5f9; padding: 12px; border-radius: 8px; font-size: 12px; font-family: monospace;">
-          Provider: ${providerOverride || 'Default Config'}<br/>
-          Timestamp: ${new Date().toISOString()}<br/>
-          Recipient: ${target}
-        </div>
-      </div>
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      </head>
+      <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f1f5f9; margin: 0; padding: 32px 16px; color: #1e293b;">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 560px; margin: 0 auto; background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);">
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #09090b 0%, #18181b 100%); padding: 28px 32px; border-bottom: 3px solid #10b981;">
+              <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    <div style="font-size: 20px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px;">CitiPay Portal</div>
+                    <div style="font-size: 11px; font-weight: 700; color: #10b981; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px;">Citi Football Federation · Outbound Mailer</div>
+                  </td>
+                  <td align="right">
+                    <span style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 9999px;">✓ Connected</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Body Content -->
+          <tr>
+            <td style="padding: 32px;">
+              <div style="margin-bottom: 20px;">
+                <h2 style="font-size: 19px; font-weight: 800; color: #0f172a; margin: 0 0 8px 0; letter-spacing: -0.3px;">Outbound Email Service Verified</h2>
+                <p style="font-size: 13px; line-height: 1.6; color: #475569; margin: 0;">
+                  This is a test message to confirm that your SMTP and transactional mail dispatch pipeline is fully operational. Matchday eligibility updates, receipts, and login credentials will deliver through this channel.
+                </p>
+              </div>
+
+              <!-- Diagnostic Info Box -->
+              <table width="100%" border="0" cellpadding="0" cellspacing="0" style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 24px;">
+                <tr>
+                  <td style="padding: 16px 20px;">
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="font-size: 12px; color: #64748b; padding: 6px 0; border-bottom: 1px solid #f1f5f9;">Active Provider:</td>
+                        <td align="right" style="font-size: 12px; font-weight: 700; color: #0f172a; font-family: monospace; padding: 6px 0; border-bottom: 1px solid #f1f5f9;">${(providerOverride || 'Hostinger SMTP').toUpperCase()}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size: 12px; color: #64748b; padding: 6px 0; border-bottom: 1px solid #f1f5f9;">Recipient Address:</td>
+                        <td align="right" style="font-size: 12px; font-weight: 700; color: #0f172a; font-family: monospace; padding: 6px 0; border-bottom: 1px solid #f1f5f9;">${target}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size: 12px; color: #64748b; padding: 6px 0; border-bottom: 1px solid #f1f5f9;">Server Host:</td>
+                        <td align="right" style="font-size: 12px; font-weight: 700; color: #0f172a; font-family: monospace; padding: 6px 0; border-bottom: 1px solid #f1f5f9;">smtp.hostinger.com:465</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size: 12px; color: #64748b; padding: 6px 0;">Dispatched At:</td>
+                        <td align="right" style="font-size: 11px; font-weight: 600; color: #475569; padding: 6px 0;">${new Date().toUTCString()}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <div style="text-align: center; margin-bottom: 24px;">
+                <a href="https://citifootypay.club/admin/dashboard" target="_blank" style="display: inline-block; background: #10b981; color: #ffffff; text-decoration: none; font-weight: 700; font-size: 13px; padding: 12px 28px; border-radius: 10px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);">
+                  Open Super Admin Portal &rarr;
+                </a>
+              </div>
+
+              <p style="font-size: 11px; color: #94a3b8; line-height: 1.5; margin: 0; text-align: center;">
+                Automated test verification dispatched by CitiPay Mailer daemon on Hostinger VPS.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background: #f8fafc; padding: 20px 32px; font-size: 11px; color: #94a3b8; text-align: center; border-top: 1px solid #e2e8f0;">
+              &copy; ${new Date().getFullYear()} CitiPay · Ikoyi Sunday League & Citi Football Federation HQ
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
     `,
-    text: `CitiPay Mailer test successful at ${new Date().toISOString()}`
+    text: `CitiPay Mailer test successful at ${new Date().toISOString()} via ${(providerOverride || 'Hostinger SMTP').toUpperCase()} to ${target}`
   }
 
   const result = await dispatchEmail(testPayload, providerOverride)
