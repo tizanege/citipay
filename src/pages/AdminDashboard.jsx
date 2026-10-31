@@ -4,7 +4,7 @@ import {
   Trophy, Users, CreditCard, Building2, TrendingUp,
   Shield, CheckCircle2, AlertTriangle, Download, ArrowUpRight,
   ShieldCheck, Activity, DollarSign, Sliders, Landmark, ArrowRight,
-  Shirt, Calendar, Edit3
+  Shirt, Calendar, Edit3, Trash2
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
 import './AdminDashboard.css'
@@ -21,7 +21,8 @@ export default function AdminDashboard() {
     leagueSettings,
     setLeagueSettingsModalState,
     islCupTeams,
-    setIslCupModalState
+    setIslCupModalState,
+    deleteIslCupTeam
   } = useCitiPay()
 
   return (
@@ -253,12 +254,13 @@ export default function AdminDashboard() {
             <table className="data-table">
               <thead>
                 <tr>
-                  <th>Slot</th>
-                  <th>Team</th>
+                  <th style={{ width: '60px' }}>Slot</th>
+                  <th style={{ width: '220px' }}>Team</th>
                   <th>Coach</th>
                   <th>Captain</th>
-                  <th>VIP Spectator 1</th>
-                  <th>VIP Spectator 2</th>
+                  <th>VIP Spectators</th>
+                  <th style={{ textAlign: 'center' }}>Status</th>
+                  <th style={{ textAlign: 'right', width: '80px' }}>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -266,23 +268,52 @@ export default function AdminDashboard() {
                   <tr key={team.id || idx}>
                     <td className="font-mono font-bold text-xs text-slate-500">#{idx + 1}</td>
                     <td>
-                      <div className="flex items-center gap-2.5">
-                        <img
-                          src={team.logoUrl || '/crests/sunday-league-fc.svg'}
-                          alt={team.teamName}
-                          className="w-7 h-7 rounded-lg object-cover border border-slate-200"
-                          onError={(e) => {
-                            e.currentTarget.onerror = null
-                            e.currentTarget.src = '/crests/sunday-league-fc.svg'
-                          }}
-                        />
-                        <span className="font-bold text-slate-900 text-xs">{team.teamName}</span>
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200 p-1 flex items-center justify-center shrink-0">
+                          <img
+                            src={team.logoUrl || '/crests/sunday-league-fc.svg'}
+                            alt={team.teamName}
+                            className="w-full h-full object-contain"
+                            onError={(e) => {
+                              e.currentTarget.onerror = null
+                              e.currentTarget.src = '/crests/sunday-league-fc.svg'
+                            }}
+                          />
+                        </div>
+                        <div className="min-w-0">
+                          <span className="font-bold text-slate-900 text-xs block truncate">{team.teamName}</span>
+                          <span className="text-3xs text-slate-400 font-mono block">₦300,000 Entry</span>
+                        </div>
                       </div>
                     </td>
-                    <td className="text-xs font-medium text-slate-700">{team.coachName}</td>
-                    <td className="text-xs font-medium text-slate-700">{team.captainName}</td>
-                    <td className="text-xs text-slate-600">{team.vipSpectator1 || '—'}</td>
-                    <td className="text-xs text-slate-600">{team.vipSpectator2 || '—'}</td>
+                    <td className="text-xs font-semibold text-slate-800">{team.coachName}</td>
+                    <td className="text-xs font-semibold text-slate-800">
+                      <div>{team.captainName}</div>
+                      {team.email && <span className="text-3xs text-slate-400 block font-mono">{team.email}</span>}
+                    </td>
+                    <td className="text-xs text-slate-600">
+                      <div className="text-3xs text-slate-700">1. {team.vipSpectator1 || '—'}</div>
+                      <div className="text-3xs text-slate-700">2. {team.vipSpectator2 || '—'}</div>
+                    </td>
+                    <td style={{ textAlign: 'center' }}>
+                      <span className={`badge text-3xs font-extrabold ${team.paymentStatus === 'Paid' ? 'badge-success' : 'badge-warning'}`}>
+                        {team.paymentStatus === 'Paid' ? '✓ SETTLED' : '⏳ PENDING'}
+                      </span>
+                    </td>
+                    <td style={{ textAlign: 'right' }}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (window.confirm(`Remove team "${team.teamName}" from ISL Cup Finals?`)) {
+                            deleteIslCupTeam(team.id)
+                          }
+                        }}
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                        title="Remove Team Entry"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
