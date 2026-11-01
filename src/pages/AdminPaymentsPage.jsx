@@ -8,7 +8,8 @@ import Pagination from '../components/Pagination'
 import './AdminDashboard.css'
 
 export default function AdminPaymentsPage() {
-  const { transactions, clubs, setReceiptModalState, adminMetrics, confirmManualPayment } = useCitiPay()
+  const { transactions, clubs, setReceiptModalState, adminMetrics, confirmManualPayment, leagueSettings } = useCitiPay()
+  const isPaystackEnabled = leagueSettings?.active_payment_gateway === 'paystack'
   const [searchTerm, setSearchTerm] = useState('')
   const [clubFilter, setClubFilter] = useState('all')
   const [typeFilter, setTypeFilter] = useState('all')
@@ -34,9 +35,18 @@ export default function AdminPaymentsPage() {
 
   const totalItems = filteredTransactions.length
   const paginatedTransactions = filteredTransactions.slice((currentPage - 1) * pageSize, currentPage * pageSize)
-  const pendingCount = transactions.filter(tx => tx.status === 'Pending').length
-
-  const totalPaystackVolume = transactions.reduce((sum, tx) => sum + (Number(tx.amount) || 0), 0)
+  
+  // Real dynamic financial calculations from actual ledger
+  const paidTransactions = transactions.filter(tx => tx.status === 'Paid')
+  const pendingTransactions = transactions.filter(tx => tx.status === 'Pending')
+  
+  const totalSettledVolume = paidTransactions.reduce((sum, tx) => sum + (Number(tx.amount) || 0), 0)
+  const totalPendingVolume = pendingTransactions.reduce((sum, tx) => sum + (Number(tx.amount) || 0), 0)
+  const pendingCount = pendingTransactions.length
+  const paidCount = paidTransactions.length
+  const totalCount = transactions.length
+  
+  const successRate = totalCount > 0 ? ((paidCount / totalCount) * 100).toFixed(1) : '100'
 
   return (
     <div className="admin-dashboard-wrap">
@@ -47,13 +57,13 @@ export default function AdminPaymentsPage() {
             <span className="badge badge-accent font-bold flex items-center gap-1 text-xs">
               <ShieldCheck size={12} /> Citi Football Federation
             </span>
-            <span className="badge badge-success text-xs font-semibold flex items-center gap-1">
-              <Activity size={11} /> Paystack Live Gateway
+            <span className={`badge ${isPaystackEnabled ? 'badge-success' : 'badge-primary'} text-xs font-semibold flex items-center gap-1`}>
+              <Activity size={11} /> {isPaystackEnabled ? 'Paystack Gateway Active' : 'Direct Bank Settlement Active'}
             </span>
           </div>
           <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Federation Revenue & Settlement Ledger</h1>
           <p className="text-xs text-slate-500 mt-1">
-            Consolidated cross-club Paystack payment streams, transaction references, fee splits, and automated bank reconciliations
+            Consolidated cross-club payment streams, verified transaction references, bank receipt proofs, and member dues clearance
           </p>
         </div>
 
@@ -64,32 +74,50 @@ export default function AdminPaymentsPage() {
         </div>
       </div>
 
-      {/* KPI Overview */}
+      {/* KPI Overview (100% Dynamic from Ledger) */}
       <div className="grid-4 mb-6">
+        {/* Card 1: Total Settled League Revenue */}
         <div className="admin-metric-card">
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">Total League Volume</span>
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">Total Settled Volume</span>
           <div className="text-2xl font-mono font-extrabold text-emerald-600 font-heading">
-            ₦{totalPaystackVolume > 0 ? totalPaystackVolume.toLocaleString() : '2,450,000'}
+            ₦{totalSettledVolume.toLocaleString()}
           </div>
-          <span className="text-3xs text-emerald-700 font-semibold">100% Processed via Paystack</span>
+          <span className="text-3xs text-emerald-700 font-semibold">
+            {paidCount} verified & cleared {paidCount === 1 ? 'transaction' : 'transactions'}
+          </span>
         </div>
 
+        {/* Card 2: Awaiting Approval / Pending */}
         <div className="admin-metric-card">
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">Settled to Club Accounts</span>
-          <div className="text-2xl font-mono font-extrabold text-slate-900 font-heading">₦2,401,000</div>
-          <span className="text-3xs text-slate-500 font-medium">Net after 2% Paystack processing fee</span>
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">Awaiting Verification</span>
+          <div className={`text-2xl font-mono font-extrabold font-heading ${totalPendingVolume > 0 ? 'text-amber-600' : 'text-slate-900'}`}>
+            ₦{totalPendingVolume.toLocaleString()}
+          </div>
+          <span className={`text-3xs font-medium ${pendingCount > 0 ? 'text-amber-700 font-bold' : 'text-slate-500'}`}>
+            {pendingCount > 0 ? `${pendingCount} transfer ${pendingCount === 1 ? 'receipt' : 'receipts'} awaiting admin approval` : 'All submitted payments verified'}
+          </span>
         </div>
 
+        {/* Card 3: Settlement Success Rate */}
         <div className="admin-metric-card">
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">Transaction Success Rate</span>
-          <div className="text-2xl font-mono font-extrabold text-blue-600 font-heading">99.8%</div>
-          <span className="text-3xs text-blue-600 font-medium">0 Chargebacks · 1 Webhook Retry</span>
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">Settlement Rate</span>
+          <div className="text-2xl font-mono font-extrabold text-blue-600 font-heading">
+            {successRate}%
+          </div>
+          <span className="text-3xs text-blue-600 font-medium">
+            {paidCount} settled of {totalCount} total entries
+          </span>
         </div>
 
+        {/* Card 4: Active Settlement Mode */}
         <div className="admin-metric-card">
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">Settlement Cycle</span>
-          <div className="text-2xl font-mono font-extrabold text-purple-600 font-heading">T + 1 Days</div>
-          <span className="text-3xs text-slate-500 font-medium">Next automatic payout: Tomorrow, 6:00 AM</span>
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">Active Gateway Mode</span>
+          <div className="text-2xl font-mono font-extrabold text-purple-600 font-heading">
+            {isPaystackEnabled ? 'Paystack Auto' : 'Bank Transfer'}
+          </div>
+          <span className="text-3xs text-slate-500 font-medium">
+            {isPaystackEnabled ? 'Daily T+1 Automated Settlement' : 'Access Bank (Oxsa int’l Nig Ltd)'}
+          </span>
         </div>
       </div>
 
