@@ -16,7 +16,12 @@ import {
   generateTempPassword,
   generateAccessPin
 } from '../lib/memberIdGenerator'
-import { sendPlayerCredentialsEmail, sendIslCupEntryEmail, sendPaymentReceiptEmail } from '../services/emailService'
+import {
+  sendPlayerCredentialsEmail,
+  sendIslCupEntryEmail,
+  sendPaymentReceiptEmail,
+  sendPaymentReminderEmail
+} from '../services/emailService'
 
 const CitiPayContext = createContext(null)
 
@@ -591,6 +596,20 @@ export function CitiPayProvider({ children }) {
       })
     } catch (e) {
       console.warn('Supabase online payment sync:', e.message)
+    }
+
+    // 3. Dispatch automated Payment Receipt Email to the payer
+    if (currentMember.email && !currentMember.email.endsWith('@sundayleaguefc.ng')) {
+      sendPaymentReceiptEmail({
+        recipientEmail: currentMember.email,
+        memberName: currentMember.full_name,
+        amount: Number(amount),
+        reference: refCode,
+        description: typeDesc,
+        receiptNo: receiptRef,
+        paymentMethod: method || 'Paystack Gateway',
+        clubName: currentClub?.name
+      }).catch(err => console.warn('Online payment receipt email notice:', err?.message))
     }
 
     return newTx
@@ -1820,6 +1839,17 @@ export function CitiPayProvider({ children }) {
       })
     } catch (e) {
       console.warn('Supabase reminder sync:', e.message)
+    }
+
+    // Outbound Email Reminder Dispatch
+    if (channel === 'email' && target.email && !target.email.endsWith('@sundayleaguefc.ng')) {
+      sendPaymentReminderEmail({
+        player: target,
+        amountDue: target.membership_outstanding || 0,
+        dueDate: 'Upcoming Matchday',
+        reminderType: reminderType || 'Matchday Clearance Notice',
+        clubName: currentClub?.name
+      }).catch(err => console.warn('Payment reminder email notice:', err?.message))
     }
   }, [members, currentClub])
 

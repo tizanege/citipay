@@ -4,6 +4,7 @@ import {
   KeyRound, Smartphone, AlertCircle, Eye, EyeOff, RefreshCw
 } from 'lucide-react'
 import { useCitiPay } from '../../contexts/CitiPayContext'
+import { sendPasswordResetOtpEmail } from '../../services/emailService'
 import './ModalStyles.css'
 
 export default function PasswordResetModal() {
@@ -67,6 +68,16 @@ export default function PasswordResetModal() {
       const code = Math.floor(100000 + Math.random() * 900000).toString()
       setGeneratedOtp(code)
       setMatchedMember(target)
+
+      // Dispatch OTP email if member has valid email
+      if (target.email && !target.email.endsWith('@sundayleaguefc.ng')) {
+        sendPasswordResetOtpEmail({
+          recipientEmail: target.email,
+          otpCode: code,
+          memberName: target.full_name
+        }).catch(err => console.warn('OTP dispatch notice:', err?.message))
+      }
+
       setStep('verify_otp')
     }, 600)
   }
