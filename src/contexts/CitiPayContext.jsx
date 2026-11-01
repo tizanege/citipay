@@ -233,13 +233,28 @@ export function CitiPayProvider({ children }) {
   }, [islCupTeams])
 
   const deleteIslCupTeam = useCallback((teamId) => {
+    let deletedTeam = null
     setIslCupTeams(prev => {
-      const next = prev.filter(t => t.id !== teamId)
+      deletedTeam = prev.find(t => t.id === teamId || t.teamName === teamId)
+      const next = prev.filter(t => t.id !== teamId && t.teamName !== teamId)
       try {
         localStorage.setItem('isl_cup_registered_teams_2026', JSON.stringify(next))
+        // Track tombstone IDs to prevent Supabase audit log hydration from re-creating deleted teams
+        const deletedIds = JSON.parse(localStorage.getItem('isl_cup_deleted_team_ids') || '[]')
+        if (teamId && !deletedIds.includes(teamId)) deletedIds.push(teamId)
+        if (deletedTeam?.teamName && !deletedIds.includes(deletedTeam.teamName)) deletedIds.push(deletedTeam.teamName)
+        localStorage.setItem('isl_cup_deleted_team_ids', JSON.stringify(deletedIds))
       } catch (e) {}
       return next
     })
+
+    // Also remove from federation transactions ledger
+    setTransactions(prev => prev.filter(tx => tx.id !== `tx-isl-${teamId}` && !tx.description?.includes(deletedTeam?.teamName || teamId)))
+
+    // Delete matching audit records from Supabase
+    if (deletedTeam?.teamName || teamId) {
+      dbService.deleteIslCupTeamRecord(deletedTeam?.teamName || teamId).catch(() => {})
+    }
   }, [])
 
   const confirmIslCupTeamPayment = useCallback((teamId) => {
@@ -367,6 +382,18 @@ export function CitiPayProvider({ children }) {
             }))
             .reverse()
           if (dbTeams.length > 0) {
+            // Retrieve deleted tombstone IDs so deleted teams are never resurrected
+            const deletedIds = (() => {
+              try {
+                return JSON.parse(localStorage.getItem('isl_cup_deleted_team_ids') || '[]')
+              } catch (e) {
+                return []
+              }
+            })()
+
+            // Filter out any teams that were deleted
+            const activeDbTeams = dbTeams.filter(t => !deletedIds.includes(t.id) && !deletedIds.includes(t.teamName))
+
             // Merge with local storage teams so that local changes or client-cached proof URLs are never lost
             const localTeams = (() => {
               try {
@@ -377,7 +404,7 @@ export function CitiPayProvider({ children }) {
               }
             })()
 
-            const merged = dbTeams.map(dbt => {
+            const merged = activeDbTeams.map(dbt => {
               const localMatch = localTeams.find(lt => lt.id === dbt.id || lt.teamName === dbt.teamName)
               return {
                 ...dbt,

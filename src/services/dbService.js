@@ -445,7 +445,31 @@ export const dbService = {
     return data
   },
 
-  // ── 5. ELIGIBILITY OVERRIDES ─────────────────────────────────────────────
+  // ── 5. ELIGIBILITY OVERRIDES & TOURNAMENT ACTIONS ──────────────────────────
+  async deleteIslCupTeamRecord(teamIdentifier) {
+    if (!teamIdentifier) return false
+    try {
+      // 1. Remove from audit_logs where action is ISL_CUP_REGISTERED
+      await supabase
+        .from('audit_logs')
+        .delete()
+        .eq('action', 'ISL_CUP_REGISTERED')
+        .or(`target_member_id.eq.${teamIdentifier},target_name.ilike.%${teamIdentifier}%`)
+
+      // 2. Also remove matching entries from payments ledger if present
+      await supabase
+        .from('payments')
+        .delete()
+        .eq('payment_type', 'isl_cup_entry')
+        .or(`notes.ilike.%${teamIdentifier}%,reference.ilike.%${teamIdentifier}%`)
+
+      return true
+    } catch (e) {
+      console.warn('deleteIslCupTeamRecord warning:', e.message)
+      return false
+    }
+  },
+
   async overrideMemberStatus({
     userId,
     targetMemberId,
