@@ -70,6 +70,7 @@ export const initialLeagueSettings = {
   competition_name: 'Citi Football Premier Championship',
   jersey_price: 18000,
   bib_price: 6500,
+  active_payment_gateway: 'manual_bank', // 'manual_bank' | 'paystack'
   currency: 'NGN',
   last_updated: new Date().toISOString(),
   updated_by: 'Super Admin'

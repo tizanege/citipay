@@ -2,14 +2,15 @@ import { useState, useRef, useEffect } from 'react'
 import {
   X, Trophy, Calendar, MapPin, Clock, DollarSign,
   Upload, Users, Shield, CheckCircle2, AlertCircle, Plus,
-  Camera, Sparkles, ChevronRight, ArrowRight, CreditCard, Landmark, Copy, Check
+  Camera, ChevronRight, ArrowRight, CreditCard, Landmark, Copy, Check
 } from 'lucide-react'
 import { useCitiPay } from '../../contexts/CitiPayContext'
 import './IslCupModal.css'
 
 export default function IslCupModal() {
-  const { islCupModalState, setIslCupModalState, islCupTeams, registerIslCupTeam, currentRole } = useCitiPay()
+  const { islCupModalState, setIslCupModalState, islCupTeams, registerIslCupTeam, currentRole, leagueSettings } = useCitiPay()
   const isSuperAdmin = currentRole === 'super_admin'
+  const isPaystackEnabled = leagueSettings?.active_payment_gateway === 'paystack'
 
   const [activeTab, setActiveTab] = useState(islCupModalState?.initialTab || 'overview') // 'overview' | 'register' | 'payment' | 'teams'
 
@@ -21,8 +22,9 @@ export default function IslCupModal() {
       } else {
         setActiveTab('overview')
       }
+      setPaymentMethod(isPaystackEnabled ? 'paystack' : 'manual_bank')
     }
-  }, [islCupModalState?.isOpen, islCupModalState?.initialTab])
+  }, [islCupModalState?.isOpen, islCupModalState?.initialTab, isPaystackEnabled])
   const [formData, setFormData] = useState({
     teamName: '',
     coachName: '',
@@ -40,7 +42,7 @@ export default function IslCupModal() {
   const fileInputRef = useRef(null)
 
   // Payment checkout states for ISL Cup (₦300,000)
-  const [paymentMethod, setPaymentMethod] = useState('paystack') // 'paystack' | 'manual_bank'
+  const [paymentMethod, setPaymentMethod] = useState(isPaystackEnabled ? 'paystack' : 'manual_bank') // 'paystack' | 'manual_bank'
   const [bankRef, setBankRef] = useState('')
   const [paymentReceiptFile, setPaymentReceiptFile] = useState(null)
   const [copiedBank, setCopiedBank] = useState(false)
@@ -229,7 +231,7 @@ export default function IslCupModal() {
         <div className="isl-modal-topbar">
           <div className="flex items-center gap-2">
             <span className="isl-cup-badge">
-              <Sparkles size={13} /> ISL CUP FINALS 2026
+              <Trophy size={13} /> ISL CUP FINALS 2026
             </span>
           </div>
 
@@ -533,69 +535,63 @@ export default function IslCupModal() {
             )}
 
             <form onSubmit={handleCompleteRegistrationWithPayment} className="flex flex-col gap-5">
-              {/* Payment Method Selector */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-                <div
-                  className={`p-4 rounded-2xl border cursor-pointer transition-all ${
-                    paymentMethod === 'paystack'
-                      ? 'border-emerald-500 bg-emerald-50/50 shadow-sm ring-2 ring-emerald-500/20'
-                      : 'border-slate-200 hover:border-slate-300 bg-white'
-                  }`}
-                  onClick={() => setPaymentMethod('paystack')}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-emerald-500 text-white flex items-center justify-center font-bold">
-                        <CreditCard size={17} />
+              {/* Payment Method Display (Single Active Gateway Mode) */}
+              <div className="grid grid-cols-1 gap-3.5">
+                {isPaystackEnabled ? (
+                  <div
+                    className="p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-50/50 shadow-sm ring-2 ring-emerald-500/20 cursor-pointer"
+                    onClick={() => setPaymentMethod('paystack')}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-lg bg-emerald-500 text-white flex items-center justify-center font-bold">
+                          <CreditCard size={17} />
+                        </div>
+                        <div>
+                          <div className="font-extrabold text-sm text-slate-900">Paystack Checkout</div>
+                          <div className="text-3xs text-emerald-700 font-semibold">Active Federation Gateway · Instant Clearance</div>
+                        </div>
                       </div>
-                      <div>
-                        <div className="font-extrabold text-sm text-slate-900">Paystack Checkout</div>
-                        <div className="text-3xs text-emerald-700 font-semibold">Instant Clearance</div>
-                      </div>
+                      <input
+                        type="radio"
+                        name="islPaymentMethod"
+                        value="paystack"
+                        checked={paymentMethod === 'paystack'}
+                        onChange={() => setPaymentMethod('paystack')}
+                      />
                     </div>
-                    <input
-                      type="radio"
-                      name="islPaymentMethod"
-                      value="paystack"
-                      checked={paymentMethod === 'paystack'}
-                      onChange={() => setPaymentMethod('paystack')}
-                    />
+                    <p className="text-xs text-slate-500 leading-relaxed">
+                      Debit Card, Bank App Transfer, USSD (*737#), QR Code, or Apple Pay.
+                    </p>
                   </div>
-                  <p className="text-xs text-slate-500 leading-relaxed">
-                    Debit Card, Bank App Transfer, USSD (*737#), QR Code, or Apple Pay.
-                  </p>
-                </div>
-
-                <div
-                  className={`p-4 rounded-2xl border cursor-pointer transition-all ${
-                    paymentMethod === 'manual_bank'
-                      ? 'border-emerald-500 bg-emerald-50/50 shadow-sm ring-2 ring-emerald-500/20'
-                      : 'border-slate-200 hover:border-slate-300 bg-white'
-                  }`}
-                  onClick={() => setPaymentMethod('manual_bank')}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold">
-                        <Landmark size={17} />
+                ) : (
+                  <div
+                    className="p-4 rounded-2xl border-2 border-blue-600 bg-blue-50/40 shadow-sm ring-2 ring-blue-500/20 cursor-pointer"
+                    onClick={() => setPaymentMethod('manual_bank')}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold">
+                          <Landmark size={17} />
+                        </div>
+                        <div>
+                          <div className="font-extrabold text-sm text-slate-900">Official Bank Transfer</div>
+                          <div className="text-3xs text-blue-700 font-semibold">Active Federation Method · Manual Admin Verification</div>
+                        </div>
                       </div>
-                      <div>
-                        <div className="font-extrabold text-sm text-slate-900">Official Bank Transfer</div>
-                        <div className="text-3xs text-blue-700 font-semibold">Admin Manual Verification</div>
-                      </div>
+                      <input
+                        type="radio"
+                        name="islPaymentMethod"
+                        value="manual_bank"
+                        checked={paymentMethod === 'manual_bank'}
+                        onChange={() => setPaymentMethod('manual_bank')}
+                      />
                     </div>
-                    <input
-                      type="radio"
-                      name="islPaymentMethod"
-                      value="manual_bank"
-                      checked={paymentMethod === 'manual_bank'}
-                      onChange={() => setPaymentMethod('manual_bank')}
-                    />
+                    <p className="text-xs text-slate-600 leading-relaxed">
+                      Direct transfer to the federation designated bank account. Upload your payment receipt below for instant Super Admin review.
+                    </p>
                   </div>
-                  <p className="text-xs text-slate-500 leading-relaxed">
-                    Direct transfer to the federation designated bank account.
-                  </p>
-                </div>
+                )}
               </div>
 
               {/* Bank Details View if Manual Selected */}

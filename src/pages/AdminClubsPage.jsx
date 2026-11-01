@@ -26,7 +26,6 @@ export default function AdminClubsPage() {
 
   const handleInspectClub = (clubId) => {
     setSelectedClubId(clubId)
-    alert(`Active club context switched to ${clubId}. You can manage this club in the executive portal.`)
   }
 
   const handleOpenClubRules = (clubId) => {

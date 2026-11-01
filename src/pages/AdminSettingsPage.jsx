@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import {
   Sliders, ShieldCheck, Activity, Key, Globe, Database,
   Lock, Save, CheckCircle2, Shield, AlertCircle, RefreshCw,
-  Shirt, Tag, Calendar, Plus, Minus, Sparkles, Mail, Send, Server, Check
+  Shirt, Tag, Calendar, Plus, Minus, Mail, Send, Server, Check
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
 import { getMailerConfig, saveMailerConfig, sendTestEmail } from '../services/emailService'
@@ -15,12 +15,14 @@ export default function AdminSettingsPage() {
   const [matchday, setMatchday] = useState(leagueSettings.current_matchday || 14)
   const [jerseyPrice, setJerseyPrice] = useState(leagueSettings.jersey_price || 18000)
   const [bibPrice, setBibPrice] = useState(leagueSettings.bib_price || 6500)
+  const [activeGateway, setActiveGateway] = useState(leagueSettings.active_payment_gateway || 'manual_bank')
 
   useEffect(() => {
     if (leagueSettings) {
       setMatchday(leagueSettings.current_matchday)
       setJerseyPrice(leagueSettings.jersey_price)
       setBibPrice(leagueSettings.bib_price)
+      setActiveGateway(leagueSettings.active_payment_gateway || 'manual_bank')
     }
   }, [leagueSettings])
 
@@ -84,6 +86,7 @@ export default function AdminSettingsPage() {
       current_matchday: Number(matchday),
       jersey_price: Number(jerseyPrice),
       bib_price: Number(bibPrice),
+      active_payment_gateway: activeGateway,
       adminName: 'TIZA NEGE (Super Admin)'
     })
 
@@ -370,7 +373,7 @@ export default function AdminSettingsPage() {
 
             {/* Live Impact Pill */}
             <div className="p-2.5 rounded-xl bg-emerald-50/80 flex items-center gap-2 text-2xs text-emerald-900 font-medium">
-              <Sparkles size={14} className="text-emerald-600 shrink-0" />
+              <ShieldCheck size={14} className="text-emerald-600 shrink-0" />
               <span>Instantly reflects in all Player Portals, Kit Store & Paystack Checkout.</span>
             </div>
           </div>
@@ -465,45 +468,116 @@ export default function AdminSettingsPage() {
         </div>
       </div>
 
-      {/* Paystack Gateway Configuration */}
+      {/* Payment Gateway Governance (Single Active Gateway Mode) */}
       <div className="card p-5 mb-6">
         <div className="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
           <div>
-            <h3 className="section-title text-base font-extrabold text-slate-900">PAYSTACK GATEWAY INTEGRATION</h3>
-            <p className="text-xs text-slate-500">Live API credentials and automated webhook endpoints</p>
+            <h3 className="section-title text-base font-extrabold text-slate-900">PAYMENT GATEWAY CONFIGURATION & ACCESS</h3>
+            <p className="text-xs text-slate-500">Only one payment method can be active at a time across the entire federation</p>
           </div>
-          <span className="badge badge-success font-bold text-xs flex items-center gap-1">
-            <Activity size={12} /> Connected & Verified
+          <span className={`badge ${activeGateway === 'manual_bank' ? 'badge-primary' : 'badge-warning'} font-bold text-xs flex items-center gap-1`}>
+            <Activity size={12} /> Active: {activeGateway === 'manual_bank' ? 'Direct Bank Transfer' : 'Paystack (Pending)'}
           </span>
         </div>
 
-        <div className="grid-2 gap-4">
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">Paystack Live Public Key</label>
-            <div className="relative">
+        {/* Gateway Switcher Toggle Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+          {/* Option 1: Manual Direct Bank Transfer (Active) */}
+          <div
+            className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+              activeGateway === 'manual_bank'
+                ? 'border-blue-600 bg-blue-50/40 shadow-xs'
+                : 'border-slate-200 bg-white hover:border-slate-300 opacity-75'
+            }`}
+            onClick={() => setActiveGateway('manual_bank')}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold">
+                  <Landmark size={16} />
+                </div>
+                <div>
+                  <div className="font-extrabold text-sm text-slate-900">Manual Direct Bank Transfer</div>
+                  <div className="text-3xs text-blue-700 font-bold uppercase">Active In System</div>
+                </div>
+              </div>
               <input
-                type="text"
-                value={paystackConfig.publicKey}
-                onChange={(e) => setPaystackConfig({ ...paystackConfig, publicKey: e.target.value })}
-                className="w-full text-xs font-mono p-2.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-800"
+                type="radio"
+                name="activeGatewayToggle"
+                checked={activeGateway === 'manual_bank'}
+                onChange={() => setActiveGateway('manual_bank')}
+                className="w-4 h-4 text-blue-600"
               />
-              <Key size={14} className="absolute right-3 top-3 text-slate-400" />
             </div>
-            <span className="text-3xs text-slate-400 mt-1 block">Used by clientside modal to initialize inline Paystack popups</span>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Players and tournament teams transfer to Access Bank (<strong>Oxsa int’l Nig Ltd / 0092042084</strong>) and upload their receipt for Super Admin approval. Recommended while Paystack merchant verification is pending.
+            </p>
           </div>
 
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">Webhook Endpoint URL</label>
-            <div className="relative">
+          {/* Option 2: Paystack Gateway (Pending) */}
+          <div
+            className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+              activeGateway === 'paystack'
+                ? 'border-emerald-600 bg-emerald-50/40 shadow-xs'
+                : 'border-slate-200 bg-white hover:border-slate-300 opacity-75'
+            }`}
+            onClick={() => setActiveGateway('paystack')}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold">
+                  <CreditCard size={16} />
+                </div>
+                <div>
+                  <div className="font-extrabold text-sm text-slate-900">Paystack Automated Gateway</div>
+                  <div className="text-3xs text-amber-600 font-bold uppercase">Pending Activation</div>
+                </div>
+              </div>
               <input
-                type="text"
-                value={paystackConfig.webhookUrl}
-                onChange={(e) => setPaystackConfig({ ...paystackConfig, webhookUrl: e.target.value })}
-                className="w-full text-xs font-mono p-2.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-800"
+                type="radio"
+                name="activeGatewayToggle"
+                checked={activeGateway === 'paystack'}
+                onChange={() => setActiveGateway('paystack')}
+                className="w-4 h-4 text-emerald-600"
               />
-              <Globe size={14} className="absolute right-3 top-3 text-slate-400" />
             </div>
-            <span className="text-3xs text-slate-400 mt-1 block">Receives <code>charge.success</code> and settlement webhooks</span>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Direct card, USSD, and instant automated bank transfer popups. Requires live Paystack business account verification.
+            </p>
+          </div>
+        </div>
+
+        {/* Paystack Credential Fields */}
+        <div className="pt-4 border-t border-slate-100">
+          <div className="text-xs font-extrabold text-slate-800 uppercase tracking-wider mb-3">Paystack API Parameters</div>
+          <div className="grid-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Paystack Live Public Key</label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={paystackConfig.publicKey}
+                  onChange={(e) => setPaystackConfig({ ...paystackConfig, publicKey: e.target.value })}
+                  className="w-full text-xs font-mono p-2.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-800"
+                />
+                <Key size={14} className="absolute right-3 top-3 text-slate-400" />
+              </div>
+              <span className="text-3xs text-slate-400 mt-1 block">Used by clientside modal to initialize inline Paystack popups</span>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Webhook Endpoint URL</label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={paystackConfig.webhookUrl}
+                  onChange={(e) => setPaystackConfig({ ...paystackConfig, webhookUrl: e.target.value })}
+                  className="w-full text-xs font-mono p-2.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-800"
+                />
+                <Globe size={14} className="absolute right-3 top-3 text-slate-400" />
+              </div>
+              <span className="text-3xs text-slate-400 mt-1 block">Receives <code>charge.success</code> and settlement webhooks</span>
+            </div>
           </div>
         </div>
 

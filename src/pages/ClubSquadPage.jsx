@@ -3,7 +3,7 @@ import {
   Users, Search, Filter, ShieldCheck, Download, Sliders,
   Landmark, Send, Shield, AlertTriangle, CheckCircle2, FileText,
   DollarSign, Check, ChevronDown, Printer, UserPlus, KeyRound,
-  LayoutGrid, List, Copy, Sparkles, Edit3, Trash2
+  LayoutGrid, List, Copy, Edit3, Trash2
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
 import Pagination from '../components/Pagination'

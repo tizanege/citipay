@@ -243,13 +243,15 @@ export function CitiPayProvider({ children }) {
   }, [])
 
   const confirmIslCupTeamPayment = useCallback((teamId) => {
+    let approvedTeam = null
     setIslCupTeams(prev => {
       const next = prev.map(t => {
         if (t.id === teamId) {
-          return {
+          approvedTeam = {
             ...t,
             paymentStatus: 'Paid'
           }
+          return approvedTeam
         }
         return t
       })
@@ -269,6 +271,14 @@ export function CitiPayProvider({ children }) {
       }
       return tx
     }))
+
+    // Send official Confirmation & Receipt email to the team captain upon Super Admin approval
+    if (approvedTeam && approvedTeam.email) {
+      sendIslCupEntryEmail({
+        team: approvedTeam,
+        recipientEmail: approvedTeam.email
+      }).catch(err => console.warn('ISL Cup approval email dispatch failed:', err?.message))
+    }
   }, [])
 
   // Active Club Object
@@ -343,14 +353,45 @@ export function CitiPayProvider({ children }) {
               teamName: l.raw_details.teamName,
               coachName: l.raw_details.coachName || '',
               captainName: l.raw_details.captainName || '',
+              email: l.raw_details.email || '',
+              phone: l.raw_details.phone || '',
               vipSpectator1: l.raw_details.vipSpectator1 || '',
               vipSpectator2: l.raw_details.vipSpectator2 || '',
               logoUrl: l.raw_details.logoUrl || '/crests/sunday-league-fc.svg',
+              paymentMethod: l.raw_details.paymentMethod || 'bank_transfer',
+              paymentStatus: l.raw_details.paymentStatus || 'Pending',
+              reference: l.raw_details.reference || '',
+              receipt_no: l.raw_details.receipt_no || '',
+              paymentProofUrl: l.raw_details.paymentProofUrl || null,
               registeredAt: l.raw_details.registeredAt || l.created_at
             }))
             .reverse()
           if (dbTeams.length > 0) {
-            setIslCupTeams(dbTeams)
+            // Merge with local storage teams so that local changes or client-cached proof URLs are never lost
+            const localTeams = (() => {
+              try {
+                const s = localStorage.getItem('isl_cup_registered_teams_2026')
+                return s ? JSON.parse(s) : []
+              } catch (e) {
+                return []
+              }
+            })()
+
+            const merged = dbTeams.map(dbt => {
+              const localMatch = localTeams.find(lt => lt.id === dbt.id || lt.teamName === dbt.teamName)
+              return {
+                ...dbt,
+                paymentProofUrl: dbt.paymentProofUrl || localMatch?.paymentProofUrl || null,
+                paymentStatus: localMatch?.paymentStatus || dbt.paymentStatus || 'Pending',
+                paymentMethod: dbt.paymentMethod || localMatch?.paymentMethod || 'bank_transfer',
+                email: dbt.email || localMatch?.email || '',
+                reference: dbt.reference || localMatch?.reference || ''
+              }
+            })
+            setIslCupTeams(merged)
+            try {
+              localStorage.setItem('isl_cup_registered_teams_2026', JSON.stringify(merged))
+            } catch (e) {}
           }
         }
         if (liveRules.status === 'fulfilled' && liveRules.value) {
@@ -799,7 +840,7 @@ export function CitiPayProvider({ children }) {
   }, [currentMember, currentClub, clubRules])
 
   // Action: Player submits a Direct Manual Bank Transfer (Awaiting Admin Confirmation)
-  const submitManualPaymentTransfer = useCallback(async ({ memberId, amount, paymentType, reference, notes }) => {
+  const submitManualPaymentTransfer = useCallback(async ({ memberId, amount, paymentType, reference, notes, paymentProofUrl }) => {
     const target = members.find(m => m.id === memberId || m.member_id === memberId) || currentMember
     if (!target) return false
 
@@ -831,6 +872,7 @@ export function CitiPayProvider({ children }) {
       status: 'Pending',
       reference: refNum,
       receipt_no: receiptRef,
+      paymentProofUrl: paymentProofUrl || null,
       notes: notes || 'Direct bank transfer receipt submitted by member, awaiting admin verification.'
     }
 
@@ -1484,12 +1526,13 @@ export function CitiPayProvider({ children }) {
     return true
   }, [clubs, selectedClubId])
 
-  // Action: Super Admin update League Parameters (Matchday, Jersey price, Bib price)
-  const updateLeagueSettings = useCallback(({ current_matchday, jersey_price, bib_price, season_title, competition_name, adminName = 'TIZA NEGE (Super Admin)' }) => {
+  // Action: Super Admin update League Parameters (Matchday, Jersey price, Bib price, Active Payment Gateway)
+  const updateLeagueSettings = useCallback(({ current_matchday, jersey_price, bib_price, active_payment_gateway, season_title, competition_name, adminName = 'TIZA NEGE (Super Admin)' }) => {
     setLeagueSettings(prev => {
       const nextMatchday = current_matchday !== undefined && current_matchday !== '' ? Math.max(1, Math.min(16, Number(current_matchday))) : prev.current_matchday
       const nextJerseyPrice = jersey_price !== undefined && jersey_price !== '' ? Math.max(0, Number(jersey_price)) : prev.jersey_price
       const nextBibPrice = bib_price !== undefined && bib_price !== '' ? Math.max(0, Number(bib_price)) : prev.bib_price
+      const nextGateway = active_payment_gateway !== undefined ? active_payment_gateway : (prev.active_payment_gateway || 'manual_bank')
 
       const updated = {
         ...prev,
@@ -1497,6 +1540,7 @@ export function CitiPayProvider({ children }) {
         total_matchdays: 16,
         jersey_price: nextJerseyPrice,
         bib_price: nextBibPrice,
+        active_payment_gateway: nextGateway,
         season_title: season_title || prev.season_title,
         competition_name: competition_name || prev.competition_name,
         last_updated: new Date().toISOString(),

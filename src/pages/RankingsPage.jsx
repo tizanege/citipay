@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import {
   Trophy, Medal, Target, Award, Users, ChevronRight,
-  TrendingUp, Star, Filter, Shield, Sparkles
+  TrendingUp, Star, Filter, Shield
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
 import Pagination from '../components/Pagination'
@@ -40,7 +40,7 @@ export default function RankingsPage() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="badge badge-accent text-2xs font-bold flex items-center gap-1">
-              <Sparkles size={12} /> Citi Football Championship
+              <Trophy size={12} /> Citi Football Championship
             </span>
           </div>
           <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">League Rankings & Standings</h1>

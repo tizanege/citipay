@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import {
   X, Building2, ShieldCheck, MapPin, DollarSign,
-  Upload, Camera, CheckCircle2, AlertCircle, Sparkles
+  Upload, Camera, CheckCircle2, AlertCircle
 } from 'lucide-react'
 import './ModalStyles.css'
 

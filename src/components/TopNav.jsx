@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import {
   Search, Bell, CreditCard, ChevronDown, Trophy,
-  ShieldCheck, Database, Sparkles
+  ShieldCheck, Database
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
 import './TopNav.css'

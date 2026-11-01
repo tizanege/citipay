@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import {
   User, Shield, CreditCard, Mail, Phone, Calendar,
-  Trophy, Sparkles, CheckCircle2, QrCode, Download,
+  Trophy, CheckCircle2, QrCode, Download,
   ArrowRight, ShieldCheck, MapPin, Award, Layers, Smartphone
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'

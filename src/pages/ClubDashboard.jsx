@@ -63,7 +63,6 @@ export default function ClubDashboard() {
       }
       return m
     }))
-    alert(`Member ${member.full_name} account status updated to ${newStatus.toUpperCase()}`)
   }
 
   const collectionRate = Math.round((adminMetrics.collectedRevenue / (adminMetrics.expectedRevenue || 1)) * 100)

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import {
   TrendingUp, Award, Flame, Target, Zap, Activity,
   ChevronRight, Calendar, Star, Shield, CheckCircle2,
-  Sparkles, Trophy, BarChart3
+  Trophy, BarChart3
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
 import './PerformancePage.css'
@@ -33,7 +33,7 @@ export default function PerformancePage() {
         <div>
           <div className="flex items-center gap-2 mb-1.5">
             <span className="badge badge-accent font-bold flex items-center gap-1 text-2xs">
-              <Sparkles size={12} /> Certified Matchday Statistics
+              <BarChart3 size={12} /> Certified Matchday Statistics
             </span>
             <span className="badge badge-secondary text-2xs">Member: {currentMember.member_id}</span>
           </div>

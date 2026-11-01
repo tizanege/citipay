@@ -74,6 +74,7 @@ export default function SubmitPaymentProofModal() {
         amount: Number(amount),
         paymentType,
         reference: reference.trim(),
+        paymentProofUrl: proofFile || null,
         notes: notesCombined || 'Direct bank transfer receipt submitted by player for admin approval.'
       })
 

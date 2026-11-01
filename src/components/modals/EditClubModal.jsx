@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import {
   X, Building2, ShieldCheck, MapPin, DollarSign,
-  Upload, Camera, CheckCircle2, AlertCircle, Save, Sparkles, Palette
+  Upload, Camera, CheckCircle2, AlertCircle, Save, Palette
 } from 'lucide-react'
 import './ModalStyles.css'
 
@@ -158,7 +158,7 @@ export default function EditClubModal({ isOpen, club, onClose, onClubUpdated }) 
           {/* Section 1: Identity & Crest */}
           <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col gap-3">
             <div className="text-2xs font-extrabold tracking-wider uppercase text-slate-600 flex items-center gap-1.5">
-              <Sparkles size={12} className="text-blue-600" /> Club Identity & Branding
+              <ShieldCheck size={12} className="text-blue-600" /> Club Identity & Branding
             </div>
 
             <div className="flex items-center gap-4">

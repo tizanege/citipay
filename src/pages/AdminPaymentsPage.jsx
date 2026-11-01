@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import {
   CreditCard, DollarSign, Download, Search, Filter, ShieldCheck,
-  CheckCircle2, ArrowUpRight, FileText, Printer, Building2, Activity
+  CheckCircle2, ArrowUpRight, FileText, Printer, Building2, Activity, Eye, X
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
 import Pagination from '../components/Pagination'
@@ -15,6 +15,7 @@ export default function AdminPaymentsPage() {
   const [statusFilter, setStatusFilter] = useState('all')
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
+  const [viewingProofTx, setViewingProofTx] = useState(null)
 
   const filteredTransactions = transactions.filter(tx => {
     const matchesSearch =
@@ -170,6 +171,7 @@ export default function AdminPaymentsPage() {
                 <th style={{ minWidth: '160px' }}>Category</th>
                 <th style={{ minWidth: '110px', textAlign: 'right' }}>Gross Amount</th>
                 <th style={{ minWidth: '120px' }}>Channel</th>
+                <th style={{ minWidth: '100px', textAlign: 'center' }}>Proof</th>
                 <th style={{ minWidth: '100px', textAlign: 'center' }}>Settlement</th>
                 <th style={{ minWidth: '120px', textAlign: 'right' }}>Action</th>
               </tr>
@@ -218,6 +220,23 @@ export default function AdminPaymentsPage() {
                       <span className="badge badge-secondary text-3xs font-semibold">
                         {tx.method || 'Paystack'}
                       </span>
+                    </td>
+
+                    <td style={{ textAlign: 'center' }}>
+                      {tx.paymentProofUrl ? (
+                        <button
+                          type="button"
+                          onClick={() => setViewingProofTx(tx)}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-3xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-colors"
+                          title="View uploaded transfer receipt screenshot"
+                        >
+                          <Eye size={11} /> Proof
+                        </button>
+                      ) : (
+                        <span className="text-4xs text-slate-400 font-mono italic">
+                          {tx.method?.includes('Paystack') ? 'Gateway Auto' : '—'}
+                        </span>
+                      )}
                     </td>
 
                     <td style={{ textAlign: 'center' }}>
@@ -272,6 +291,98 @@ export default function AdminPaymentsPage() {
           itemName="payments"
         />
       </div>
+
+      {/* Proof / Receipt Modal Viewer */}
+      {viewingProofTx && (
+        <div className="modal-backdrop-portal" onClick={() => setViewingProofTx(null)}>
+          <div
+            className="modal-content-portal max-w-lg"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-header-portal">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-blue-500/10 text-blue-600">
+                  <FileText size={18} />
+                </div>
+                <div>
+                  <h3 className="modal-title-portal">Payment Proof & Receipt</h3>
+                  <p className="modal-desc-portal">
+                    Uploaded transfer confirmation for <strong>{viewingProofTx.member_name}</strong>
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="modal-close-btn"
+                onClick={() => setViewingProofTx(null)}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="modal-body-portal p-5 space-y-4">
+              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl grid grid-cols-2 gap-3 text-xs">
+                <div>
+                  <span className="text-slate-400 block text-3xs font-semibold">PAYER NAME</span>
+                  <strong className="text-slate-800">{viewingProofTx.member_name}</strong>
+                </div>
+                <div>
+                  <span className="text-slate-400 block text-3xs font-semibold">MEMBER ID</span>
+                  <strong className="text-slate-800 font-mono">{viewingProofTx.member_id}</strong>
+                </div>
+                <div>
+                  <span className="text-slate-400 block text-3xs font-semibold">CATEGORY</span>
+                  <span className="text-slate-700 font-semibold">{viewingProofTx.description}</span>
+                </div>
+                <div>
+                  <span className="text-slate-400 block text-3xs font-semibold">GROSS AMOUNT</span>
+                  <strong className="text-emerald-700 font-mono text-sm">₦{Number(viewingProofTx.amount).toLocaleString()}</strong>
+                </div>
+                {viewingProofTx.reference && (
+                  <div className="col-span-2">
+                    <span className="text-slate-400 block text-3xs font-semibold">TRANSFER REFERENCE</span>
+                    <span className="text-slate-800 font-mono font-bold text-xs">{viewingProofTx.reference}</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="border border-slate-200 rounded-2xl overflow-hidden bg-slate-900 text-center p-2">
+                <img
+                  src={viewingProofTx.paymentProofUrl}
+                  alt={`Receipt proof for ${viewingProofTx.member_name}`}
+                  className="max-h-96 w-auto mx-auto object-contain rounded-xl"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+                <a
+                  href={viewingProofTx.paymentProofUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  download={`Receipt-${viewingProofTx.reference || viewingProofTx.member_name}.png`}
+                  className="btn btn-secondary text-xs flex items-center gap-1.5"
+                >
+                  <Download size={14} /> Open Full Size / Download
+                </a>
+                {viewingProofTx.status === 'Pending' && (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      if (window.confirm(`Confirm offline bank transfer of ₦${Number(viewingProofTx.amount).toLocaleString()} for ${viewingProofTx.member_name}?`)) {
+                        await confirmManualPayment({ transactionId: viewingProofTx.id, adminName: 'Super Admin' })
+                        setViewingProofTx(null)
+                      }
+                    }}
+                    className="btn btn-primary text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white"
+                  >
+                    ✓ Approve Payment Now
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

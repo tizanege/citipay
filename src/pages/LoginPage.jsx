@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   ShieldCheck, Shield, Lock, User, Building2, KeyRound, Eye, EyeOff,
-  ArrowRight, Sparkles, CheckCircle2, Trophy, Smartphone,
+  ArrowRight, CheckCircle2, Trophy, Smartphone,
   HelpCircle, RefreshCw
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
@@ -263,7 +263,7 @@ export default function LoginPage() {
             />
             <div>
               <div className="text-xs font-medium text-emerald-400 flex items-center gap-1">
-                <Sparkles size={11} /> Featured Player
+                <CheckCircle2 size={11} /> Featured Player
               </div>
               <div className="font-semibold text-white text-sm">Ukpongote Esu (CAM #10)</div>
               <div className="text-xs text-slate-400 font-mono">ID: {defaultMember?.member_id || 'SL-8K4P2'} · Cleared</div>

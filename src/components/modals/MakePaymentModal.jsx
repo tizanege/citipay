@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
   X, CreditCard, ShieldCheck, CheckCircle2, ChevronRight,
-  Sparkles, Check, ArrowRight, Wallet, Landmark, Smartphone,
-  FileText, ShoppingBag, Shield, HelpCircle, Copy, AlertCircle, Building2
+  Check, ArrowRight, Wallet, Landmark, Smartphone,
+  FileText, ShoppingBag, Shield, HelpCircle, Copy, AlertCircle, Building2, Upload
 } from 'lucide-react'
 import { useCitiPay } from '../../contexts/CitiPayContext'
 import './ModalStyles.css'
@@ -26,11 +26,16 @@ export default function MakePaymentModal() {
   const halfMembership = Math.round((currentMember.membership_fee || currentClub?.membership_fee || 100000) / 2)
   const defaultInstAmount = currentMember.membership_outstanding > 0 ? Math.min(halfMembership, currentMember.membership_outstanding) : halfMembership
 
+  const isPaystackEnabled = leagueSettings?.active_payment_gateway === 'paystack'
+  const defaultMethod = isPaystackEnabled ? 'paystack' : 'manual_bank'
+
   const [paymentType, setPaymentType] = useState(paymentModalState.type || 'membership_installment')
   const [amount, setAmount] = useState(paymentModalState.defaultAmount || defaultInstAmount)
-  const [paymentMethod, setPaymentMethod] = useState('paystack') // 'paystack' | 'manual_bank' | 'wallet'
+  const [paymentMethod, setPaymentMethod] = useState(defaultMethod) // 'paystack' | 'manual_bank' | 'wallet'
   const [paystackChannel, setPaystackChannel] = useState('all_channels') // 'all_channels' | 'card' | 'bank_transfer' | 'ussd'
   const [transferRef, setTransferRef] = useState('')
+  const [transferReceiptProof, setTransferReceiptProof] = useState(null)
+  const transferFileInputRef = useRef(null)
   const [copiedAccount, setCopiedAccount] = useState(false)
   const [notes, setNotes] = useState('')
   const [isProcessing, setIsProcessing] = useState(false)
@@ -55,8 +60,12 @@ export default function MakePaymentModal() {
       }
       setSuccessTx(null)
       setErrorMessage('')
+      setPaymentMethod(prev => {
+        if (!isPaystackEnabled && prev === 'paystack') return 'manual_bank'
+        return prev
+      })
     }
-  }, [paymentModalState.isOpen, paymentModalState.type, paymentModalState.defaultAmount, leagueSettings?.jersey_price, leagueSettings?.bib_price, defaultInstAmount])
+  }, [paymentModalState.isOpen, paymentModalState.type, paymentModalState.defaultAmount, leagueSettings?.jersey_price, leagueSettings?.bib_price, defaultInstAmount, isPaystackEnabled])
 
   if (!paymentModalState.isOpen) return null
 
@@ -102,6 +111,7 @@ export default function MakePaymentModal() {
           amount: Number(amount),
           paymentType,
           reference: generatedRef,
+          paymentProofUrl: transferReceiptProof || null,
           notes: notes ? `Manual Bank Transfer: ${notes}` : 'Manual Direct Bank Transfer to Club Account'
         })
         setIsProcessing(false)
@@ -400,50 +410,51 @@ export default function MakePaymentModal() {
                   <span className="text-3xs text-slate-500 font-medium">Select preferred channel</span>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2">
-                  {/* Paystack Online Gateway */}
-                  <button
-                    type="button"
-                    className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
-                      paymentMethod === 'paystack'
-                        ? 'border-slate-900 bg-slate-900 text-white shadow-sm'
-                        : 'border-slate-200 bg-white hover:border-slate-300 text-slate-800'
-                    }`}
-                    onClick={() => setPaymentMethod('paystack')}
-                  >
-                    <div className="flex items-center justify-between w-full mb-1">
-                      <CreditCard size={16} className={paymentMethod === 'paystack' ? 'text-emerald-400' : 'text-blue-600'} />
-                      <span className={`text-4xs uppercase tracking-wider font-extrabold px-1.5 py-0.5 rounded ${
-                        paymentMethod === 'paystack' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-blue-50 text-blue-700'
-                      }`}>Instant</span>
-                    </div>
-                    <div>
-                      <div className="font-extrabold text-xs">Paystack</div>
-                      <div className={`text-3xs ${paymentMethod === 'paystack' ? 'text-slate-300' : 'text-slate-500'}`}>Card, Transfer, USSD</div>
-                    </div>
-                  </button>
-
-                  {/* Manual Bank Transfer */}
-                  <button
-                    type="button"
-                    className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
-                      paymentMethod === 'manual_bank'
-                        ? 'border-slate-900 bg-slate-900 text-white shadow-sm'
-                        : 'border-slate-200 bg-white hover:border-slate-300 text-slate-800'
-                    }`}
-                    onClick={() => setPaymentMethod('manual_bank')}
-                  >
-                    <div className="flex items-center justify-between w-full mb-1">
-                      <Landmark size={16} className={paymentMethod === 'manual_bank' ? 'text-amber-400' : 'text-amber-600'} />
-                      <span className={`text-4xs uppercase tracking-wider font-extrabold px-1.5 py-0.5 rounded ${
-                        paymentMethod === 'manual_bank' ? 'bg-amber-500/20 text-amber-300' : 'bg-amber-50 text-amber-800'
-                      }`}>Direct</span>
-                    </div>
-                    <div>
-                      <div className="font-extrabold text-xs">Bank Transfer</div>
-                      <div className={`text-3xs ${paymentMethod === 'manual_bank' ? 'text-slate-300' : 'text-slate-500'}`}>Manual Bank Deposit</div>
-                    </div>
-                  </button>
+                <div className="grid grid-cols-2 gap-2">
+                  {/* Active Gateway Option (Direct Bank Transfer OR Paystack) */}
+                  {isPaystackEnabled ? (
+                    <button
+                      type="button"
+                      className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                        paymentMethod === 'paystack'
+                          ? 'border-slate-900 bg-slate-900 text-white shadow-sm'
+                          : 'border-slate-200 bg-white hover:border-slate-300 text-slate-800'
+                      }`}
+                      onClick={() => setPaymentMethod('paystack')}
+                    >
+                      <div className="flex items-center justify-between w-full mb-1">
+                        <CreditCard size={16} className={paymentMethod === 'paystack' ? 'text-emerald-400' : 'text-blue-600'} />
+                        <span className={`text-4xs uppercase tracking-wider font-extrabold px-1.5 py-0.5 rounded ${
+                          paymentMethod === 'paystack' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-blue-50 text-blue-700'
+                        }`}>Instant</span>
+                      </div>
+                      <div>
+                        <div className="font-extrabold text-xs">Paystack</div>
+                        <div className={`text-3xs ${paymentMethod === 'paystack' ? 'text-slate-300' : 'text-slate-500'}`}>Card, Transfer, USSD</div>
+                      </div>
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                        paymentMethod === 'manual_bank'
+                          ? 'border-slate-900 bg-slate-900 text-white shadow-sm'
+                          : 'border-slate-200 bg-white hover:border-slate-300 text-slate-800'
+                      }`}
+                      onClick={() => setPaymentMethod('manual_bank')}
+                    >
+                      <div className="flex items-center justify-between w-full mb-1">
+                        <Landmark size={16} className={paymentMethod === 'manual_bank' ? 'text-amber-400' : 'text-amber-600'} />
+                        <span className={`text-4xs uppercase tracking-wider font-extrabold px-1.5 py-0.5 rounded ${
+                          paymentMethod === 'manual_bank' ? 'bg-amber-500/20 text-amber-300' : 'bg-amber-50 text-amber-800'
+                        }`}>Direct</span>
+                      </div>
+                      <div>
+                        <div className="font-extrabold text-xs">Direct Bank Transfer</div>
+                        <div className={`text-3xs ${paymentMethod === 'manual_bank' ? 'text-slate-300' : 'text-slate-500'}`}>Manual Bank Deposit</div>
+                      </div>
+                    </button>
+                  )}
 
                   {/* CitiPay Virtual Wallet */}
                   <button
@@ -514,8 +525,60 @@ export default function MakePaymentModal() {
                         placeholder="e.g. Your Name or App Reference"
                         value={transferRef}
                         onChange={(e) => setTransferRef(e.target.value)}
-                        className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs font-mono outline-none focus:border-slate-900"
+                        className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs font-mono outline-none focus:border-slate-900 mb-2"
                       />
+                    </div>
+
+                    {/* Receipt Screenshot Upload */}
+                    <div>
+                      <label className="text-3xs font-bold text-slate-600 block mb-1">
+                        ATTACH PAYMENT RECEIPT / SCREENSHOT
+                      </label>
+                      <input
+                        type="file"
+                        ref={transferFileInputRef}
+                        accept="image/*,.pdf"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0]
+                          if (file) {
+                            const reader = new FileReader()
+                            reader.onload = () => setTransferReceiptProof(reader.result)
+                            reader.readAsDataURL(file)
+                          }
+                        }}
+                      />
+                      {transferReceiptProof ? (
+                        <div className="flex items-center justify-between p-2 rounded-lg bg-emerald-50 border border-emerald-200">
+                          <div className="flex items-center gap-2 overflow-hidden">
+                            <img
+                              src={transferReceiptProof}
+                              alt="Receipt Thumbnail"
+                              className="w-8 h-8 rounded object-cover border border-emerald-300"
+                            />
+                            <div className="min-w-0">
+                              <span className="text-xs font-bold text-emerald-800 block truncate">Receipt Attached</span>
+                              <span className="text-3xs text-emerald-600">Ready for admin verification</span>
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setTransferReceiptProof(null)}
+                            className="text-xs text-rose-500 hover:text-rose-700 p-1"
+                          >
+                            <X size={14} />
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => transferFileInputRef.current?.click()}
+                          className="w-full py-2 px-3 rounded-lg border border-dashed border-slate-300 hover:border-blue-400 bg-white text-slate-600 hover:text-slate-900 text-xs font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                        >
+                          <Upload size={13} className="text-blue-600" />
+                          <span>Upload Transfer Receipt Screenshot</span>
+                        </button>
+                      )}
                     </div>
                   </div>
                 )}

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import {
   X, UserPlus, RefreshCw, ShieldCheck, CheckCircle2,
-  Sparkles, Mail, Phone, Shirt, Trophy, KeyRound, Lock,
+  Mail, Phone, Shirt, Trophy, KeyRound, Lock,
   Eye, EyeOff, Copy, Check, ChevronDown, ChevronUp, Send
 } from 'lucide-react'
 import { useCitiPay } from '../../contexts/CitiPayContext'
@@ -158,7 +158,7 @@ Note: Change your temporary password upon your first sign in.`
             <div className="bg-slate-900 text-white rounded-xl p-4 text-left border border-slate-800 mb-4 shadow-md">
               <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
                 <span className="text-3xs uppercase font-extrabold tracking-wider text-emerald-400 flex items-center gap-1.5">
-                  <Sparkles size={12} /> Generated Login Credentials
+                  <KeyRound size={12} /> Generated Login Credentials
                 </span>
                 <button
                   type="button"

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import {
   X, Wallet, ArrowDownRight, ArrowUpRight, ShieldCheck,
-  CreditCard, Landmark, Smartphone, Sparkles, CheckCircle2,
+  CreditCard, Landmark, Smartphone, CheckCircle2,
   AlertCircle, History, ArrowRight, Copy, Check, Building2
 } from 'lucide-react'
 import { useCitiPay } from '../../contexts/CitiPayContext'
@@ -17,11 +17,14 @@ export default function WalletModal() {
     currentClub,
     fundWallet,
     submitManualPaymentTransfer,
-    transactions
+    transactions,
+    leagueSettings
   } = useCitiPay()
 
+  const isPaystackEnabled = leagueSettings?.active_payment_gateway === 'paystack'
+
   const [topupAmount, setTopupAmount] = useState(20000)
-  const [fundingMethod, setFundingMethod] = useState('paystack') // 'paystack' | 'manual_bank'
+  const [fundingMethod, setFundingMethod] = useState(isPaystackEnabled ? 'paystack' : 'manual_bank') // 'paystack' | 'manual_bank'
   const [selectedChannel, setSelectedChannel] = useState('all_channels') // 'all_channels' | 'card' | 'bank_transfer'
   const [transferRef, setTransferRef] = useState('')
   const [copiedAccount, setCopiedAccount] = useState(false)
@@ -273,48 +276,42 @@ export default function WalletModal() {
                 </div>
               </div>
 
-              {/* Payment Method Selector */}
+              {/* Payment Method Selector (Single Active Gateway Mode) */}
               <div>
                 <label className="text-3xs font-bold text-slate-500 uppercase tracking-wider block mb-1.5">
                   Payment Method
                 </label>
 
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
-                      fundingMethod === 'paystack'
-                        ? 'border-slate-900 bg-slate-900 text-white'
-                        : 'border-slate-200 bg-white hover:border-slate-300 text-slate-800'
-                    }`}
-                    onClick={() => setFundingMethod('paystack')}
-                  >
-                    <div className="flex items-center gap-2 mb-1">
-                      <CreditCard size={16} className={fundingMethod === 'paystack' ? 'text-emerald-400' : 'text-slate-600'} />
-                      <span className="font-bold text-xs">Paystack</span>
-                    </div>
-                    <div className={`text-3xs ${fundingMethod === 'paystack' ? 'text-slate-300' : 'text-slate-500'}`}>
-                      Card, USSD & Instant Bank
-                    </div>
-                  </button>
-
-                  <button
-                    type="button"
-                    className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
-                      fundingMethod === 'manual_bank'
-                        ? 'border-slate-900 bg-slate-900 text-white'
-                        : 'border-slate-200 bg-white hover:border-slate-300 text-slate-800'
-                    }`}
-                    onClick={() => setFundingMethod('manual_bank')}
-                  >
-                    <div className="flex items-center gap-2 mb-1">
-                      <Landmark size={16} className={fundingMethod === 'manual_bank' ? 'text-amber-400' : 'text-slate-600'} />
-                      <span className="font-bold text-xs">Direct Transfer</span>
-                    </div>
-                    <div className={`text-3xs ${fundingMethod === 'manual_bank' ? 'text-slate-300' : 'text-slate-500'}`}>
-                      Transfer & Admin Confirm
-                    </div>
-                  </button>
+                <div className="grid grid-cols-1 gap-2">
+                  {isPaystackEnabled ? (
+                    <button
+                      type="button"
+                      className="p-3 rounded-xl border-2 border-slate-900 bg-slate-900 text-white text-left transition-all cursor-pointer"
+                      onClick={() => setFundingMethod('paystack')}
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        <CreditCard size={16} className="text-emerald-400" />
+                        <span className="font-bold text-xs">Paystack Gateway</span>
+                      </div>
+                      <div className="text-3xs text-slate-300">
+                        Card, USSD & Instant Bank
+                      </div>
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      className="p-3 rounded-xl border-2 border-blue-600 bg-blue-50/40 text-blue-950 text-left transition-all cursor-pointer"
+                      onClick={() => setFundingMethod('manual_bank')}
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        <Landmark size={16} className="text-blue-600" />
+                        <span className="font-bold text-xs">Manual Direct Bank Transfer</span>
+                      </div>
+                      <div className="text-3xs text-slate-600">
+                        Transfer to Federation Account & Admin Confirmation
+                      </div>
+                    </button>
+                  )}
                 </div>
 
                 {/* Sub-view: Manual Bank Transfer Details */}

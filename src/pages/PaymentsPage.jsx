@@ -2,7 +2,7 @@ import { useState } from 'react'
 import {
   CreditCard, ShieldCheck, CheckCircle2, Clock, AlertTriangle,
   ArrowRight, Download, RefreshCw, Zap, Landmark, Check,
-  Wifi, Sparkles, AlertCircle, Wallet, FileText
+  Wifi, AlertCircle, Wallet, FileText
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
 import './PaymentsPage.css'

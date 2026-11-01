@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import {
   Building2, ShieldCheck, MapPin, Sliders, Landmark,
   Users, Mail, Phone, Calendar, CheckCircle2, Shield,
-  CreditCard, Edit3, Save, Sparkles, Award
+  CreditCard, Edit3, Save, Award
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
 import EditClubModal from '../components/modals/EditClubModal'

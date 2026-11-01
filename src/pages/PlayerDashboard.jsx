@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   CreditCard, ShieldCheck, AlertCircle, CheckCircle2, Clock,
-  ArrowRight, Sparkles, Download, Check, HelpCircle, PhoneCall,
+  ArrowRight, Download, Check, HelpCircle, PhoneCall,
   Calendar, MapPin, Zap, Star, Shield, Trophy, ChevronRight,
   TrendingUp, User, Users, RefreshCw, UserPlus, Plus, Minus
 } from 'lucide-react'
@@ -109,13 +109,13 @@ export default function PlayerDashboard() {
         {/* Top Count Stats */}
         <div className="superpower-stats-bar">
           <div className="sp-counter-item">
-            <div className="sp-counter-value sp-dot-matrix">{adminMetrics?.totalMembers ?? clubMembers.length}</div>
+            <div className="sp-counter-value font-mono font-bold">{adminMetrics?.totalMembers ?? clubMembers.length}</div>
             <div className="sp-counter-label">
               <span className="sp-mini-badge yellow">Roster</span>
             </div>
           </div>
           <div className="sp-counter-item">
-            <div className="sp-counter-value sp-dot-matrix">
+            <div className="sp-counter-value font-mono font-bold">
               {adminMetrics?.eligibleGreen ?? clubMembers.filter(m => m.status === 'green').length}
             </div>
             <div className="sp-counter-label">
@@ -123,7 +123,7 @@ export default function PlayerDashboard() {
             </div>
           </div>
           <div className="sp-counter-item">
-            <div className="sp-counter-value sp-dot-matrix">
+            <div className="sp-counter-value font-mono font-bold">
               {adminMetrics?.dueSoonYellow ?? clubMembers.filter(m => m.status === 'yellow').length}
             </div>
             <div className="sp-counter-label">
@@ -131,7 +131,7 @@ export default function PlayerDashboard() {
             </div>
           </div>
           <div className="sp-counter-item">
-            <div className="sp-counter-value sp-dot-matrix">
+            <div className="sp-counter-value font-mono font-bold">
               {adminMetrics?.notEligibleRed ?? clubMembers.filter(m => m.status === 'red').length}
             </div>
             <div className="sp-counter-label">
@@ -150,7 +150,7 @@ export default function PlayerDashboard() {
             <span className="sp-tl-dot done" />
             <span className="sp-tl-dot done" />
             <div className="sp-timeline-pill-floating">
-              <Sparkles size={12} className="text-amber-500" />
+              <CheckCircle2 size={12} className="text-emerald-500" />
               <span>{isGreen ? 'Eligible for Starting XI' : isYellow ? 'Grace Period Active' : 'Payment Required'}</span>
             </div>
             <span className="sp-tl-dot current" />
@@ -161,7 +161,7 @@ export default function PlayerDashboard() {
         </div>
       </div>
 
-      {/* DUAL GLOWING HERO CARDS (Dynamic Clearance & Upcoming Fixture Window) */}
+      {/* DUAL HERO CARDS (Dynamic Clearance & Upcoming Fixture Window) */}
       <div className="superpower-hero-grid mb-6">
         {/* Card 1: Dynamic Clearance Score */}
         <div className={`sp-hero-card ${isRed ? 'sp-hero-danger' : isYellow ? 'sp-hero-warning' : 'sp-hero-green'}`}>
@@ -169,7 +169,7 @@ export default function PlayerDashboard() {
             <span className="sp-hero-label">Player Clearance Score</span>
           </div>
           <div className="sp-hero-body">
-            <div className="sp-hero-big-number sp-dot-matrix">
+            <div className="sp-hero-big-number font-mono font-black">
               {clearanceScore}%
             </div>
             <div className="sp-hero-status-pill">
@@ -333,61 +333,50 @@ export default function PlayerDashboard() {
         </div>
       </div>
 
-      {/* FINANCIAL BIOMARKERS CAROUSEL / ROW */}
+      {/* DUES & OBLIGATIONS BREAKDOWN */}
       <div className="superpower-biomarkers-section mb-6">
         <div className="flex justify-between items-center mb-3">
           <div>
-            <h3 className="sp-section-heading">Financial Biomarkers</h3>
-            <p className="sp-section-sub">A snapshot of your dues, balance, and ledger health</p>
+            <h3 className="sp-section-heading">Dues & Fee Breakdown</h3>
+            <p className="sp-section-sub">Overview of your season commitments, social dues, and upcoming milestones</p>
           </div>
           <button className="sp-see-all-btn" onClick={() => navigate('/payments')}>
-            See All
+            Make Payment &rarr;
           </button>
         </div>
 
         <div className="sp-biomarkers-grid">
-          {/* Biomarker 1: Membership Fee */}
+          {/* Card 1: Membership Fee */}
           <div className="sp-bio-card">
             <div className="sp-bio-header">
               <span className="sp-bio-icon">💳</span>
-              <span className="sp-bio-type">Annual Dues</span>
+              <span className="sp-bio-type">Annual Season Fee</span>
             </div>
             <div className="sp-bio-value">
               <span className="sp-bio-num">₦{membershipPaid.toLocaleString()}</span>
               <span className="sp-bio-unit">/ ₦{membershipFee.toLocaleString()}</span>
             </div>
             <div className="sp-bio-label">
-              {membershipOutstanding === 0 ? '🟢 Fully Settled' : `🔴 ₦${membershipOutstanding.toLocaleString()} Due`}
-            </div>
-            <div className="sp-sparkline-bars">
-              <span style={{ height: '40%' }} />
-              <span style={{ height: '70%' }} />
-              <span style={{ height: '90%' }} />
-              <span style={{ height: '100%' }} />
+              {membershipOutstanding === 0 ? '🟢 Fully Settled' : `🔴 ₦${membershipOutstanding.toLocaleString()} Outstanding`}
             </div>
           </div>
 
-          {/* Biomarker 2: Social Dues */}
+          {/* Card 2: Social Dues */}
           <div className="sp-bio-card">
             <div className="sp-bio-header">
               <span className="sp-bio-icon">🏆</span>
-              <span className="sp-bio-type">Monthly Socials</span>
+              <span className="sp-bio-type">Monthly Social Dues</span>
             </div>
             <div className="sp-bio-value">
               <span className="sp-bio-num">₦{socialDuesCurrentMonth.toLocaleString()}</span>
               <span className="sp-bio-unit">/ month</span>
             </div>
             <div className="sp-bio-label">
-              {member.social_dues_status === 'paid' ? '🟢 Settled for September' : '🟡 Pending Settlement'}
-            </div>
-            <div className="sp-sparkline-wave">
-              <svg viewBox="0 0 100 20" className="w-full h-5 text-emerald-500 fill-none stroke-current stroke-2">
-                <path d="M0,15 Q25,0 50,12 T100,8" />
-              </svg>
+              {member.social_dues_status === 'paid' ? '🟢 Settled for Month' : '🟡 Pending Settlement'}
             </div>
           </div>
 
-          {/* Biomarker 3: Next Installment */}
+          {/* Card 3: Next Installment */}
           <div className="sp-bio-card">
             <div className="sp-bio-header">
               <span className="sp-bio-icon">⚡</span>
@@ -400,47 +389,8 @@ export default function PlayerDashboard() {
               <span className="sp-bio-unit">scheduled</span>
             </div>
             <div className="sp-bio-label">
-              {nextPaymentAmount > 0 ? 'Due in 7 days' : 'Zero balance due'}
+              {nextPaymentAmount > 0 ? 'Due for upcoming matchday' : 'Zero balance due'}
             </div>
-            <div className="sp-sparkline-dots">
-              <span className="dot active" />
-              <span className="dot active" />
-              <span className="dot" />
-              <span className="dot" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* TOP CLUB GEAR & RECOVERY (Superpower Supplements Inspiration) */}
-      <div className="superpower-supplements-section mb-6">
-        <div className="flex justify-between items-center mb-3">
-          <div>
-            <h3 className="sp-section-heading">Club Gear & Performance Pack</h3>
-            <p className="sp-section-sub">Official gear and recovery essentials allocated for your squad tier</p>
-          </div>
-          <button className="sp-see-all-btn" onClick={() => alert('Club kit store opening soon!')}>
-            See All
-          </button>
-        </div>
-
-        <div className="sp-supplements-grid">
-          <div className="sp-supp-card">
-            <span className="sp-supp-badge yellow">Official Kit</span>
-            <div className="sp-supp-orb green-orb">
-              <span>👕</span>
-            </div>
-            <div className="sp-supp-title">2026 Matchday Jersey</div>
-            <div className="sp-supp-price">₦18,500</div>
-          </div>
-
-          <div className="sp-supp-card">
-            <span className="sp-supp-badge yellow">Training Gear</span>
-            <div className="sp-supp-orb blue-orb">
-              <span>🎽</span>
-            </div>
-            <div className="sp-supp-title">2026/27 Bib</div>
-            <div className="sp-supp-price">₦8,200</div>
           </div>
         </div>
       </div>

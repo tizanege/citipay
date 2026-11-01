@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import {
   User, Mail, Lock, Phone, Shield, Trophy, ChevronRight,
   ChevronLeft, Check, Upload, CheckCircle2, AlertCircle,
-  ShieldCheck, Sparkles, CreditCard, Calendar, Star, DollarSign
+  ShieldCheck, CreditCard, Calendar, Star, DollarSign
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
 import './RegisterPage.css'

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import {
   X, Calendar, Shirt, Tag, CheckCircle2, ShieldCheck,
-  Save, Sparkles, Plus, Minus, ArrowRight
+  Save, Plus, Minus, ArrowRight
 } from 'lucide-react'
 import { useCitiPay } from '../../contexts/CitiPayContext'
 import './ModalStyles.css'
@@ -262,7 +262,7 @@ export default function EditLeagueSettingsModal() {
 
               {/* Live Impact Note */}
               <div className="p-3 rounded-lg bg-blue-50/70 border border-blue-100 text-3xs text-blue-900 flex items-start gap-2">
-                <Sparkles size={14} className="text-blue-600 shrink-0 mt-0.5" />
+                <ShieldCheck size={14} className="text-blue-600 shrink-0 mt-0.5" />
                 <div>
                   <strong>Instant League Propagation:</strong> Saving applies new prices immediately to player merchandise stores, quick pay cards, and Paystack checkout modals. Matchday updates sync across all club dashboards, rosters, and audit trails.
                 </div>

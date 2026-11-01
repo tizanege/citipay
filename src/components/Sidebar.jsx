@@ -3,7 +3,7 @@ import {
   LayoutDashboard, User, CreditCard, History, TrendingUp,
   Trophy, Calendar, Bell, Settings, Users, ClipboardList,
   Building2, FileText, BarChart3, Shield, LogOut, Menu, X,
-  ChevronLeft, Sparkles, ShieldCheck, Sliders, Landmark, Wallet
+  ChevronLeft, ShieldCheck, Sliders, Landmark, Wallet
 } from 'lucide-react'
 import { useState } from 'react'
 import { useCitiPay } from '../contexts/CitiPayContext'
