@@ -1729,14 +1729,17 @@ export function CitiPayProvider({ children }) {
   const updateMemberProfile = useCallback(async (memberId, updateData) => {
     const adminName = currentRole === 'super_admin' ? 'Super Admin' : 'Club Administrator'
 
-    // Update in local state
+    // 1. Sync to Supabase first so database validation errors surface cleanly
+    await dbService.updatePlayerProfile(memberId, updateData, adminName)
+
+    // 2. Update in local state on successful write
     setMembers(prev => prev.map(m => {
       if (m.id === memberId || isMemberIdMatch(m.member_id, memberId)) {
         return {
           ...m,
           full_name: updateData.fullName !== undefined ? updateData.fullName : m.full_name,
           nickname: updateData.nickname !== undefined ? updateData.nickname : m.nickname,
-          phone: updateData.phone !== undefined ? updateData.phone : m.phone,
+          phone: updateData.phone !== undefined ? (updateData.phone.trim() || null) : m.phone,
           position: updateData.position !== undefined ? updateData.position : m.position,
           jersey_number: updateData.jerseyNumber !== undefined ? String(updateData.jerseyNumber) : m.jersey_number,
           club_id: updateData.clubId !== undefined ? updateData.clubId : m.club_id
@@ -1744,13 +1747,6 @@ export function CitiPayProvider({ children }) {
       }
       return m
     }))
-
-    // Sync to Supabase
-    try {
-      await dbService.updatePlayerProfile(memberId, updateData, adminName)
-    } catch (e) {
-      console.warn('Supabase updatePlayerProfile warning:', e.message)
-    }
 
     return true
   }, [currentRole])

@@ -755,7 +755,10 @@ export const dbService = {
     }
     if (fullName !== undefined) profileUpdates.full_name = fullName.trim()
     if (nickname !== undefined) profileUpdates.nickname = nickname.trim()
-    if (phone !== undefined) profileUpdates.phone = phone.trim()
+    if (phone !== undefined) {
+      const cleanPhone = typeof phone === 'string' ? phone.trim() : ''
+      profileUpdates.phone = cleanPhone.length > 0 ? cleanPhone : null
+    }
     if (clubId !== undefined) profileUpdates.club_id = clubId
 
     // 1. Update profiles table
