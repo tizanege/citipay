@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react'
 import {
   Sliders, ShieldCheck, Activity, Key, Globe, Database,
   Lock, Save, CheckCircle2, Shield, AlertCircle, RefreshCw,
-  Shirt, Tag, Calendar, Plus, Minus, Mail, Send, Server, Check
+  Shirt, Tag, Calendar, Plus, Minus, Mail, Send, Server, Check,
+  Landmark, CreditCard
 } from 'lucide-react'
 import { useCitiPay } from '../contexts/CitiPayContext'
 import { getMailerConfig, saveMailerConfig, sendTestEmail } from '../services/emailService'
